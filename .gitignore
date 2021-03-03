@@ -1,0 +1,10 @@
+#Listado de archivos ignorados
+ESE_GRS_ConnectionSimulator.opensdf
+ESE_GRS_ConnectionSimulator.sdf
+ESE_GRS_ConnectionSimulator.sln
+ESE_GRS_ConnectionSimulator.v11.suo
+ESE_GRS_ConnectionSimulator/ESE_GRS_ConnectionSimulator.vcxproj
+ESE_GRS_ConnectionSimulator/ESE_GRS_ConnectionSimulator.vcxproj.filters
+ESE_GRS_ConnectionSimulator/ESE_GRS_ConnectionSimulator.vcxproj.user
+ESE_GRS_ConnectionSimulator/MyForm.resx
+ESE_GRS_ConnectionSimulator/Debug
