@@ -17,30 +17,34 @@ namespace ESE_GRS_ConnectionSimulator {
 	{
 	public:
 		Connection*c;
-		unsigned Interfaz;
-	private: System::Windows::Forms::Label^  label1;
+		unsigned Interfaz,cont;
+	private: System::Windows::Forms::Label^  labelError;
 
 	private: System::Windows::Forms::RadioButton^  radioButtonESE_GRS;
 	private: System::Windows::Forms::RadioButton^  radioButtonNormal;
 	private: System::Windows::Forms::Button^  buttonRedireccionar;
-	private: System::Windows::Forms::CheckBox^  checkBox1;
-	private: System::Windows::Forms::Label^  label2;
+	private: System::Windows::Forms::CheckBox^  checkBoxDraw;
+	private: System::Windows::Forms::Label^  labelConnectionType;
 	private: System::Windows::Forms::Button^  buttonSend;
-	private: System::Windows::Forms::CheckBox^  checkBox2;
+	private: System::Windows::Forms::CheckBox^  checkBoxCode;
 	private: System::Windows::Forms::Panel^  panel1;
 	private: System::Windows::Forms::RadioButton^  radioButton4;
 	private: System::Windows::Forms::RadioButton^  radioButton3;
 	private: System::Windows::Forms::Timer^  timer1;
-	private: System::Windows::Forms::Label^  label3;
+	private: System::Windows::Forms::Label^  labelCharUnsignedConnection;
 	private: System::Windows::Forms::Button^  button2;
+	private: System::Windows::Forms::CheckBox^  checkBoxAuto;
+	private: System::Windows::Forms::Button^  buttonAuto;
+	private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer1;
+	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape1;
 
 
 	public: 
 		msclr::interop::marshal_context context;
 		MyForm(void)
 		{
-			c=new TcP_ip_Server();
-			Interfaz=0;
+			c=new PuertoSerie();
+			Interfaz=cont=0;
 			InitializeComponent();
 			//
 			//TODO: Add the constructor code here
@@ -88,20 +92,24 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->textBox2 = (gcnew System::Windows::Forms::TextBox());
 			this->comboBox1 = (gcnew System::Windows::Forms::ComboBox());
-			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->labelError = (gcnew System::Windows::Forms::Label());
 			this->radioButtonESE_GRS = (gcnew System::Windows::Forms::RadioButton());
 			this->radioButtonNormal = (gcnew System::Windows::Forms::RadioButton());
 			this->buttonRedireccionar = (gcnew System::Windows::Forms::Button());
-			this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
-			this->label2 = (gcnew System::Windows::Forms::Label());
+			this->checkBoxDraw = (gcnew System::Windows::Forms::CheckBox());
+			this->labelConnectionType = (gcnew System::Windows::Forms::Label());
 			this->buttonSend = (gcnew System::Windows::Forms::Button());
-			this->checkBox2 = (gcnew System::Windows::Forms::CheckBox());
+			this->checkBoxCode = (gcnew System::Windows::Forms::CheckBox());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
 			this->radioButton4 = (gcnew System::Windows::Forms::RadioButton());
 			this->radioButton3 = (gcnew System::Windows::Forms::RadioButton());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
-			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->labelCharUnsignedConnection = (gcnew System::Windows::Forms::Label());
 			this->button2 = (gcnew System::Windows::Forms::Button());
+			this->checkBoxAuto = (gcnew System::Windows::Forms::CheckBox());
+			this->buttonAuto = (gcnew System::Windows::Forms::Button());
+			this->shapeContainer1 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape1 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->panel1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -122,7 +130,7 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->Size = System::Drawing::Size(96, 20);
 			this->textBox1->TabIndex = 2;
-			this->textBox1->Text = L"127.0.0.1";
+			this->textBox1->Text = L"COM1";
 			this->textBox1->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
 			this->textBox1->TextChanged += gcnew System::EventHandler(this, &MyForm::textBox1_TextChanged);
 			// 
@@ -133,7 +141,7 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->textBox2->Name = L"textBox2";
 			this->textBox2->Size = System::Drawing::Size(96, 20);
 			this->textBox2->TabIndex = 3;
-			this->textBox2->Text = L"55555";
+			this->textBox2->Text = L"9600";
 			this->textBox2->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
 			this->textBox2->TextChanged += gcnew System::EventHandler(this, &MyForm::textBox2_TextChanged);
 			// 
@@ -145,25 +153,25 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->comboBox1->Name = L"comboBox1";
 			this->comboBox1->Size = System::Drawing::Size(110, 21);
 			this->comboBox1->TabIndex = 4;
-			this->comboBox1->Text = L"TCP_IP_SERVER";
+			this->comboBox1->Text = L"SERIAL___PORT";
 			this->comboBox1->SelectedIndexChanged += gcnew System::EventHandler(this, &MyForm::comboBox1_SelectedIndexChanged);
 			this->comboBox1->TextChanged += gcnew System::EventHandler(this, &MyForm::OnTExtChanged);
 			// 
-			// label1
+			// labelError
 			// 
-			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(94, 185);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(35, 13);
-			this->label1->TabIndex = 5;
-			this->label1->Text = L"label1";
-			this->label1->Visible = false;
+			this->labelError->AutoSize = true;
+			this->labelError->Location = System::Drawing::Point(94, 185);
+			this->labelError->Name = L"labelError";
+			this->labelError->Size = System::Drawing::Size(51, 13);
+			this->labelError->TabIndex = 5;
+			this->labelError->Text = L"labelError";
+			this->labelError->Visible = false;
 			// 
 			// radioButtonESE_GRS
 			// 
 			this->radioButtonESE_GRS->AutoSize = true;
 			this->radioButtonESE_GRS->Checked = true;
-			this->radioButtonESE_GRS->Location = System::Drawing::Point(8, 12);
+			this->radioButtonESE_GRS->Location = System::Drawing::Point(224, 11);
 			this->radioButtonESE_GRS->Name = L"radioButtonESE_GRS";
 			this->radioButtonESE_GRS->Size = System::Drawing::Size(75, 17);
 			this->radioButtonESE_GRS->TabIndex = 7;
@@ -176,7 +184,7 @@ namespace ESE_GRS_ConnectionSimulator {
 			// radioButtonNormal
 			// 
 			this->radioButtonNormal->AutoSize = true;
-			this->radioButtonNormal->Location = System::Drawing::Point(8, 32);
+			this->radioButtonNormal->Location = System::Drawing::Point(224, 34);
 			this->radioButtonNormal->Name = L"radioButtonNormal";
 			this->radioButtonNormal->Size = System::Drawing::Size(58, 17);
 			this->radioButtonNormal->TabIndex = 8;
@@ -196,29 +204,28 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->buttonRedireccionar->Visible = false;
 			this->buttonRedireccionar->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
 			// 
-			// checkBox1
+			// checkBoxDraw
 			// 
-			this->checkBox1->AutoSize = true;
-			this->checkBox1->Location = System::Drawing::Point(12, 84);
-			this->checkBox1->Name = L"checkBox1";
-			this->checkBox1->Size = System::Drawing::Size(51, 17);
-			this->checkBox1->TabIndex = 10;
-			this->checkBox1->Text = L"Draw";
-			this->checkBox1->UseVisualStyleBackColor = true;
-			this->checkBox1->Visible = false;
-			this->checkBox1->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBox1_CheckedChanged);
+			this->checkBoxDraw->AutoSize = true;
+			this->checkBoxDraw->Location = System::Drawing::Point(12, 84);
+			this->checkBoxDraw->Name = L"checkBoxDraw";
+			this->checkBoxDraw->Size = System::Drawing::Size(51, 17);
+			this->checkBoxDraw->TabIndex = 10;
+			this->checkBoxDraw->Text = L"Draw";
+			this->checkBoxDraw->UseVisualStyleBackColor = true;
+			this->checkBoxDraw->Visible = false;
+			this->checkBoxDraw->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBox1_CheckedChanged);
 			// 
-			// label2
+			// labelConnectionType
 			// 
-			this->label2->AutoSize = true;
-			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->label2->Location = System::Drawing::Point(61, 4);
-			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(157, 25);
-			this->label2->TabIndex = 11;
-			this->label2->Text = L"ConnectionType";
-			this->label2->Visible = false;
+			this->labelConnectionType->AutoSize = true;
+			this->labelConnectionType->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15, System::Drawing::FontStyle::Regular, 
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->labelConnectionType->Location = System::Drawing::Point(29, 4);
+			this->labelConnectionType->Name = L"labelConnectionType";
+			this->labelConnectionType->Size = System::Drawing::Size(233, 25);
+			this->labelConnectionType->TabIndex = 11;
+			this->labelConnectionType->Text = L"ESE_GRS_SIMULATOR";
 			// 
 			// buttonSend
 			// 
@@ -231,17 +238,17 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->buttonSend->Visible = false;
 			this->buttonSend->Click += gcnew System::EventHandler(this, &MyForm::buttonSend_Click);
 			// 
-			// checkBox2
+			// checkBoxCode
 			// 
-			this->checkBox2->AutoSize = true;
-			this->checkBox2->Location = System::Drawing::Point(12, 106);
-			this->checkBox2->Name = L"checkBox2";
-			this->checkBox2->Size = System::Drawing::Size(51, 17);
-			this->checkBox2->TabIndex = 13;
-			this->checkBox2->Text = L"Code";
-			this->checkBox2->UseVisualStyleBackColor = true;
-			this->checkBox2->Visible = false;
-			this->checkBox2->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBox2_CheckedChanged);
+			this->checkBoxCode->AutoSize = true;
+			this->checkBoxCode->Location = System::Drawing::Point(12, 106);
+			this->checkBoxCode->Name = L"checkBoxCode";
+			this->checkBoxCode->Size = System::Drawing::Size(51, 17);
+			this->checkBoxCode->TabIndex = 13;
+			this->checkBoxCode->Text = L"Code";
+			this->checkBoxCode->UseVisualStyleBackColor = true;
+			this->checkBoxCode->Visible = false;
+			this->checkBoxCode->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBox2_CheckedChanged);
 			// 
 			// panel1
 			// 
@@ -279,15 +286,15 @@ namespace ESE_GRS_ConnectionSimulator {
 			// 
 			this->timer1->Tick += gcnew System::EventHandler(this, &MyForm::timer1_Tick);
 			// 
-			// label3
+			// labelCharUnsignedConnection
 			// 
-			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(8, 243);
-			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(35, 13);
-			this->label3->TabIndex = 15;
-			this->label3->Text = L"label3";
-			this->label3->Visible = false;
+			this->labelCharUnsignedConnection->AutoSize = true;
+			this->labelCharUnsignedConnection->Location = System::Drawing::Point(8, 243);
+			this->labelCharUnsignedConnection->Name = L"labelCharUnsignedConnection";
+			this->labelCharUnsignedConnection->Size = System::Drawing::Size(150, 13);
+			this->labelCharUnsignedConnection->TabIndex = 15;
+			this->labelCharUnsignedConnection->Text = L"labelCharUnsignedConnection";
+			this->labelCharUnsignedConnection->Visible = false;
 			// 
 			// button2
 			// 
@@ -300,26 +307,73 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->button2->Visible = false;
 			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click_1);
 			// 
+			// checkBoxAuto
+			// 
+			this->checkBoxAuto->AutoSize = true;
+			this->checkBoxAuto->Checked = true;
+			this->checkBoxAuto->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->checkBoxAuto->Location = System::Drawing::Point(11, 35);
+			this->checkBoxAuto->Name = L"checkBoxAuto";
+			this->checkBoxAuto->Size = System::Drawing::Size(55, 17);
+			this->checkBoxAuto->TabIndex = 17;
+			this->checkBoxAuto->Text = L"AutoV";
+			this->checkBoxAuto->UseVisualStyleBackColor = true;
+			this->checkBoxAuto->Visible = false;
+			this->checkBoxAuto->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBoxAuto_CheckedChanged);
+			// 
+			// buttonAuto
+			// 
+			this->buttonAuto->Location = System::Drawing::Point(34, 58);
+			this->buttonAuto->Name = L"buttonAuto";
+			this->buttonAuto->Size = System::Drawing::Size(20, 20);
+			this->buttonAuto->TabIndex = 18;
+			this->buttonAuto->Text = L"A";
+			this->buttonAuto->UseVisualStyleBackColor = true;
+			this->buttonAuto->Visible = false;
+			this->buttonAuto->Click += gcnew System::EventHandler(this, &MyForm::buttonAuto_Click);
+			// 
+			// shapeContainer1
+			// 
+			this->shapeContainer1->Location = System::Drawing::Point(0, 0);
+			this->shapeContainer1->Margin = System::Windows::Forms::Padding(0);
+			this->shapeContainer1->Name = L"shapeContainer1";
+			this->shapeContainer1->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(1) {this->rectangleShape1});
+			this->shapeContainer1->Size = System::Drawing::Size(284, 261);
+			this->shapeContainer1->TabIndex = 19;
+			this->shapeContainer1->TabStop = false;
+			// 
+			// rectangleShape1
+			// 
+			this->rectangleShape1->Location = System::Drawing::Point(70, 42);
+			this->rectangleShape1->Name = L"rectangleShape1";
+			this->rectangleShape1->Size = System::Drawing::Size(148, 204);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(284, 261);
+			this->Controls->Add(this->buttonAuto);
+			this->Controls->Add(this->checkBoxAuto);
 			this->Controls->Add(this->button2);
-			this->Controls->Add(this->label3);
+			this->Controls->Add(this->labelCharUnsignedConnection);
 			this->Controls->Add(this->panel1);
-			this->Controls->Add(this->checkBox2);
+			this->Controls->Add(this->checkBoxCode);
 			this->Controls->Add(this->buttonSend);
-			this->Controls->Add(this->label2);
-			this->Controls->Add(this->checkBox1);
+			this->Controls->Add(this->labelConnectionType);
+			this->Controls->Add(this->checkBoxDraw);
 			this->Controls->Add(this->buttonRedireccionar);
 			this->Controls->Add(this->radioButtonNormal);
 			this->Controls->Add(this->radioButtonESE_GRS);
-			this->Controls->Add(this->label1);
+			this->Controls->Add(this->labelError);
 			this->Controls->Add(this->comboBox1);
 			this->Controls->Add(this->textBox2);
 			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->button1);
+			this->Controls->Add(this->shapeContainer1);
+			this->MaximizeBox = false;
+			this->MaximumSize = System::Drawing::Size(300, 300);
+			this->MinimumSize = System::Drawing::Size(300, 300);
 			this->Name = L"MyForm";
 			this->Text = L"MyForm";
 			this->panel1->ResumeLayout(false);
@@ -385,10 +439,10 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 
 			    if(!c->inicializa(txb1,atol(txb2)))
 			    {
-				    label1->Text=gcnew String(c->ErrorStr());
-				    System::Windows::Forms::MessageBox::Show(label1->Text);
-				    label1->Visible=true;
-				    
+				    labelError->Text=gcnew String(c->ErrorStr());
+				    System::Windows::Forms::MessageBox::Show(labelError->Text);
+				    labelError->Visible=true;
+					Interfaz=0;
 				    return;
 			    }
 			    Interfaz05();
@@ -404,17 +458,19 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 public:
 	void Interfaz0()
 	{
-		label1->Visible=false;
-		label2->Visible=false;
-		label3->Visible=false;
+		labelError->Visible=false;
+		labelConnectionType->Visible=false;
+		labelCharUnsignedConnection->Visible=false;
 		radioButtonESE_GRS->Visible=false;
 		radioButtonNormal->Visible=false;
 		buttonRedireccionar->Visible=false;
 		button2->Visible=false;
-		checkBox1->Visible=false;
-		checkBox2->Visible=false;
+		checkBoxDraw->Visible=false;
+		checkBoxCode->Visible=false;
 		buttonSend->Visible=false;
 		panel1->Visible=false;
+		checkBoxAuto->Visible=false;
+		buttonAuto->Visible=false;
 		textBox2->Location = System::Drawing::Point(97,145);
 		textBox1->Location = System::Drawing::Point(97,103);
 		button1->Location= System::Drawing::Point(90,213);
@@ -423,11 +479,14 @@ public:
 		comboBox1->Visible=true;
 		textBox1->Visible=true;
 		textBox2->Visible=true;
+		rectangleShape1->Visible=true;
 		textBox1->Text=gcnew String(c->getChar());
 		textBox2->Text=Convert::ToString(c->getunsigned());
 	}
 	void Interfaz05()
 	{
+		labelConnectionType->Location=Point(61,4);
+		rectangleShape1->Visible=false;
 		if(c->GetType()==ConnectionType::TCP_IP_SERVER)
 		{
 			 comboBox1->Visible=false;
@@ -436,8 +495,8 @@ public:
 	         button1->Text="Disconnect";
 			 button1->Location = System::Drawing::Point(205,226);
 			 button1->Size = System::Drawing::Size(71, 23);
-			 label2->Visible=true;
-			 label2->Text=comboBox1->Text;
+			 labelConnectionType->Visible=true;
+			 labelConnectionType->Text=comboBox1->Text;
 			 button2->Visible=true;
 		}
 		else
@@ -446,14 +505,14 @@ public:
 	}
 	void Interfaz1()
 		 {
-			 label1->Visible=false;
+			 labelError->Visible=false;
 			 buttonSend->Visible=true;
 			 button1->Text="Disconnect";
 			 button1->Location = System::Drawing::Point(205,226);
 			 button1->Size = System::Drawing::Size(71, 23);
 			 comboBox1->Visible=false;
-			 label2->Visible=true;
-			 label2->Text=comboBox1->Text;
+			 labelConnectionType->Visible=true;
+			 labelConnectionType->Text=comboBox1->Text;
 			 radioButtonNormal->Location = System::Drawing::Point(102,70);
 			 radioButtonESE_GRS->Location = System::Drawing::Point(102,47);
 			 textBox1->Visible=true;
@@ -461,16 +520,17 @@ public:
 			 radioButtonESE_GRS->Visible=true;
 			 radioButtonNormal->Visible=true;
 			 ActivateDesactiveRadButt0(true);
-			 label3->Text=gcnew String(c->getChar())+"::"+Convert::ToString(c->getunsigned());
-			 label3->Visible=true;
+			 labelCharUnsignedConnection->Text=gcnew String(c->getChar())+"::"+Convert::ToString(c->getunsigned());
+			 labelCharUnsignedConnection->Visible=true;
+			 checkBoxAuto->Visible=true;
 		 }
 	void  ActivateDesactiveRadButt0(bool ActiveDesact)
 	{
 	 if(ActiveDesact)
 		{
 	     buttonRedireccionar->Visible=true;
-	     checkBox1->Visible=true;
-		 checkBox2->Visible=true;
+	     checkBoxDraw->Visible=true;
+		 checkBoxCode->Visible=true;
 		  textBox2->Visible=true;
 		 textBox1->Text="00000001";
 		 textBox2->Text="00000001"; 
@@ -482,8 +542,8 @@ public:
 	 else
 	 {
 	    buttonRedireccionar->Visible=false;
-	    checkBox1->Visible=false;
-		checkBox2->Visible=false;
+	    checkBoxDraw->Visible=false;
+		checkBoxCode->Visible=false;
 	 }
 }
 	void  ActivateDesactiveRadButt1(bool ActiveDesact)
@@ -539,17 +599,31 @@ public:
 
 	
 	}
+	void SendAuto(){
+	
+		cont++;
+		if(cont==10)
+		{
+			cont=0;
+			buttonAuto_Click(gcnew System::Object,gcnew System::EventArgs);
+		}
+	};
 private: System::Void radioButton1_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
 			 if(radioButtonESE_GRS->Checked)
 			 {
 				 ActivateDesactiveRadButt1(false);
 				 ActivateDesactiveRadButt0(true);
+				 checkBoxAuto->Checked=true;
+				 checkBoxAuto->Visible=true;
+				 buttonAuto->Visible=false;
 			 }
 			 else if(radioButtonNormal->Checked)
 			 {
 				 ActivateDesactiveRadButt1(true);
 				 ActivateDesactiveRadButt0(false);
 				 textBox1->Location = System::Drawing::Point(97,123);
+				 checkBoxAuto->Visible=false;
+				 buttonAuto->Visible=false;
 			 }
 		 }
 private: System::Void checkBox1_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
@@ -558,7 +632,7 @@ private: System::Void checkBox1_CheckedChanged(System::Object^  sender, System::
 			a[strlen(txb1)]=0;
 			for(unsigned i=0;i<strlen(txb1);i++)
 			   a[i]=txb1[i];
-			if(checkBox1->Checked)
+			if(checkBoxDraw->Checked)
 			{
 			   a[6]='1';
 			   textBox1->Text=gcnew String(a);
@@ -575,7 +649,7 @@ private: System::Void checkBox2_CheckedChanged(System::Object^  sender, System::
 			a[strlen(txb2)]=0;
 			for(unsigned i=0;i<strlen(txb2);i++)
 			   a[i]=txb2[i];
-			if(checkBox2->Checked)
+			if(checkBoxCode->Checked)
 			{
 			   a[6]='1';
 			   textBox2->Text=gcnew String(a);
@@ -593,7 +667,10 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
 			 char*s1="00000111";
 			 char*toSend=ToBinary(s,s1);
 			 if(toSend!=NULL)
+			 {
 				 c->Trasmitir(toSend);
+				 SendAuto();
+			 }
 		 }
 private: System::Void buttonSend_Click(System::Object^  sender, System::EventArgs^  e) {
 			 const char*txb1=context.marshal_as<const char*>(textBox1->Text);
@@ -602,7 +679,11 @@ private: System::Void buttonSend_Click(System::Object^  sender, System::EventArg
 				const char*txb2=context.marshal_as<const char*>(textBox2->Text);
 			 char*ToSend=ToBinary(txb1,txb2);
 			 if(ToSend!=NULL)
+			 {
 				 c->Trasmitir(ToSend);
+				 if(checkBoxAuto->Checked)
+					 SendAuto();
+			 }
 			 }
 			 else if(radioButtonNormal->Checked)
 			 {
@@ -639,9 +720,9 @@ private: System::Void textBox1_TextChanged(System::Object^  sender, System::Even
 					 if(buttonSend->Enabled==false)
 					    buttonSend->Enabled=true;
 					 if(textBox1->Text[6]=='1')
-					    checkBox1->Checked=true;
+					    checkBoxDraw->Checked=true;
 				     else
-			            checkBox1->Checked=false;
+			            checkBoxDraw->Checked=false;
 				 }
 
 				 
@@ -674,21 +755,20 @@ private: System::Void textBox2_TextChanged(System::Object^  sender, System::Even
 					 if(buttonSend->Enabled==false)
 					    buttonSend->Enabled=true;
 					 if(textBox2->Text[6]=='1')
-					    checkBox2->Checked=true;
+					    checkBoxCode->Checked=true;
 				     else
-			            checkBox2->Checked=false;
+			            checkBoxCode->Checked=false;
 				 }
 
 				 
 			 }
 		 }
-
 private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 		     char*asd=c->PricipalAction();
 			 if(c->Error())
 			 {
-				 label1->Text=gcnew String(c->ErrorStr());
-				 System::Windows::Forms::MessageBox::Show(label1->Text);
+				 labelError->Text=gcnew String(c->ErrorStr());
+				 System::Windows::Forms::MessageBox::Show(labelError->Text);
 			 }
 			 else
 			    Interfaz1();
@@ -698,6 +778,19 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
 private: System::Void button2_Click_1(System::Object^  sender, System::EventArgs^  e) {
 			 timer1->Enabled=true;
 			 button2->Visible=false;
+		 }
+private: System::Void buttonAuto_Click(System::Object^  sender, System::EventArgs^  e) {
+			 char*s="00000001";
+			 char*s1="00000100";
+			 char*toSend=ToBinary(s,s1);
+			 if(toSend!=NULL)
+				 c->Trasmitir(toSend);
+		 }
+private: System::Void checkBoxAuto_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
+			 if(checkBoxAuto->Checked) 
+				 buttonAuto->Visible=false;
+			 else
+				 buttonAuto->Visible=true;
 		 }
 };
 }
