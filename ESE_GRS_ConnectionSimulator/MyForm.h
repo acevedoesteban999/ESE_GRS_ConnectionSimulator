@@ -20,8 +20,8 @@ namespace ESE_GRS_ConnectionSimulator {
 		unsigned Interfaz;
 	private: System::Windows::Forms::Label^  label1;
 
-	private: System::Windows::Forms::RadioButton^  radioButton1;
-	private: System::Windows::Forms::RadioButton^  radioButton2;
+	private: System::Windows::Forms::RadioButton^  radioButtonESE_GRS;
+	private: System::Windows::Forms::RadioButton^  radioButtonNormal;
 	private: System::Windows::Forms::Button^  buttonRedireccionar;
 	private: System::Windows::Forms::CheckBox^  checkBox1;
 	private: System::Windows::Forms::Label^  label2;
@@ -89,8 +89,8 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->textBox2 = (gcnew System::Windows::Forms::TextBox());
 			this->comboBox1 = (gcnew System::Windows::Forms::ComboBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->radioButton1 = (gcnew System::Windows::Forms::RadioButton());
-			this->radioButton2 = (gcnew System::Windows::Forms::RadioButton());
+			this->radioButtonESE_GRS = (gcnew System::Windows::Forms::RadioButton());
+			this->radioButtonNormal = (gcnew System::Windows::Forms::RadioButton());
 			this->buttonRedireccionar = (gcnew System::Windows::Forms::Button());
 			this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
 			this->label2 = (gcnew System::Windows::Forms::Label());
@@ -159,31 +159,31 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->label1->Text = L"label1";
 			this->label1->Visible = false;
 			// 
-			// radioButton1
+			// radioButtonESE_GRS
 			// 
-			this->radioButton1->AutoSize = true;
-			this->radioButton1->Checked = true;
-			this->radioButton1->Location = System::Drawing::Point(8, 12);
-			this->radioButton1->Name = L"radioButton1";
-			this->radioButton1->Size = System::Drawing::Size(75, 17);
-			this->radioButton1->TabIndex = 7;
-			this->radioButton1->TabStop = true;
-			this->radioButton1->Text = L"ESE_GRS";
-			this->radioButton1->UseVisualStyleBackColor = true;
-			this->radioButton1->Visible = false;
-			this->radioButton1->CheckedChanged += gcnew System::EventHandler(this, &MyForm::radioButton1_CheckedChanged);
+			this->radioButtonESE_GRS->AutoSize = true;
+			this->radioButtonESE_GRS->Checked = true;
+			this->radioButtonESE_GRS->Location = System::Drawing::Point(8, 12);
+			this->radioButtonESE_GRS->Name = L"radioButtonESE_GRS";
+			this->radioButtonESE_GRS->Size = System::Drawing::Size(75, 17);
+			this->radioButtonESE_GRS->TabIndex = 7;
+			this->radioButtonESE_GRS->TabStop = true;
+			this->radioButtonESE_GRS->Text = L"ESE_GRS";
+			this->radioButtonESE_GRS->UseVisualStyleBackColor = true;
+			this->radioButtonESE_GRS->Visible = false;
+			this->radioButtonESE_GRS->CheckedChanged += gcnew System::EventHandler(this, &MyForm::radioButton1_CheckedChanged);
 			// 
-			// radioButton2
+			// radioButtonNormal
 			// 
-			this->radioButton2->AutoSize = true;
-			this->radioButton2->Location = System::Drawing::Point(8, 32);
-			this->radioButton2->Name = L"radioButton2";
-			this->radioButton2->Size = System::Drawing::Size(58, 17);
-			this->radioButton2->TabIndex = 8;
-			this->radioButton2->Text = L"Normal";
-			this->radioButton2->UseVisualStyleBackColor = true;
-			this->radioButton2->Visible = false;
-			this->radioButton2->CheckedChanged += gcnew System::EventHandler(this, &MyForm::radioButton1_CheckedChanged);
+			this->radioButtonNormal->AutoSize = true;
+			this->radioButtonNormal->Location = System::Drawing::Point(8, 32);
+			this->radioButtonNormal->Name = L"radioButtonNormal";
+			this->radioButtonNormal->Size = System::Drawing::Size(58, 17);
+			this->radioButtonNormal->TabIndex = 8;
+			this->radioButtonNormal->Text = L"Normal";
+			this->radioButtonNormal->UseVisualStyleBackColor = true;
+			this->radioButtonNormal->Visible = false;
+			this->radioButtonNormal->CheckedChanged += gcnew System::EventHandler(this, &MyForm::radioButton1_CheckedChanged);
 			// 
 			// buttonRedireccionar
 			// 
@@ -313,8 +313,8 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->checkBox1);
 			this->Controls->Add(this->buttonRedireccionar);
-			this->Controls->Add(this->radioButton2);
-			this->Controls->Add(this->radioButton1);
+			this->Controls->Add(this->radioButtonNormal);
+			this->Controls->Add(this->radioButtonESE_GRS);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->comboBox1);
 			this->Controls->Add(this->textBox2);
@@ -407,8 +407,8 @@ public:
 		label1->Visible=false;
 		label2->Visible=false;
 		label3->Visible=false;
-		radioButton1->Visible=false;
-		radioButton2->Visible=false;
+		radioButtonESE_GRS->Visible=false;
+		radioButtonNormal->Visible=false;
 		buttonRedireccionar->Visible=false;
 		button2->Visible=false;
 		checkBox1->Visible=false;
@@ -454,12 +454,12 @@ public:
 			 comboBox1->Visible=false;
 			 label2->Visible=true;
 			 label2->Text=comboBox1->Text;
-			 radioButton2->Location = System::Drawing::Point(102,70);
-			 radioButton1->Location = System::Drawing::Point(102,47);
+			 radioButtonNormal->Location = System::Drawing::Point(102,70);
+			 radioButtonESE_GRS->Location = System::Drawing::Point(102,47);
 			 textBox1->Visible=true;
 			 textBox2->Visible=true;
-			 radioButton1->Visible=true;
-			 radioButton2->Visible=true;
+			 radioButtonESE_GRS->Visible=true;
+			 radioButtonNormal->Visible=true;
 			 ActivateDesactiveRadButt0(true);
 			 label3->Text=gcnew String(c->getChar())+"::"+Convert::ToString(c->getunsigned());
 			 label3->Visible=true;
@@ -540,12 +540,12 @@ public:
 	
 	}
 private: System::Void radioButton1_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
-			 if(radioButton1->Checked)
+			 if(radioButtonESE_GRS->Checked)
 			 {
 				 ActivateDesactiveRadButt1(false);
 				 ActivateDesactiveRadButt0(true);
 			 }
-			 else if(radioButton2->Checked)
+			 else if(radioButtonNormal->Checked)
 			 {
 				 ActivateDesactiveRadButt1(true);
 				 ActivateDesactiveRadButt0(false);
@@ -597,14 +597,14 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
 		 }
 private: System::Void buttonSend_Click(System::Object^  sender, System::EventArgs^  e) {
 			 const char*txb1=context.marshal_as<const char*>(textBox1->Text);
-			 if(radioButton1->Checked)
+			 if(radioButtonESE_GRS->Checked)
 			 {
 				const char*txb2=context.marshal_as<const char*>(textBox2->Text);
 			 char*ToSend=ToBinary(txb1,txb2);
 			 if(ToSend!=NULL)
 				 c->Trasmitir(ToSend);
 			 }
-			 else if(radioButton2->Checked)
+			 else if(radioButtonNormal->Checked)
 			 {
 
 				 c->Trasmitir((char*)txb1);
@@ -612,12 +612,30 @@ private: System::Void buttonSend_Click(System::Object^  sender, System::EventArg
 
 		 }
 private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
-			 if(Interfaz==1&&radioButton1->Checked)
+			 if(Interfaz==1&&radioButtonESE_GRS->Checked)
 			 {
 				 if(textBox1->TextLength!=8)
-					 buttonSend->Enabled=false;
-				 else 
+					 buttonSend->Enabled=false; 
+			     else
 				 {
+					 bool err0=true;;
+					 for(unsigned i=0;i<8;i++)
+					 {	 
+						 if(textBox1->Text[i]=='1'&&err0)
+							 err0=false;
+						 if(textBox1->Text[i]!='1'&&textBox1->Text[i]!='0')
+						 {
+							  buttonSend->Enabled=false; 
+							  return;
+						 }
+				     }
+					 if(err0)
+					 {
+						 buttonSend->Enabled=false; 
+						 return;
+					 }
+
+
 					 if(buttonSend->Enabled==false)
 					    buttonSend->Enabled=true;
 					 if(textBox1->Text[6]=='1')
@@ -630,12 +648,29 @@ private: System::Void textBox1_TextChanged(System::Object^  sender, System::Even
 			 }
 		 }
 private: System::Void textBox2_TextChanged(System::Object^  sender, System::EventArgs^  e) {
-			 if(Interfaz==1&&radioButton1->Checked)
+			 if(Interfaz==1&&radioButtonESE_GRS->Checked)
 			 {
-				 if(textBox1->TextLength!=8)
+				 if(textBox2->TextLength!=8)
 					 buttonSend->Enabled=false;
 				 else 
 				 {
+					  bool err0=true;;
+					 for(unsigned i=0;i<8;i++)
+					 {	 
+						 if(textBox2->Text[i]=='1'&&err0)
+							 err0=false;
+						 if(textBox2->Text[i]!='1'&&textBox2->Text[i]!='0')
+						 {
+							  buttonSend->Enabled=false; 
+							  return;
+						 }
+				     }
+					 if(err0)
+					 {
+						 buttonSend->Enabled=false; 
+						 return;
+					 }
+
 					 if(buttonSend->Enabled==false)
 					    buttonSend->Enabled=true;
 					 if(textBox2->Text[6]=='1')
