@@ -28,6 +28,7 @@ Class ESE_GRS_ConnectionSimulator.MyForm: AutoLayout, AnsiClass, Class, Public, 
     UInt32 Interfaz : Public
     UInt32 cont : Public
     msclr.interop.marshal_context context IsByValue : Public, InitOnly
+    Boolean SendCont : Public
   Methods:
     Interfaz0(): PrivateScope, Public, HideBySig
     Interfaz05(): PrivateScope, Public, HideBySig
@@ -36,3 +37,4 @@ Class ESE_GRS_ConnectionSimulator.MyForm: AutoLayout, AnsiClass, Class, Public, 
     ActivateDesactiveRadButt1(Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
     ToBinary(SByte*, SByte*): PrivateScope, Public, HideBySig
     SendAuto(): PrivateScope, Public, HideBySig
+    InterfazAutoSend(Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
