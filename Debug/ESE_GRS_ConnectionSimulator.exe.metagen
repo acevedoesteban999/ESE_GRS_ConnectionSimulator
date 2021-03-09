@@ -27,8 +27,9 @@ Class ESE_GRS_ConnectionSimulator.MyForm: AutoLayout, AnsiClass, Class, Public, 
     Connection* c : Public
     UInt32 Interfaz : Public
     UInt32 cont : Public
-    msclr.interop.marshal_context context IsByValue : Public, InitOnly
     Boolean SendCont : Public
+    Boolean txb1OK : Public
+    Boolean txb2OK : Public
   Methods:
     Interfaz0(): PrivateScope, Public, HideBySig
     Interfaz05(): PrivateScope, Public, HideBySig

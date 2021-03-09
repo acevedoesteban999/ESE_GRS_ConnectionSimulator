@@ -15,11 +15,13 @@ namespace ESE_GRS_ConnectionSimulator {
 	/// </summary>
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
+	private: 
+		msclr::interop::marshal_context context;
 	public:
 		Connection*c;
 		unsigned Interfaz,cont;
+		 bool SendCont,txb1OK,txb2OK;
 	private: System::Windows::Forms::Label^  labelError;
-
 	private: System::Windows::Forms::RadioButton^  radioButtonESE_GRS;
 	private: System::Windows::Forms::RadioButton^  radioButtonNormal;
 	private: System::Windows::Forms::Button^  buttonRedireccionar;
@@ -27,9 +29,6 @@ namespace ESE_GRS_ConnectionSimulator {
 	private: System::Windows::Forms::Label^  labelConnectionType;
 	private: System::Windows::Forms::Button^  buttonSend;
 	private: System::Windows::Forms::CheckBox^  checkBoxCode;
-	private: System::Windows::Forms::Panel^  panel1;
-	private: System::Windows::Forms::RadioButton^  radioButton4;
-	private: System::Windows::Forms::RadioButton^  radioButton3;
 	private: System::Windows::Forms::Timer^  timer1;
 	private: System::Windows::Forms::Label^  labelCharUnsignedConnection;
 	private: System::Windows::Forms::Button^  button2;
@@ -40,14 +39,15 @@ namespace ESE_GRS_ConnectionSimulator {
 	private: System::Windows::Forms::CheckBox^  checkBoxAutoSend;
 	private: System::Windows::Forms::TextBox^  textBoxAutoS;
 	private: System::Windows::Forms::Timer^  timer2;
-
-
-	public: 
-		msclr::interop::marshal_context context;
-		bool SendCont;
+	private: System::Windows::Forms::Button^  buttonNextFocus;
+	private: System::Windows::Forms::Button^  buttonFocusClick;
+	private: System::Windows::Forms::Button^  buttonAcept;
+	private: System::Windows::Forms::Button^  buttonCancel;
+	public:		
 		MyForm(void)
 		{
 			SendCont=false;
+			txb1OK=txb2OK=true;
 			c=new PuertoSerie();
 			Interfaz=cont=0;
 			InitializeComponent();
@@ -105,9 +105,6 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->labelConnectionType = (gcnew System::Windows::Forms::Label());
 			this->buttonSend = (gcnew System::Windows::Forms::Button());
 			this->checkBoxCode = (gcnew System::Windows::Forms::CheckBox());
-			this->panel1 = (gcnew System::Windows::Forms::Panel());
-			this->radioButton4 = (gcnew System::Windows::Forms::RadioButton());
-			this->radioButton3 = (gcnew System::Windows::Forms::RadioButton());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->labelCharUnsignedConnection = (gcnew System::Windows::Forms::Label());
 			this->button2 = (gcnew System::Windows::Forms::Button());
@@ -118,12 +115,15 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->checkBoxAutoSend = (gcnew System::Windows::Forms::CheckBox());
 			this->textBoxAutoS = (gcnew System::Windows::Forms::TextBox());
 			this->timer2 = (gcnew System::Windows::Forms::Timer(this->components));
-			this->panel1->SuspendLayout();
+			this->buttonNextFocus = (gcnew System::Windows::Forms::Button());
+			this->buttonFocusClick = (gcnew System::Windows::Forms::Button());
+			this->buttonAcept = (gcnew System::Windows::Forms::Button());
+			this->buttonCancel = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// button1
 			// 
-			this->button1->Location = System::Drawing::Point(90, 214);
+			this->button1->Location = System::Drawing::Point(90, 201);
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(110, 23);
 			this->button1->TabIndex = 1;
@@ -258,39 +258,6 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->checkBoxCode->Visible = false;
 			this->checkBoxCode->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBox2_CheckedChanged);
 			// 
-			// panel1
-			// 
-			this->panel1->Controls->Add(this->radioButton4);
-			this->panel1->Controls->Add(this->radioButton3);
-			this->panel1->Location = System::Drawing::Point(24, 120);
-			this->panel1->Name = L"panel1";
-			this->panel1->Size = System::Drawing::Size(64, 69);
-			this->panel1->TabIndex = 14;
-			this->panel1->Visible = false;
-			// 
-			// radioButton4
-			// 
-			this->radioButton4->AutoSize = true;
-			this->radioButton4->Location = System::Drawing::Point(3, 26);
-			this->radioButton4->Name = L"radioButton4";
-			this->radioButton4->Size = System::Drawing::Size(56, 17);
-			this->radioButton4->TabIndex = 1;
-			this->radioButton4->TabStop = true;
-			this->radioButton4->Text = L"Code2";
-			this->radioButton4->UseVisualStyleBackColor = true;
-			// 
-			// radioButton3
-			// 
-			this->radioButton3->AutoSize = true;
-			this->radioButton3->Location = System::Drawing::Point(4, 3);
-			this->radioButton3->Name = L"radioButton3";
-			this->radioButton3->Size = System::Drawing::Size(47, 17);
-			this->radioButton3->TabIndex = 0;
-			this->radioButton3->TabStop = true;
-			this->radioButton3->Text = L"Set0";
-			this->radioButton3->UseVisualStyleBackColor = true;
-			this->radioButton3->CheckedChanged += gcnew System::EventHandler(this, &MyForm::radioButton3_CheckedChanged);
-			// 
 			// timer1
 			// 
 			this->timer1->Tick += gcnew System::EventHandler(this, &MyForm::timer1_Tick);
@@ -336,7 +303,7 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->buttonAuto->Name = L"buttonAuto";
 			this->buttonAuto->Size = System::Drawing::Size(20, 20);
 			this->buttonAuto->TabIndex = 18;
-			this->buttonAuto->Text = L"A";
+			this->buttonAuto->Text = L"V";
 			this->buttonAuto->UseVisualStyleBackColor = true;
 			this->buttonAuto->Visible = false;
 			this->buttonAuto->Click += gcnew System::EventHandler(this, &MyForm::buttonAuto_Click);
@@ -383,18 +350,63 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->timer2->Interval = 333;
 			this->timer2->Tick += gcnew System::EventHandler(this, &MyForm::timer2_Tick);
 			// 
+			// buttonNextFocus
+			// 
+			this->buttonNextFocus->Location = System::Drawing::Point(12, 133);
+			this->buttonNextFocus->Name = L"buttonNextFocus";
+			this->buttonNextFocus->Size = System::Drawing::Size(20, 20);
+			this->buttonNextFocus->TabIndex = 22;
+			this->buttonNextFocus->Text = L"F";
+			this->buttonNextFocus->UseVisualStyleBackColor = true;
+			this->buttonNextFocus->Visible = false;
+			this->buttonNextFocus->Click += gcnew System::EventHandler(this, &MyForm::buttonNextFocus_Click);
+			// 
+			// buttonFocusClick
+			// 
+			this->buttonFocusClick->Location = System::Drawing::Point(34, 133);
+			this->buttonFocusClick->Name = L"buttonFocusClick";
+			this->buttonFocusClick->Size = System::Drawing::Size(20, 20);
+			this->buttonFocusClick->TabIndex = 23;
+			this->buttonFocusClick->Text = L"C";
+			this->buttonFocusClick->UseVisualStyleBackColor = true;
+			this->buttonFocusClick->Visible = false;
+			this->buttonFocusClick->Click += gcnew System::EventHandler(this, &MyForm::buttonFocusClick_Click);
+			// 
+			// buttonAcept
+			// 
+			this->buttonAcept->Location = System::Drawing::Point(8, 155);
+			this->buttonAcept->Name = L"buttonAcept";
+			this->buttonAcept->Size = System::Drawing::Size(49, 10);
+			this->buttonAcept->TabIndex = 24;
+			this->buttonAcept->UseVisualStyleBackColor = true;
+			this->buttonAcept->Visible = false;
+			this->buttonAcept->Click += gcnew System::EventHandler(this, &MyForm::buttonAcept_Click);
+			// 
+			// buttonCancel
+			// 
+			this->buttonCancel->Location = System::Drawing::Point(56, 129);
+			this->buttonCancel->Name = L"buttonCancel";
+			this->buttonCancel->Size = System::Drawing::Size(10, 36);
+			this->buttonCancel->TabIndex = 25;
+			this->buttonCancel->UseVisualStyleBackColor = true;
+			this->buttonCancel->Visible = false;
+			this->buttonCancel->Click += gcnew System::EventHandler(this, &MyForm::buttonCancel_Click);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(284, 261);
+			this->Controls->Add(this->buttonCancel);
+			this->Controls->Add(this->buttonAcept);
+			this->Controls->Add(this->buttonFocusClick);
+			this->Controls->Add(this->buttonNextFocus);
 			this->Controls->Add(this->textBoxAutoS);
 			this->Controls->Add(this->checkBoxAutoSend);
 			this->Controls->Add(this->buttonAuto);
 			this->Controls->Add(this->checkBoxAutoVerif);
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->labelCharUnsignedConnection);
-			this->Controls->Add(this->panel1);
 			this->Controls->Add(this->checkBoxCode);
 			this->Controls->Add(this->buttonSend);
 			this->Controls->Add(this->labelConnectionType);
@@ -412,9 +424,7 @@ namespace ESE_GRS_ConnectionSimulator {
 			this->MaximumSize = System::Drawing::Size(300, 300);
 			this->MinimumSize = System::Drawing::Size(300, 300);
 			this->Name = L"MyForm";
-			this->Text = L"MyForm";
-			this->panel1->ResumeLayout(false);
-			this->panel1->PerformLayout();
+			this->Text = L"ESE_GRS_Connection_Simulator";
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -511,14 +521,17 @@ public:
 		checkBoxDraw->Visible=false;
 		checkBoxCode->Visible=false;
 		buttonSend->Visible=false;
-		panel1->Visible=false;
+		buttonAcept->Visible=false;
+		buttonCancel->Visible=false;
+		buttonFocusClick->Visible=false;
+		buttonNextFocus->Visible=false;
 		checkBoxAutoVerif->Visible=false;
 		checkBoxAutoSend->Visible=false;
 		buttonAuto->Visible=false;
 		textBoxAutoS->Visible=false;
 		textBox2->Location = System::Drawing::Point(97,145);
 		textBox1->Location = System::Drawing::Point(97,103);
-		button1->Location= System::Drawing::Point(90,213);
+		button1->Location= System::Drawing::Point(90,201);
 		button1->Text="Connect";
 		button1->Size = System::Drawing::Size(110,23);
 		comboBox1->Visible=true;
@@ -679,12 +692,13 @@ public:
 			checkBoxDraw->Enabled=false;
 			checkBoxAutoVerif->Enabled=false;
 			checkBoxCode->Enabled=false;
-			radioButton3->Enabled=false;
-			radioButton4->Enabled=false;
 			radioButtonESE_GRS->Enabled=false;
 			radioButtonNormal->Enabled=false;
-			panel1->Enabled=false;
 			textBoxAutoS->Enabled=false;
+			buttonAcept->Enabled=false;
+		    buttonCancel->Enabled=false;
+            buttonFocusClick->Enabled=false;
+			buttonNextFocus->Enabled=false;
 			buttonRedireccionar->Enabled=false;
 			timer2->Interval = (int)atoi(txbAS);
 			timer2->Enabled=true;
@@ -700,12 +714,13 @@ public:
 			checkBoxDraw->Enabled=true;
 			checkBoxAutoVerif->Enabled=true;
 			checkBoxCode->Enabled=true;
-			radioButton3->Enabled=true;
-			radioButton4->Enabled=true;
+			buttonAcept->Enabled=true;
+		    buttonCancel->Enabled=true;
+            buttonFocusClick->Enabled=true;
+			buttonNextFocus->Enabled=true;
 			radioButtonESE_GRS->Enabled=true;
 			radioButtonNormal->Enabled=true;
 			textBoxAutoS->Enabled=true;
-			panel1->Enabled=true;
 		    buttonRedireccionar->Enabled=true;	
 		}
 	}
@@ -721,6 +736,7 @@ private: System::Void radioButton1_CheckedChanged(System::Object^  sender, Syste
 				 checkBoxAutoSend->Visible=true;
 				 checkBoxAutoSend->Checked=false;
 				 textBoxAutoS->Visible=false;
+				 checkBoxCode->Checked=false;
 			 }
 			 else if(radioButtonNormal->Checked)
 			 {
@@ -732,7 +748,10 @@ private: System::Void radioButton1_CheckedChanged(System::Object^  sender, Syste
 				 buttonAuto->Visible=false;
 				 checkBoxAutoSend->Visible=false;
 				 textBoxAutoS->Visible=false;
-				 panel1->Visible=false;
+				 buttonAcept->Visible=false;
+		         buttonCancel->Visible=false;
+                 buttonFocusClick->Visible=false;
+			     buttonNextFocus->Visible=false;
 			 }
 		 }
 private: System::Void checkBox1_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
@@ -753,17 +772,31 @@ private: System::Void checkBox1_CheckedChanged(System::Object^  sender, System::
 			}
 	}	 
 private: System::Void checkBox2_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
-			if(checkBoxCode->Checked)
+			 char*aa="00000001";
+			 char*a=new char[9];
+			 for(unsigned i=0;i<8;i++)
+				 a[i]=aa[i];
+			 a[8]=0;
+			 if(checkBoxCode->Checked)
 			{
-			   textBox1->Text="00000001";
-			   textBox2->Text="00000011";
-			   panel1->Visible=true;
+			   textBox1->Text=gcnew String(a);
+			   a[6]='1';
+			   textBox2->Text=gcnew String(a);
+		 	   buttonAcept->Visible=true;
+		       buttonCancel->Visible=true;
+               buttonFocusClick->Visible=true;
+			   buttonNextFocus->Visible=true;
 			}
 			else 
 			{
-			   textBox1->Text="00000001";
-			   textBox2->Text="00000001";
-			   panel1->Visible=false;
+			   textBox1->Text=gcnew String(a);
+			   a[6]='0';
+			   textBox2->Text=gcnew String(a);
+			   textBox1->Text=gcnew String(a);
+			   buttonAcept->Visible=false;
+		       buttonCancel->Visible=false;
+               buttonFocusClick->Visible=false;
+			   buttonNextFocus->Visible=false;
 			}
 		 }
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -809,7 +842,10 @@ private: System::Void textBox1_TextChanged(System::Object^  sender, System::Even
 			 if(Interfaz==1&&radioButtonESE_GRS->Checked)
 			 {
 				 if(textBox1->TextLength!=8)
-					 buttonSend->Enabled=false; 
+				 {
+					 buttonSend->Enabled=false;
+					 txb1OK=false;
+				 }
 			     else
 				 {
 					 bool err0=true;;
@@ -820,17 +856,18 @@ private: System::Void textBox1_TextChanged(System::Object^  sender, System::Even
 						 if(textBox1->Text[i]!='1'&&textBox1->Text[i]!='0')
 						 {
 							  buttonSend->Enabled=false; 
+							  txb1OK=false;
 							  return;
 						 }
 				     }
 					 if(err0)
 					 {
 						 buttonSend->Enabled=false; 
+						 txb1OK=false;
 						 return;
 					 }
-
-
-					 if(buttonSend->Enabled==false)
+					 txb1OK=true;
+					 if(buttonSend->Enabled==false&&txb2OK)
 					    buttonSend->Enabled=true;
 					 if(textBox1->Text[6]=='1')
 					    checkBoxDraw->Checked=true;
@@ -845,7 +882,10 @@ private: System::Void textBox2_TextChanged(System::Object^  sender, System::Even
 			 if(Interfaz==1&&radioButtonESE_GRS->Checked)
 			 {
 				 if(textBox2->TextLength!=8)
+				 {
 					 buttonSend->Enabled=false;
+					 txb2OK=false;
+				 }
 				 else 
 				 {
 					  bool err0=true;;
@@ -856,17 +896,21 @@ private: System::Void textBox2_TextChanged(System::Object^  sender, System::Even
 						 if(textBox2->Text[i]!='1'&&textBox2->Text[i]!='0')
 						 {
 							  buttonSend->Enabled=false; 
+							  txb2OK=false;
 							  return;
 						 }
 				     }
 					 if(err0)
 					 {
 						 buttonSend->Enabled=false; 
+						 txb2OK=false;
 						 return;
 					 }
-
-					 if(buttonSend->Enabled==false)
+					 txb2OK=true;
+					 if(buttonSend->Enabled==false&&txb1OK)
+					 {
 					    buttonSend->Enabled=true;
+					 }
 					 if(textBox2->Text[6]=='1')
 					    checkBoxCode->Checked=true;
 				     else
@@ -927,22 +971,45 @@ private: System::Void timer2_Tick(System::Object^  sender, System::EventArgs^  e
 				   SendAuto();
 			    }
 		 }
-private: System::Void radioButton3_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
-			 const char*txb2=context.marshal_as<const char*>(textBox2->Text);
-			 char*a=new char[strlen(txb2)+1];
-			 a[strlen(txb2)]=0;
-			   for(unsigned i=0;i<strlen(txb2);i++)
-			      a[i]=txb2[i];
-			   if(radioButton3->Checked)
-			   {
-			   a[0]='1';
-			   textBox2->Text=gcnew String(a);
-			   }
-			   else
-			   {
-			   a[0]='0';
-			   textBox2->Text=gcnew String(a);
-			   }
+private: System::Void buttonNextFocus_Click(System::Object^  sender, System::EventArgs^  e) {
+			 char*s="00000001";
+			 char*s1="00001011";
+			 char*toSend=ToBinary(s,s1);
+			 if(toSend!=NULL)
+			 {
+				 c->Trasmitir(toSend);
+				 SendAuto();
+			 }
+		 }
+private: System::Void buttonFocusClick_Click(System::Object^  sender, System::EventArgs^  e) {
+			 char*s="00000001";
+			 char*s1="00001111";
+			 char*toSend=ToBinary(s,s1);
+			 if(toSend!=NULL)
+			 {
+				 c->Trasmitir(toSend);
+				 SendAuto();
+			 }
+		 }
+private: System::Void buttonAcept_Click(System::Object^  sender, System::EventArgs^  e) {
+			 char*s="00000001";
+			 char*s1="00010011";
+			 char*toSend=ToBinary(s,s1);
+			 if(toSend!=NULL)
+			 {
+				 c->Trasmitir(toSend);
+				 SendAuto();
+			 }
+		 }
+private: System::Void buttonCancel_Click(System::Object^  sender, System::EventArgs^  e) {
+			 char*s="00000001";
+			 char*s1="00010111";
+			 char*toSend=ToBinary(s,s1);
+			 if(toSend!=NULL)
+			 {
+				 c->Trasmitir(toSend);
+				 SendAuto();
+			 }
 		 }
 };
 }
