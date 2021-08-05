@@ -7,9 +7,9 @@ Además de dar la pisobilidad de crear un servidor únicamente por Sockets para ma
 de clientes. 
 
 
-## [Descargar ESE_GRS](https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/tree/master/media/ESE_GRS_ConnectionSimulator)
+## [Descargar ESE_GRS_ConnectionSimulator(https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/tree/master/media/ESE_GRS_ConnectionSimulator)
 
-![Foto de ESE_GRS](https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/blob/master/media/ESE_GRS_ConnectionSimulator.png)
+![Foto de ESE_GRS_ConnectionSimulator(https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/blob/master/media/ESE_GRS_ConnectionSimulator.png)
 
 ## Plataforma
 >Windows
