@@ -15,7 +15,7 @@ de clientes.
 >Windows
 
 ## Lenguaje
->C++ Visual
+>C & C++
 
 ## Librerias utilizadas
 > - winsock(Conexiones por Sockets)

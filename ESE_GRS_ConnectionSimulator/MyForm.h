@@ -2926,7 +2926,7 @@ private:
 		if(contVerif==10)
 		{
 			contVerif=0;
-			c[0]->Trasmitir(ToBinary("00000001","00000100"));
+			c[0]->Trasmitir(ToBinary("00000001","00000100"),NULL,true);
 		}
 	}
 	void VistaDeCarga()

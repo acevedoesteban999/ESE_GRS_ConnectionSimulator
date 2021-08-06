@@ -567,12 +567,17 @@ public:
 		string s;
 		for(unsigned i=0;i<ManejadorClientes.cont;i++)
 		{
-			s+="---------------------------\n";
-			s+="Ip:";
-			s+=inet_ntoa(ManejadorClientes.clientes[i].Addr.sin_addr);
-			s+="\nType:";
-			s+=(ManejadorClientes.clientes[i].t==TypeClient::HTML?"HTML":ManejadorClientes.clientes[i].t==TypeClient::Windows?"Windoes":ManejadorClientes.clientes[i].t==TypeClient::WEB?"Web":"Null");
-			s+="\n---------------------------\n";
+		s+="_Id:";
+		s+=to_string(ManejadorClientes.clientes[i]);
+		s+="\n_Tipo:";
+		s+=(ManejadorClientes.clientes[i].t==TypeClient::HTML?"HTML":ManejadorClientes.clientes[i].t==TypeClient::Windows?"WIND":ManejadorClientes.clientes[i].t==TypeClient::WEB?"WEB":ManejadorClientes.clientes[i].t==TypeClient::ESE_GRS?"ESE":"NULL");
+		s+="\n_Acceso:";
+		s+=(ManejadorClientes.user==i||ManejadorClientes.ESE==i)?"TRUE":"FALSE";
+		s+="\n_Ip:";
+		s+=inet_ntoa(ManejadorClientes.clientes[i].Addr.sin_addr);
+		s+="\n_Fecha:";
+		s+=ctime(&ManejadorClientes.clientes[i].date);
+		s+="\n\n";
 		}
 		char*toReturn=new char[s.length()+1];
 		toReturn[s.length()]=0;
@@ -967,7 +972,7 @@ public:
 		}
 		return cadena;
 	};
-	void Trasmitir(char *oBuffer,SOCKET s=NULL)
+	void Trasmitir(char *oBuffer,SOCKET s=NULL,bool ESEGRS=false)
 	{
 	DWORD iBytesWritten;
 	iBytesWritten=0;
