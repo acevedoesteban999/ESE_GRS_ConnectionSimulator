@@ -1,4 +1,5 @@
 #Listado de archivos ignorados
+Debug
 ESE_GRS_ConnectionSimulator.opensdf
 ESE_GRS_ConnectionSimulator.sdf
 ESE_GRS_ConnectionSimulator.sln

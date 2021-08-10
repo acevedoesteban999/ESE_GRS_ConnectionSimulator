@@ -10,6 +10,7 @@ de clientes.
 ## [Descargar ESE_GRS_ConnectionSimulator](https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/tree/master/media/ESE_GRS_ConnectionSimulator)
 
 ![Foto de ESE_GRS_ConnectionSimulator](https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/blob/master/media/ESE_GRS_ConnectionSimulator.png)
+![Foto de ESE_GRS_ConnectionSimulator](https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/blob/master/media/ESE_GRS_ConnectionSimulator1.png)
 
 ## Plataforma
 >Windows
