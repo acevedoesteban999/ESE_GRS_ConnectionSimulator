@@ -496,9 +496,10 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// 
 			this->comboBoxSocketIPPuente->FormattingEnabled = true;
 			this->comboBoxSocketIPPuente->Items->AddRange(gcnew cli::array< System::Object^  >(2) {L"INADDR_ANY", L"127.0.0.1"});
-			this->comboBoxSocketIPPuente->Location = System::Drawing::Point(160, 111);
+			this->comboBoxSocketIPPuente->Location = System::Drawing::Point(165, 110);
 			this->comboBoxSocketIPPuente->Name = L"comboBoxSocketIPPuente";
-			this->comboBoxSocketIPPuente->Size = System::Drawing::Size(103, 21);
+			this->comboBoxSocketIPPuente->RightToLeft = System::Windows::Forms::RightToLeft::No;
+			this->comboBoxSocketIPPuente->Size = System::Drawing::Size(96, 21);
 			this->comboBoxSocketIPPuente->TabIndex = 19;
 			this->comboBoxSocketIPPuente->Text = L"INADDR_ANY";
 			this->comboBoxSocketIPPuente->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketPuente_TextChanged);
@@ -721,7 +722,7 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->comboBoxSocketIP->Items->AddRange(gcnew cli::array< System::Object^  >(2) {L"INADDR_ANY", L"127.0.0.1"});
 			this->comboBoxSocketIP->Location = System::Drawing::Point(95, 98);
 			this->comboBoxSocketIP->Name = L"comboBoxSocketIP";
-			this->comboBoxSocketIP->Size = System::Drawing::Size(98, 21);
+			this->comboBoxSocketIP->Size = System::Drawing::Size(95, 21);
 			this->comboBoxSocketIP->TabIndex = 11;
 			this->comboBoxSocketIP->Text = L"INADDR_ANY";
 			this->comboBoxSocketIP->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketIniciarConnection_TextChanged);
@@ -757,7 +758,7 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(135, 69);
+			this->label7->Location = System::Drawing::Point(135, 75);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(17, 13);
 			this->label7->TabIndex = 6;
@@ -819,7 +820,7 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// 
 			this->rectangleShape20->Location = System::Drawing::Point(44, 62);
 			this->rectangleShape20->Name = L"rectangleShape20";
-			this->rectangleShape20->Size = System::Drawing::Size(191, 171);
+			this->rectangleShape20->Size = System::Drawing::Size(191, 165);
 			// 
 			// rectangleShape3
 			// 
@@ -895,7 +896,7 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->buttonSocketEnviarTabControl2->Name = L"buttonSocketEnviarTabControl2";
 			this->buttonSocketEnviarTabControl2->Size = System::Drawing::Size(71, 23);
 			this->buttonSocketEnviarTabControl2->TabIndex = 4;
-			this->buttonSocketEnviarTabControl2->Text = L"Send";
+			this->buttonSocketEnviarTabControl2->Text = L"Enviar";
 			this->buttonSocketEnviarTabControl2->UseVisualStyleBackColor = true;
 			this->buttonSocketEnviarTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketEnviarTabControl2_Click);
 			// 
@@ -988,9 +989,9 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->textBoxSocketDrawTabControl2->AutoSize = true;
 			this->textBoxSocketDrawTabControl2->Location = System::Drawing::Point(46, 158);
 			this->textBoxSocketDrawTabControl2->Name = L"textBoxSocketDrawTabControl2";
-			this->textBoxSocketDrawTabControl2->Size = System::Drawing::Size(51, 17);
+			this->textBoxSocketDrawTabControl2->Size = System::Drawing::Size(53, 17);
 			this->textBoxSocketDrawTabControl2->TabIndex = 16;
-			this->textBoxSocketDrawTabControl2->Text = L"Draw";
+			this->textBoxSocketDrawTabControl2->Text = L"Pintar";
 			this->textBoxSocketDrawTabControl2->UseVisualStyleBackColor = true;
 			this->textBoxSocketDrawTabControl2->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBoxSocketDrawTabControl2_Click);
 			// 
