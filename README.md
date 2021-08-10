@@ -1,7 +1,7 @@
 # Proyecto ESE_GRS_ConnectionSimulator
 
 Este proyecto tiene como objetivo el desarrollo de una aplicación
-para simular la conexión del brazo ESE_GRS. La aplicación Permite crear un ¨Puente¨
+para simular la conexión del brazo ESE_GRS. La aplicación permite crear un ¨Puente¨
 para concetar el Puerto Serie directmente con un servidor de Sockets.
 Además de dar la pisobilidad de iniciar un servidor únicamente por Sockets para manipular varios tipos 
 de clientes. 
