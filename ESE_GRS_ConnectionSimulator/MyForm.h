@@ -45,7 +45,7 @@ namespace ESE_GRS_ConnectionSimulator {
 	private: System::Windows::Forms::Button^  buttonSocketIniciar;
 	private: System::Windows::Forms::Label^  label6;
 	private: System::Windows::Forms::Label^  labelSocketServer;
-	private: System::Windows::Forms::TextBox^  textBoxSocketIP;
+
 	private: System::Windows::Forms::TextBox^  textBoxSocketPuerto;
 	private: System::Windows::Forms::CheckBox^  checkBoxSocketPuerto;
 	private: System::Windows::Forms::CheckBox^  checkBoxSocketIP;
@@ -79,7 +79,7 @@ namespace ESE_GRS_ConnectionSimulator {
 	private: System::Windows::Forms::Label^  labelCOMVelocidadPuente;
 	private: System::Windows::Forms::Label^  labelCOMPuertoPuente;
 	private: System::Windows::Forms::TextBox^  textBoxSocketPuertoPuente;
-	private: System::Windows::Forms::TextBox^  textBoxSocketIPPuente;
+
 	private: System::Windows::Forms::TextBox^  textBoxCOMVelocidadPuente;
 	private: System::Windows::Forms::TextBox^  textBoxCOMPuertoPuente;
 	private: System::Windows::Forms::Label^  labelSocketPuente;
@@ -141,6 +141,9 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape20;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape22;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape24;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
+private: System::Windows::Forms::ComboBox^  comboBoxSocketIP;
+private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
+
 	private: System::ComponentModel::IContainer^  components;
 	public:		
 		MyForm(void)
@@ -151,7 +154,7 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			COM_Soket=false;
 			contVistaCarga=0;
 			contClienteVista=0;
-			VerifCOM=VerifSocket=false;
+			VerifCOM=VerifSocket=true;
 			this->tabControl1->Location = System::Drawing::Point(0, 0);
 			this->tabControl2->Location = System::Drawing::Point(0, 0);
 			this->tabControl3->Location = System::Drawing::Point(0, 0);
@@ -201,8 +204,10 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->textBoxCOMVelocidad = (gcnew System::Windows::Forms::TextBox());
 			this->textBoxCOMPuerto = (gcnew System::Windows::Forms::TextBox());
 			this->shapeContainer2 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape21 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->ovalShape1 = (gcnew Microsoft::VisualBasic::PowerPacks::OvalShape());
 			this->tabPagePuente = (gcnew System::Windows::Forms::TabPage());
+			this->comboBoxSocketIPPuente = (gcnew System::Windows::Forms::ComboBox());
 			this->buttonInitConecctionPuente = (gcnew System::Windows::Forms::Button());
 			this->checkBoxSocketPuertoPuente = (gcnew System::Windows::Forms::CheckBox());
 			this->checkBoxSocketIPPuente = (gcnew System::Windows::Forms::CheckBox());
@@ -213,7 +218,6 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->labelCOMVelocidadPuente = (gcnew System::Windows::Forms::Label());
 			this->labelCOMPuertoPuente = (gcnew System::Windows::Forms::Label());
 			this->textBoxSocketPuertoPuente = (gcnew System::Windows::Forms::TextBox());
-			this->textBoxSocketIPPuente = (gcnew System::Windows::Forms::TextBox());
 			this->textBoxCOMVelocidadPuente = (gcnew System::Windows::Forms::TextBox());
 			this->textBoxCOMPuertoPuente = (gcnew System::Windows::Forms::TextBox());
 			this->labelSocketPuente = (gcnew System::Windows::Forms::Label());
@@ -223,15 +227,16 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->rectangleShape2 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape1 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->tabPageSocket = (gcnew System::Windows::Forms::TabPage());
+			this->comboBoxSocketIP = (gcnew System::Windows::Forms::ComboBox());
 			this->checkBoxSocketPuerto = (gcnew System::Windows::Forms::CheckBox());
 			this->checkBoxSocketIP = (gcnew System::Windows::Forms::CheckBox());
 			this->label7 = (gcnew System::Windows::Forms::Label());
 			this->buttonSocketIniciar = (gcnew System::Windows::Forms::Button());
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->labelSocketServer = (gcnew System::Windows::Forms::Label());
-			this->textBoxSocketIP = (gcnew System::Windows::Forms::TextBox());
 			this->textBoxSocketPuerto = (gcnew System::Windows::Forms::TextBox());
 			this->shapeContainer3 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape20 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape3 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->tabPageAbout = (gcnew System::Windows::Forms::TabPage());
 			this->flowLayoutPanel2 = (gcnew System::Windows::Forms::FlowLayoutPanel());
@@ -255,6 +260,7 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->buttonSocketDisconectTabControl2 = (gcnew System::Windows::Forms::Button());
 			this->textBoxSocketLowByteTabControl2 = (gcnew System::Windows::Forms::TextBox());
 			this->shapeContainer5 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape22 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape5 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->tabPageSocketClientesTabControl2 = (gcnew System::Windows::Forms::TabPage());
 			this->flowLayoutPanel1 = (gcnew System::Windows::Forms::FlowLayoutPanel());
@@ -280,6 +286,8 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->buttonDesconectarPuente = (gcnew System::Windows::Forms::Button());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->shapeContainer4 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape24 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
+			this->rectangleShape23 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape19 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape18 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape17 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
@@ -297,11 +305,6 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->rectangleShape4 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->timer2 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->timer3 = (gcnew System::Windows::Forms::Timer(this->components));
-			this->rectangleShape20 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
-			this->rectangleShape21 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
-			this->rectangleShape22 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
-			this->rectangleShape23 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
-			this->rectangleShape24 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->tabControl1->SuspendLayout();
 			this->tabPageCOM->SuspendLayout();
 			this->tabPagePuente->SuspendLayout();
@@ -449,6 +452,12 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->shapeContainer2->TabIndex = 9;
 			this->shapeContainer2->TabStop = false;
 			// 
+			// rectangleShape21
+			// 
+			this->rectangleShape21->Location = System::Drawing::Point(16, 83);
+			this->rectangleShape21->Name = L"rectangleShape21";
+			this->rectangleShape21->Size = System::Drawing::Size(239, 131);
+			// 
 			// ovalShape1
 			// 
 			this->ovalShape1->Location = System::Drawing::Point(54, 9);
@@ -458,6 +467,7 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			// tabPagePuente
 			// 
 			this->tabPagePuente->BackColor = System::Drawing::Color::White;
+			this->tabPagePuente->Controls->Add(this->comboBoxSocketIPPuente);
 			this->tabPagePuente->Controls->Add(this->buttonInitConecctionPuente);
 			this->tabPagePuente->Controls->Add(this->checkBoxSocketPuertoPuente);
 			this->tabPagePuente->Controls->Add(this->checkBoxSocketIPPuente);
@@ -468,7 +478,6 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->tabPagePuente->Controls->Add(this->labelCOMVelocidadPuente);
 			this->tabPagePuente->Controls->Add(this->labelCOMPuertoPuente);
 			this->tabPagePuente->Controls->Add(this->textBoxSocketPuertoPuente);
-			this->tabPagePuente->Controls->Add(this->textBoxSocketIPPuente);
 			this->tabPagePuente->Controls->Add(this->textBoxCOMVelocidadPuente);
 			this->tabPagePuente->Controls->Add(this->textBoxCOMPuertoPuente);
 			this->tabPagePuente->Controls->Add(this->labelSocketPuente);
@@ -482,6 +491,17 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->tabPagePuente->TabIndex = 1;
 			this->tabPagePuente->Tag = L"";
 			this->tabPagePuente->Text = L"Puente";
+			// 
+			// comboBoxSocketIPPuente
+			// 
+			this->comboBoxSocketIPPuente->FormattingEnabled = true;
+			this->comboBoxSocketIPPuente->Items->AddRange(gcnew cli::array< System::Object^  >(2) {L"INADDR_ANY", L"127.0.0.1"});
+			this->comboBoxSocketIPPuente->Location = System::Drawing::Point(160, 111);
+			this->comboBoxSocketIPPuente->Name = L"comboBoxSocketIPPuente";
+			this->comboBoxSocketIPPuente->Size = System::Drawing::Size(103, 21);
+			this->comboBoxSocketIPPuente->TabIndex = 19;
+			this->comboBoxSocketIPPuente->Text = L"INADDR_ANY";
+			this->comboBoxSocketIPPuente->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketPuente_TextChanged);
 			// 
 			// buttonInitConecctionPuente
 			// 
@@ -592,19 +612,9 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->textBoxSocketPuertoPuente->Name = L"textBoxSocketPuertoPuente";
 			this->textBoxSocketPuertoPuente->Size = System::Drawing::Size(91, 20);
 			this->textBoxSocketPuertoPuente->TabIndex = 8;
-			this->textBoxSocketPuertoPuente->Text = L"5555";
+			this->textBoxSocketPuertoPuente->Text = L"55555";
 			this->textBoxSocketPuertoPuente->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
 			this->textBoxSocketPuertoPuente->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketPuente_TextChanged);
-			// 
-			// textBoxSocketIPPuente
-			// 
-			this->textBoxSocketIPPuente->Location = System::Drawing::Point(165, 111);
-			this->textBoxSocketIPPuente->Name = L"textBoxSocketIPPuente";
-			this->textBoxSocketIPPuente->Size = System::Drawing::Size(91, 20);
-			this->textBoxSocketIPPuente->TabIndex = 7;
-			this->textBoxSocketIPPuente->Text = L"127.0.0.1";
-			this->textBoxSocketIPPuente->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
-			this->textBoxSocketIPPuente->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketPuente_TextChanged);
 			// 
 			// textBoxCOMVelocidadPuente
 			// 
@@ -688,13 +698,13 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			// 
 			// tabPageSocket
 			// 
+			this->tabPageSocket->Controls->Add(this->comboBoxSocketIP);
 			this->tabPageSocket->Controls->Add(this->checkBoxSocketPuerto);
 			this->tabPageSocket->Controls->Add(this->checkBoxSocketIP);
 			this->tabPageSocket->Controls->Add(this->label7);
 			this->tabPageSocket->Controls->Add(this->buttonSocketIniciar);
 			this->tabPageSocket->Controls->Add(this->label6);
 			this->tabPageSocket->Controls->Add(this->labelSocketServer);
-			this->tabPageSocket->Controls->Add(this->textBoxSocketIP);
 			this->tabPageSocket->Controls->Add(this->textBoxSocketPuerto);
 			this->tabPageSocket->Controls->Add(this->shapeContainer3);
 			this->tabPageSocket->Location = System::Drawing::Point(4, 22);
@@ -704,6 +714,17 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->tabPageSocket->TabIndex = 2;
 			this->tabPageSocket->Text = L"Socket";
 			this->tabPageSocket->UseVisualStyleBackColor = true;
+			// 
+			// comboBoxSocketIP
+			// 
+			this->comboBoxSocketIP->FormattingEnabled = true;
+			this->comboBoxSocketIP->Items->AddRange(gcnew cli::array< System::Object^  >(2) {L"INADDR_ANY", L"127.0.0.1"});
+			this->comboBoxSocketIP->Location = System::Drawing::Point(95, 98);
+			this->comboBoxSocketIP->Name = L"comboBoxSocketIP";
+			this->comboBoxSocketIP->Size = System::Drawing::Size(98, 21);
+			this->comboBoxSocketIP->TabIndex = 11;
+			this->comboBoxSocketIP->Text = L"INADDR_ANY";
+			this->comboBoxSocketIP->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketIniciarConnection_TextChanged);
 			// 
 			// checkBoxSocketPuerto
 			// 
@@ -726,7 +747,7 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->checkBoxSocketIP->Checked = true;
 			this->checkBoxSocketIP->CheckState = System::Windows::Forms::CheckState::Checked;
 			this->checkBoxSocketIP->Cursor = System::Windows::Forms::Cursors::No;
-			this->checkBoxSocketIP->Location = System::Drawing::Point(199, 93);
+			this->checkBoxSocketIP->Location = System::Drawing::Point(208, 100);
 			this->checkBoxSocketIP->Name = L"checkBoxSocketIP";
 			this->checkBoxSocketIP->Size = System::Drawing::Size(15, 14);
 			this->checkBoxSocketIP->TabIndex = 8;
@@ -736,7 +757,7 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(135, 65);
+			this->label7->Location = System::Drawing::Point(135, 69);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(17, 13);
 			this->label7->TabIndex = 6;
@@ -773,23 +794,13 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->labelSocketServer->TabIndex = 2;
 			this->labelSocketServer->Text = L"Socket Server";
 			// 
-			// textBoxSocketIP
-			// 
-			this->textBoxSocketIP->Location = System::Drawing::Point(104, 90);
-			this->textBoxSocketIP->Name = L"textBoxSocketIP";
-			this->textBoxSocketIP->Size = System::Drawing::Size(75, 20);
-			this->textBoxSocketIP->TabIndex = 1;
-			this->textBoxSocketIP->Text = L"127.0.0.1";
-			this->textBoxSocketIP->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
-			this->textBoxSocketIP->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketIniciarConnection_TextChanged);
-			// 
 			// textBoxSocketPuerto
 			// 
 			this->textBoxSocketPuerto->Location = System::Drawing::Point(104, 146);
 			this->textBoxSocketPuerto->Name = L"textBoxSocketPuerto";
 			this->textBoxSocketPuerto->Size = System::Drawing::Size(75, 20);
 			this->textBoxSocketPuerto->TabIndex = 0;
-			this->textBoxSocketPuerto->Text = L"5555";
+			this->textBoxSocketPuerto->Text = L"55555";
 			this->textBoxSocketPuerto->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
 			this->textBoxSocketPuerto->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketIniciarConnection_TextChanged);
 			// 
@@ -803,6 +814,12 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->shapeContainer3->Size = System::Drawing::Size(268, 232);
 			this->shapeContainer3->TabIndex = 10;
 			this->shapeContainer3->TabStop = false;
+			// 
+			// rectangleShape20
+			// 
+			this->rectangleShape20->Location = System::Drawing::Point(44, 62);
+			this->rectangleShape20->Name = L"rectangleShape20";
+			this->rectangleShape20->Size = System::Drawing::Size(191, 171);
 			// 
 			// rectangleShape3
 			// 
@@ -964,6 +981,7 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->labelSocketAddrTabControl2->TabIndex = 17;
 			this->labelSocketAddrTabControl2->Text = L"127.0.0.1:5555";
 			this->labelSocketAddrTabControl2->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->labelSocketAddrTabControl2->DoubleClick += gcnew System::EventHandler(this, &MyForm::labelSocketAddrTabControl2_DoubleClick);
 			// 
 			// textBoxSocketDrawTabControl2
 			// 
@@ -1068,6 +1086,12 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->shapeContainer5->Size = System::Drawing::Size(268, 232);
 			this->shapeContainer5->TabIndex = 18;
 			this->shapeContainer5->TabStop = false;
+			// 
+			// rectangleShape22
+			// 
+			this->rectangleShape22->Location = System::Drawing::Point(6, 72);
+			this->rectangleShape22->Name = L"rectangleShape22";
+			this->rectangleShape22->Size = System::Drawing::Size(133, 139);
 			// 
 			// rectangleShape5
 			// 
@@ -1337,6 +1361,7 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->labelSocketPuenteTabControl3->TabIndex = 3;
 			this->labelSocketPuenteTabControl3->Text = L"127.0.0.1:5555";
 			this->labelSocketPuenteTabControl3->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->labelSocketPuenteTabControl3->DoubleClick += gcnew System::EventHandler(this, &MyForm::labelSocketPuenteTabControl3_DoubleClick);
 			// 
 			// labelCOMPuenteTabControl3
 			// 
@@ -1385,6 +1410,18 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			this->shapeContainer4->Size = System::Drawing::Size(268, 232);
 			this->shapeContainer4->TabIndex = 4;
 			this->shapeContainer4->TabStop = false;
+			// 
+			// rectangleShape24
+			// 
+			this->rectangleShape24->Location = System::Drawing::Point(1, 56);
+			this->rectangleShape24->Name = L"rectangleShape24";
+			this->rectangleShape24->Size = System::Drawing::Size(265, 144);
+			// 
+			// rectangleShape23
+			// 
+			this->rectangleShape23->Location = System::Drawing::Point(62, 2);
+			this->rectangleShape23->Name = L"rectangleShape23";
+			this->rectangleShape23->Size = System::Drawing::Size(141, 45);
 			// 
 			// rectangleShape19
 			// 
@@ -1494,36 +1531,6 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 			// timer2
 			// 
 			this->timer2->Tick += gcnew System::EventHandler(this, &MyForm::timer2_Tick);
-			// 
-			// rectangleShape20
-			// 
-			this->rectangleShape20->Location = System::Drawing::Point(44, 57);
-			this->rectangleShape20->Name = L"rectangleShape20";
-			this->rectangleShape20->Size = System::Drawing::Size(191, 171);
-			// 
-			// rectangleShape21
-			// 
-			this->rectangleShape21->Location = System::Drawing::Point(16, 83);
-			this->rectangleShape21->Name = L"rectangleShape21";
-			this->rectangleShape21->Size = System::Drawing::Size(239, 131);
-			// 
-			// rectangleShape22
-			// 
-			this->rectangleShape22->Location = System::Drawing::Point(6, 72);
-			this->rectangleShape22->Name = L"rectangleShape22";
-			this->rectangleShape22->Size = System::Drawing::Size(133, 139);
-			// 
-			// rectangleShape23
-			// 
-			this->rectangleShape23->Location = System::Drawing::Point(62, 2);
-			this->rectangleShape23->Name = L"rectangleShape23";
-			this->rectangleShape23->Size = System::Drawing::Size(141, 45);
-			// 
-			// rectangleShape24
-			// 
-			this->rectangleShape24->Location = System::Drawing::Point(1, 56);
-			this->rectangleShape24->Name = L"rectangleShape24";
-			this->rectangleShape24->Size = System::Drawing::Size(265, 144);
 			// 
 			// MyForm
 			// 
@@ -2145,6 +2152,27 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 //			 }
 //		 }
 public:
+/////////////////////////////////////////////label///////////////////////////////////////////////////////////
+private: System::Void labelSocketAddrTabControl2_DoubleClick(System::Object^  sender, System::EventArgs^  e) {
+			 if(c[0]->ActualizIP())
+			 {
+				 string s=c[0]->getChar();
+				 s+=":";
+				 s+=to_string(c[0]->getunsigned());
+				 labelSocketAddrTabControl2->Text=gcnew String(s.c_str());
+				 labelSocketAddrTabControl2->Text=gcnew String(s.c_str());
+			 }
+		 }
+private: System::Void labelSocketPuenteTabControl3_DoubleClick(System::Object^  sender, System::EventArgs^  e) {
+			 if(c[0]->ActualizIP())
+			 {
+				 string s=c[0]->getChar();
+				 s+=":";
+				 s+=to_string(c[0]->getunsigned());
+				 labelSocketPuenteTabControl3->Text=gcnew String(s.c_str());
+			 }
+		 }
+
 //////////////////////////////////////////////Button//////////////////////////////////////////////////////////
 private: System::Void ButtonIniciarConnection_Click(System::Object^  sender, System::EventArgs^  e) {
 			 delete c[0];
@@ -2167,7 +2195,7 @@ private: System::Void ButtonIniciarConnection_Click(System::Object^  sender, Sys
 			 else if(tabControl1->SelectedIndex==2)
 			 {
 				 c[0]=new Socket_Server();
-				 const char*txb3=context.marshal_as<const char*>( textBoxSocketIP->Text);
+				 const char*txb3=context.marshal_as<const char*>( comboBoxSocketIP->Text);
 				 const char*txb4=context.marshal_as<const char*>(textBoxSocketPuerto->Text);
 				 c[0]->inicializa(txb3,atol(txb4));
 			 }
@@ -2245,7 +2273,7 @@ private: System::Void buttonInitConecctionPuente_Click(System::Object^  sender, 
 			 c[0]=new Socket_Server();
 			 c[1]=new PuertoSerie();
 			 COM_Soket=true;
-			 const char*txb1=context.marshal_as<const char*>( textBoxSocketIPPuente->Text);
+			 const char*txb1=context.marshal_as<const char*>( comboBoxSocketIPPuente->Text);
 			 const char*txb2=context.marshal_as<const char*>(textBoxSocketPuertoPuente->Text);
 			 const char*txb3=context.marshal_as<const char*>( textBoxCOMPuertoPuente->Text);
 			 const char*txb4=context.marshal_as<const char*>(textBoxCOMVelocidadPuente->Text);
@@ -2282,7 +2310,6 @@ private: System::Void buttonDesconectarPuente_Click(System::Object^  sender, Sys
 			 m1.ReleaseMutex();
 			 m2.ReleaseMutex();
 			 delete[]c;
-			 VerifCOM=VerifSocket=false;
 			 COM_Soket=false;
 			 c=new Connection*[1]();
 			 this->rectangleShape1->BackColor = System::Drawing::Color::Transparent;
@@ -2420,13 +2447,19 @@ private: System::Void textBoxSocketIniciarConnection_TextChanged(System::Object^
 			bool lastPunt=false;
 			try
 			{
-				for(unsigned i=0;i<(unsigned)textBoxSocketIP->Text->Length;i++)
+				if(comboBoxSocketIP->Text==(gcnew String("INADDR_ANY")))
 				{
-					if(textBoxSocketIP->Text[textBoxSocketIP->Text->Length-1]=='.')
+					checkBoxSocketIP->Checked=true;
+					this->checkBoxSocketIP->BackColor = System::Drawing::Color::LightGreen;
+					throw(true);
+				}
+				for(unsigned i=0;i<(unsigned)comboBoxSocketIP->Text->Length;i++)
+				{
+					if(comboBoxSocketIP->Text[comboBoxSocketIP->Text->Length-1]=='.')
 						throw(true);
-					if(!isdigit(textBoxSocketIP->Text[i]))
+					if(!isdigit(comboBoxSocketIP->Text[i]))
 					{
-						if(textBoxSocketIP->Text[i]=='.')
+						if(comboBoxSocketIP->Text[i]=='.')
 						{
 							if(punt==3||lastPunt)
 								throw(true);
@@ -2611,13 +2644,19 @@ private: System::Void textBoxSocketPuente_TextChanged(System::Object^  sender, S
 			bool lastPunt=false;
 			try
 			{
-				for(unsigned i=0;i<(unsigned)textBoxSocketIPPuente->Text->Length;i++)
+				if(comboBoxSocketIPPuente->Text==(gcnew String("INADDR_ANY")))
 				{
-					if(textBoxSocketIPPuente->Text[textBoxSocketIPPuente->Text->Length-1]=='.')
+					checkBoxSocketIPPuente->Checked=true;
+					this->checkBoxSocketIPPuente->BackColor = System::Drawing::Color::Green;
+					throw(true);
+				}
+				for(unsigned i=0;i<(unsigned)comboBoxSocketIPPuente->Text->Length;i++)
+				{
+					if(comboBoxSocketIPPuente->Text[comboBoxSocketIPPuente->Text->Length-1]=='.')
 						throw(true);
-					if(!isdigit(textBoxSocketIPPuente->Text[i]))
+					if(!isdigit(comboBoxSocketIPPuente->Text[i]))
 					{
-						if(textBoxSocketIPPuente->Text[i]=='.')
+						if(comboBoxSocketIPPuente->Text[i]=='.')
 						{
 							if(punt==3||lastPunt)
 								throw(true);
@@ -2861,6 +2900,10 @@ private:
 	}
 	void Escenario3()
 	{
+		string s=c[0]->getChar();
+		s+=":";
+		s+=to_string(c[0]->getunsigned());
+		labelSocketPuenteTabControl3->Text=gcnew String(s.c_str());
 		tabControl3->Controls->Add(tabPageSocketClientesTabControl2);
 		tabPageSocketClientesTabControl2->Text="Clientes";
 		contVistaCarga=14;
@@ -3030,3 +3073,4 @@ private:
 	}
 };
 }
+//textBoxSocketIPPuentep

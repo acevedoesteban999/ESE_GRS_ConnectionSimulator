@@ -105,6 +105,7 @@ public:
 	virtual bool SocketServer_ClientESE(unsigned i){return false;}
 	virtual unsigned SocketServer_ClientESEIndex(){return 10;};
 	virtual void SocketServer_SetESE(bool ESE){}
+	virtual bool ActualizIP(){return false;};
 	bool Error(){return error;};
 	bool EstaConectado(){return IsConectado;};
 	char* ErrorStr(){return errorstr;};
@@ -451,7 +452,11 @@ public:
 			cout<<errorstr<<endl;
 			return false;
 		}
-		serveraddr.sin_addr.s_addr=inet_addr((const char*)Ip);   //INADDR_ANY;
+		if(!strcmp(Ip,"INADDR_ANY"))
+			serveraddr.sin_addr.s_addr=INADDR_ANY;
+		else
+			serveraddr.sin_addr.s_addr=inet_addr((const char*)Ip);   //INADDR_ANY;
+		
 		serveraddr.sin_family=AF_INET;
 		serveraddr.sin_port=htons((u_short)Port);
 		if(::bind(server,(SOCKADDR*)&serveraddr,sizeof(serveraddr))!=0)
@@ -481,11 +486,14 @@ public:
 
 		error=false;
 		IsConectado=true;
-		delete[]ip;
-		this->ip=new char[strlen(Ip)+1];
-	    this->ip[strlen(Ip)]=0;
-	    for(unsigned i=0;i<strlen(Ip);i++)
-	   	   this->ip[i]=Ip[i];
+		if(strcmp(Ip,"INADDR_ANY")||!ActualizIP())
+		{
+			delete[]ip;
+			this->ip=new char[strlen(Ip)+1];
+			this->ip[strlen(Ip)]=0;
+			for(unsigned i=0;i<strlen(Ip);i++)
+	   		   this->ip[i]=Ip[i];
+		}
 		this->Port=Port;
 		cout<<"Server incicado en "<<ip<<":"<<Port<<endl;
 		//th=new thread(&Socket_Server::Select,this);
@@ -679,6 +687,31 @@ public:
 		if(ESE)
 			ManejadorClientes.ESE=10;
 		ManejadorClientes.ESEB=ESE;
+	}
+	bool ActualizIP()
+	{
+		if(serveraddr.sin_addr.s_addr!=INADDR_ANY)
+			return false;
+		char host[256];
+		struct  hostent*host_entry;
+		int hostname;
+		hostname=gethostname(host,sizeof(host));
+		if(hostname!=-1)
+		{
+			host_entry=gethostbyname(host);
+			if(host_entry!=NULL)
+			{
+				char*IP;
+				delete[]ip;
+				IP=inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0]));
+				ip=new char[strlen(IP)+1];
+				ip[strlen(IP)]=0;
+				for(unsigned i=0;i<strlen(IP);i++)
+					ip[i]=IP[i];
+				return true;
+			}
+		}
+		return false;
 	}
 	/*char* ActionAfterError()
 	{
