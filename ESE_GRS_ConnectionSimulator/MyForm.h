@@ -2,10 +2,314 @@
 #include "Connection.h"
 #include <msclr\marshal.h>
 Connection**c;
+bool ErrorThWebSocketClient=false;
+bool SalirThreadSinError=false;
+bool CerrarCOM_Web=false;
 void SelectThreadExtern()
 {
 	c[0]->Select();
 }
+
+void ThreadSocketClient()
+{
+	
+	while(true)
+	{
+		char*toSend;
+		toSend=c[2]->Recibir();
+		if(toSend==NULL)
+		{
+			if(!c[2]->EstaConectado())
+				return;
+		}
+		else
+		{
+			c[1]->Trasmitir(toSend);
+		}
+	}
+}
+
+void ThreadWebSocketClient()
+{
+	ErrorThWebSocketClient=SalirThreadSinError=CerrarCOM_Web=false;
+	while(true)
+	{
+		try
+		{
+			char*toSend;
+			toSend=c[1]->Recibir();
+			if(toSend==NULL)
+			{
+				if(!c[1]->EstaConectado())
+				{
+					if(!SalirThreadSinError)
+					{
+						c[1]->CloseConnection();
+						ErrorThWebSocketClient=true;
+						c[0]->ActStatusClient(true);
+						while(!SalirThreadSinError)
+						{
+							if(c[1]->inicializa((char*)string(c[1]->getChar()).c_str(),c[1]->getunsigned()))
+							{
+									char toSend[3];
+									toSend[0]=(char)107;
+									toSend[1]=(char)1;
+									toSend[2]=0;
+									c[1]->Trasmitir(toSend);
+									fd_set descriptoresLectura;
+									struct timeval tv;
+									tv.tv_sec=3;
+		 							tv.tv_usec=55555;
+									FD_ZERO(&descriptoresLectura);
+									FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+									select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+									bool err=true;
+									char*toReciv;
+									if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+									{
+										toReciv=c[1]->Recibir();
+										if(toReciv!=NULL)
+											if(toReciv[0]==(char)107)
+				 							err=false;
+									}
+									if(err)
+									{
+										System::Windows::Forms::MessageBox::Show("Error al Reconectar a la Web");
+										CerrarCOM_Web=true;
+										c[0]->ActStatusClient(true);
+										return;
+									}
+								toSend[0]=(char)99;
+								c[1]->Trasmitir(toSend);
+								FD_ZERO(&descriptoresLectura);
+								FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+								select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+								err=true;
+								if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+								{
+									toReciv=c[1]->Recibir();
+									if(toReciv!=NULL)
+										if(toReciv[0]==(char)99)
+										{
+											err=false;
+											switch (toReciv[1])
+											{
+											case 4:
+												if(c[0]->SocketServer_ClientUserIndex()!=-1)
+												{
+													System::Windows::Forms::MessageBox::Show("User perdido del ServerSocket");
+													c[0]->SocketServer_QuitarOnlyUSER(c[0]->SocketServer_ClientUserIndex());
+												}
+												toSend[0]=(char)51;
+												c[2]->Trasmitir(toSend);
+												if(c[0]->SocketServer_ClientESEIndex()!=-1)
+												{
+													System::Windows::Forms::MessageBox::Show("ESE perdido del ServerSocket");
+													c[0]->SocketServer_QuitarOnlyESE(c[0]->SocketServer_ClientESEIndex());
+												}
+												toSend[0]=(char)35;
+												c[2]->Trasmitir(toSend);
+												break;
+											case 3:
+												if(c[0]->SocketServer_ClientESEIndex()!=-1)
+												{
+													System::Windows::Forms::MessageBox::Show("ESE perdido del ServerSocket");
+													c[0]->SocketServer_QuitarOnlyESE(c[0]->SocketServer_ClientESEIndex());
+												}
+												toSend[0]=(char)35;
+												c[2]->Trasmitir(toSend);
+												if(c[0]->SocketServer_ClientUserIndex()!=-1)
+												{
+													bool err1=true;
+													toSend[0]=(char)51;
+													c[1]->Trasmitir(toSend);
+													FD_ZERO(&descriptoresLectura);
+													FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+													select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+													if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+													{
+														toReciv=c[1]->Recibir();
+														if(toReciv!=NULL)
+															if(toReciv[0]==(char)51)
+																err1=false;
+													}
+													if(err1)
+													{
+														System::Windows::Forms::MessageBox::Show("User perdido del ServerSocket");
+														c[0]->SocketServer_QuitarOnlyUSER(c[0]->SocketServer_ClientUserIndex());
+													}
+												}
+												break;
+											case 2:
+												if(c[0]->SocketServer_ClientUserIndex()!=-1)
+												{
+													System::Windows::Forms::MessageBox::Show("User perdido del ServerSocket");
+													c[0]->SocketServer_QuitarOnlyUSER(c[0]->SocketServer_ClientUserIndex());
+												}
+												toSend[0]=(char)51;
+												c[2]->Trasmitir(toSend);
+												if(c[0]->SocketServer_ClientESEIndex()!=-1)
+												{
+													bool err1=true;
+													toSend[0]=(char)35;
+													c[1]->Trasmitir(toSend);
+													FD_ZERO(&descriptoresLectura);
+													FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+													select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+													if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+													{
+														toReciv=c[1]->Recibir();
+														if(toReciv!=NULL)
+															if(toReciv[0]==(char)35)
+																err1=false;
+													}
+													if(err1)
+													{
+														System::Windows::Forms::MessageBox::Show("ESE perdido del ServerSocket");
+														c[0]->SocketServer_QuitarOnlyESE(c[0]->SocketServer_ClientESEIndex());
+													}
+												}
+												break;
+											case 1:
+												if(c[0]->SocketServer_ClientESEIndex()!=-1)
+												{
+													bool err1=true;
+													toSend[0]=(char)35;
+													c[1]->Trasmitir(toSend);
+													FD_ZERO(&descriptoresLectura);
+													FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+													select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+													if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+													{
+														toReciv=c[1]->Recibir();
+														if(toReciv!=NULL)
+															if(toReciv[0]==(char)35)
+																err1=false;
+													}
+													if(err1)
+													{
+														System::Windows::Forms::MessageBox::Show("ESE perdido del ServerSocket");
+														c[0]->SocketServer_QuitarOnlyESE(c[0]->SocketServer_ClientESEIndex());
+													}
+												}
+												if(c[0]->SocketServer_ClientUserIndex()!=-1)
+												{
+													bool err1=true;
+													toSend[0]=(char)51;
+													c[1]->Trasmitir(toSend);
+													FD_ZERO(&descriptoresLectura);
+													FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+													select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+													if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+													{
+														toReciv=c[1]->Recibir();
+														if(toReciv!=NULL)
+															if(toReciv[0]==(char)51)
+																err1=false;
+													}
+													if(err1)
+													{
+														System::Windows::Forms::MessageBox::Show("User perdido del ServerSocket");
+														c[0]->SocketServer_QuitarOnlyUSER(c[0]->SocketServer_ClientUserIndex());
+													}
+												}
+												break;
+											}
+										}
+								}
+								if(err)
+								{
+									System::Windows::Forms::MessageBox::Show("ERROR en la comunicacion SocketServer-Web");
+									c[1]->CloseConnection();
+									c[2]->CloseConnection();
+									return;
+								}
+								//ErrorThWebSocketClient=true;
+								//
+								ErrorThWebSocketClient=false;
+								c[0]->ActStatusClient(true);
+								throw(true);
+							}
+						}
+					}
+					return;
+				}
+			}
+			else
+			{
+				c[2]->Trasmitir(toSend);
+			}
+		}catch(bool)
+		{
+		}
+	}	
+}
+
+void ThreadWeb()
+{
+	SalirThreadSinError=ErrorThWebSocketClient=CerrarCOM_Web=false;
+	char*toReciv;
+	while(true)
+	{
+		try
+		{
+			toReciv=c[0]->Recibir();
+			if(toReciv==NULL)
+			{
+				if(!c[0]->EstaConectado())
+				{
+					if(!SalirThreadSinError)
+					{
+						c[0]->CloseConnection();
+						ErrorThWebSocketClient=true;
+						c[0]->ActStatusClient(true);
+						while(!SalirThreadSinError)
+						{
+							if(c[0]->inicializa((char*)string(c[0]->getChar()).c_str(),c[0]->getunsigned()))
+							{
+								char toSend[3];
+								toSend[0]=(char)35;
+								toSend[1]=(char)1;
+								toSend[2]=0;
+								bool err=true;
+								c[0]->Trasmitir(toSend);
+								fd_set descriptoresLectura;
+								struct timeval tv;
+								tv.tv_sec=3;
+		 						tv.tv_usec=55555;
+								FD_ZERO(&descriptoresLectura);
+								FD_SET(c[0]->GetSocket(),&descriptoresLectura);
+								select(c[0]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+								if(FD_ISSET(c[0]->GetSocket(),&descriptoresLectura))
+								{
+									toReciv=c[0]->Recibir();
+									if(toReciv!=NULL)
+										if(toReciv[0]==(char)35)
+											err=false;
+								}
+								if(err)
+								{
+									System::Windows::Forms::MessageBox::Show("Error al Reconectar a la Web");
+									CerrarCOM_Web=true;
+									c[0]->ActStatusClient(true);
+									return;
+								
+								}
+								ErrorThWebSocketClient=false;
+								c[0]->ActStatusClient(true);
+								throw(true);
+							}
+						}
+					}
+					return;
+				}
+			}
+		}catch(bool){}
+		
+	}
+
+}
+
 namespace ESE_GRS_ConnectionSimulator {
 
 	using namespace System;
@@ -20,138 +324,153 @@ namespace ESE_GRS_ConnectionSimulator {
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	private:
+	SOCKET s1,s2;	
 	msclr::interop::marshal_context context;
 	unsigned contClients,contVerif,contClienteVista;
-	System::Threading::Thread^th;
-	System::Threading::Mutex m1,m2;
+	System::Threading::Thread^th,^thSocketCliente,^thWebSocketCliente;
+	System::Threading::Mutex m1,m2,m3;
 	bool VerifCOM,VerifSocket;
-	bool COM_Soket;
-	bool ThreadCOM;
+	bool COM,COM_Soket,WebSocket,SocketServer,Web;
 	unsigned contVistaCarga;
-	private: System::Windows::Forms::TabControl^  tabControl1;
-	private: System::Windows::Forms::TabPage^  tabPageCOM;
-	private: System::Windows::Forms::TabPage^  tabPagePuente;
-	private: System::Windows::Forms::TabPage^  tabPageSocket;
-	private: System::Windows::Forms::Label^  label1;
-	private: System::Windows::Forms::TextBox^  textBoxCOMPuerto;
-	private: System::Windows::Forms::Label^  label3;
-	private: System::Windows::Forms::Label^  label2;
-	private: System::Windows::Forms::Label^  labelCOM;
-	private: System::Windows::Forms::Button^  buttonCOMIniciar;
-	private: System::Windows::Forms::TextBox^  textBoxCOMVelocidad;
-	private: System::Windows::Forms::CheckBox^  checkBox1COMVelocidad;
-	private: System::Windows::Forms::CheckBox^  checkBox1COMPuerto;
-	private: System::Windows::Forms::Label^  label7;
-	private: System::Windows::Forms::Button^  buttonSocketIniciar;
-	private: System::Windows::Forms::Label^  label6;
-	private: System::Windows::Forms::Label^  labelSocketServer;
-
-	private: System::Windows::Forms::TextBox^  textBoxSocketPuerto;
-	private: System::Windows::Forms::CheckBox^  checkBoxSocketPuerto;
-	private: System::Windows::Forms::CheckBox^  checkBoxSocketIP;
-	private: System::Windows::Forms::TabPage^  tabPageAbout;
-	private: System::Windows::Forms::TextBox^  textBoxSocketHightByteTabControl2;
-	private: System::Windows::Forms::Button^  buttonSocketEnviarTabControl2;
-	private: System::Windows::Forms::Timer^  timer1;
-	private: System::Windows::Forms::Button^  buttonSocketRedireccionarTabControl2;
-	private: System::Windows::Forms::Button^  buttonSocketAceptButtonTabControl2;
-	private: System::Windows::Forms::Button^  buttonSocketCancelButtonTabControl2;
-	private: System::Windows::Forms::TabControl^  tabControl2;
-	private: System::Windows::Forms::TabPage^  tabPageSocketServerTabControl2;
-	private: System::Windows::Forms::TabPage^  tabPageSocketClientesTabControl2;
-	private: System::Windows::Forms::CheckBox^  checkBoxSocketIPTabControl2;
-	private: System::Windows::Forms::CheckBox^  checkBoxSocketPuertoTabControl2;
-	private: System::Windows::Forms::Label^  labelSocketCOMServerTabControl2;
-	private: System::Windows::Forms::Button^  buttonSocketDisconectTabControl2;
-	private: System::Windows::Forms::Label^  label8;
-	private: System::Windows::Forms::Label^  label9;
-	private: System::Windows::Forms::TextBox^  textBoxSocketLowByteTabControl2;
-	private: System::Windows::Forms::Button^  buttonSocketFocusTabControl2;
-	private: System::Windows::Forms::Button^  buttonSocketAceptFocusTabControl2;
-	private: System::Windows::Forms::CheckBox^  textBoxSocketDrawTabControl2;
-	private: System::Windows::Forms::Label^  labelSocketAddrTabControl2;
-	private: System::Windows::Forms::CheckBox^  checkBoxSocketPuertoPuente;
-	private: System::Windows::Forms::CheckBox^  checkBoxSocketIPPuente;
-	private: System::Windows::Forms::CheckBox^  checkBoxCOMVelocidadPuente;
-	private: System::Windows::Forms::CheckBox^  checkBoxCOMPuertoPuente;
-	private: System::Windows::Forms::Label^  labelSocketPuertoPuente;
-	private: System::Windows::Forms::Label^  labelSocketIPPuente;
-	private: System::Windows::Forms::Label^  labelCOMVelocidadPuente;
-	private: System::Windows::Forms::Label^  labelCOMPuertoPuente;
-	private: System::Windows::Forms::TextBox^  textBoxSocketPuertoPuente;
-
-	private: System::Windows::Forms::TextBox^  textBoxCOMVelocidadPuente;
-	private: System::Windows::Forms::TextBox^  textBoxCOMPuertoPuente;
-	private: System::Windows::Forms::Label^  labelSocketPuente;
-	private: System::Windows::Forms::Label^  labelCOMPuente;
-	private: System::Windows::Forms::Label^  labelPuentePuente;
-	private: System::Windows::Forms::TabControl^  tabControl3;
-	private: System::Windows::Forms::TabPage^  tabPage2;
-	private: System::Windows::Forms::Button^  buttonInitConecctionPuente;
-	private: System::Windows::Forms::Timer^  timer2;
-	private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer1;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape2;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape1;
-	private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer2;
-	private: Microsoft::VisualBasic::PowerPacks::OvalShape^  ovalShape1;
-	private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer3;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape3;
-	private: System::Windows::Forms::Button^  buttonDesconectarPuente;
-	private: System::Windows::Forms::Label^  label4;
-	private: System::Windows::Forms::Label^  labelSocketPuenteTabControl3;
-	private: System::Windows::Forms::Label^  labelCOMPuenteTabControl3;
-	private: System::Windows::Forms::Timer^  timer3;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^SignoCarga;
-	private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer5;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape5;
-	private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer4;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape19;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape18;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape17;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape16;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape15;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape14;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape13;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape12;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape11;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape10;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape9;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape8;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape7;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape6;
-	private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape4;
-	private: System::Windows::Forms::Label^  labelSocketClientesTabControl2;
-	private: System::Windows::Forms::Button^  button30;
-	private: System::Windows::Forms::Button^  button29;
-	private: System::Windows::Forms::Button^  button28;
-	private: System::Windows::Forms::Button^  button27;
-	private: System::Windows::Forms::Button^  button26;
-	private: System::Windows::Forms::Button^  button25;
-	private: System::Windows::Forms::Button^  button24;
-	private: System::Windows::Forms::Button^  button23;
-	private: System::Windows::Forms::Button^  button22;
-	private: System::Windows::Forms::Button^  button21;
-	private: System::Windows::Forms::FlowLayoutPanel^  flowLayoutPanel1;
-	private: System::Windows::Forms::Button^  buttonDesconectar;
-	private: System::Windows::Forms::Button^  buttonAcceso;
-	private: System::Windows::Forms::FlowLayoutPanel^  flowLayoutPanel2;
-	private: System::Windows::Forms::Label^  label5;
+private: System::Windows::Forms::TabControl^  tabControl1;
+private: System::Windows::Forms::TabPage^  tabPageCOM;
+private: System::Windows::Forms::TabPage^  tabPagePuente;
+private: System::Windows::Forms::TabPage^  tabPageSocket;
+private: System::Windows::Forms::Label^  label1;
+private: System::Windows::Forms::TextBox^  textBoxCOMPuerto;
+private: System::Windows::Forms::Label^  label3;
+private: System::Windows::Forms::Label^  label2;
+private: System::Windows::Forms::Label^  labelCOM;
+private: System::Windows::Forms::Button^  buttonCOMIniciar;
+private: System::Windows::Forms::TextBox^  textBoxCOMVelocidad;
+private: System::Windows::Forms::CheckBox^  checkBox1COMVelocidad;
+private: System::Windows::Forms::CheckBox^  checkBox1COMPuerto;
+private: System::Windows::Forms::Label^  label7;
+private: System::Windows::Forms::Button^  buttonSocketIniciar;
+private: System::Windows::Forms::Label^  label6;
+private: System::Windows::Forms::Label^  labelSocketServer;
+private: System::Windows::Forms::TextBox^  textBoxSocketPuerto;
+private: System::Windows::Forms::CheckBox^  checkBoxSocketPuerto;
+private: System::Windows::Forms::CheckBox^  checkBoxSocketIP;
+private: System::Windows::Forms::TabPage^  tabPageAbout;
+private: System::Windows::Forms::Timer^  timer1;
+private: System::Windows::Forms::CheckBox^  checkBoxSocketPuertoPuente;
+private: System::Windows::Forms::CheckBox^  checkBoxSocketIPPuente;
+private: System::Windows::Forms::CheckBox^  checkBoxCOMVelocidadPuente;
+private: System::Windows::Forms::CheckBox^  checkBoxCOMPuertoPuente;
+private: System::Windows::Forms::Label^  labelSocketPuertoPuente;
+private: System::Windows::Forms::Label^  labelSocketIPPuente;
+private: System::Windows::Forms::Label^  labelCOMVelocidadPuente;
+private: System::Windows::Forms::Label^  labelCOMPuertoPuente;
+private: System::Windows::Forms::TextBox^  textBoxSocketPuertoPuente;
+private: System::Windows::Forms::TextBox^  textBoxCOMVelocidadPuente;
+private: System::Windows::Forms::TextBox^  textBoxCOMPuertoPuente;
+private: System::Windows::Forms::Label^  labelSocketPuente;
+private: System::Windows::Forms::Label^  labelCOMPuente;
+private: System::Windows::Forms::Label^  labelPuentePuente;
+private: System::Windows::Forms::TabControl^  tabControl3;
+private: System::Windows::Forms::TabPage^  tabPage2;
+private: System::Windows::Forms::Button^  buttonInitConecctionPuente;
+private: System::Windows::Forms::Timer^  timer2;
+private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer1;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape2;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape1;
+private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer2;
+private: Microsoft::VisualBasic::PowerPacks::OvalShape^  ovalShape1;
+private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer3;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape3;
+private: System::Windows::Forms::Button^  buttonDesconectarPuente;
+private: System::Windows::Forms::Label^  label4;
+private: System::Windows::Forms::Label^  labelSocketPuenteTabControl3;
+private: System::Windows::Forms::Label^  labelCOMPuenteTabControl3;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^SignoCarga;
+private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer4;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape19;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape18;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape17;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape16;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape15;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape14;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape13;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape12;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape11;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape10;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape9;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape8;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape7;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape6;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape4;
+private: System::Windows::Forms::FlowLayoutPanel^  flowLayoutPanel2;
+private: System::Windows::Forms::Label^  label5;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape21;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape20;
-private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape22;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape24;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape23;
 private: System::Windows::Forms::ComboBox^  comboBoxSocketIP;
 private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape28;
+private: System::Windows::Forms::TabPage^  tabPageSocketClientesTabControl2;
+private: System::Windows::Forms::FlowLayoutPanel^  flowLayoutPanel1;
+private: System::Windows::Forms::Label^  labelSocketClientesTabControl2;
+private: System::Windows::Forms::Button^  buttonDesconectar;
+private: System::Windows::Forms::Button^  button30;
+private: System::Windows::Forms::Button^  buttonAcceso;
+private: System::Windows::Forms::Button^  button29;
+private: System::Windows::Forms::Button^  button28;
+private: System::Windows::Forms::Button^  button27;
+private: System::Windows::Forms::Button^  button26;
+private: System::Windows::Forms::Button^  button25;
+private: System::Windows::Forms::Button^  button24;
+private: System::Windows::Forms::Button^  button23;
+private: System::Windows::Forms::Button^  button22;
+private: System::Windows::Forms::Button^  button21;
+private: System::Windows::Forms::Label^  label9;
+private: System::Windows::Forms::Label^  label8;
+private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer7;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShapeClientes;
+private: System::Windows::Forms::Label^  labelMostrarHost;
+private: System::Windows::Forms::Button^  buttonDescanectarServerWeb;
+private: System::Windows::Forms::Button^  buttonConnectarHost;
+private: System::Windows::Forms::Label^  labelPuertoWeb;
+private: System::Windows::Forms::Label^  labelHost;
+private: System::Windows::Forms::Label^  label1ServerWeb;
+private: System::Windows::Forms::TextBox^  textBoxHostPuerto;
+private: System::Windows::Forms::ComboBox^  comboBoxHost;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape25;
+private: System::Windows::Forms::TabPage^  tabPageSocketServerTabControl2;
+private: System::Windows::Forms::Label^  labelSocketAddrTabControl2;
+private: System::Windows::Forms::CheckBox^  textBoxSocketDrawTabControl2;
+private: System::Windows::Forms::Button^  buttonSocketAceptFocusTabControl2;
+private: System::Windows::Forms::Button^  buttonSocketFocusTabControl2;
+private: System::Windows::Forms::CheckBox^  checkBoxSocketIPTabControl2;
+private: System::Windows::Forms::CheckBox^  checkBoxSocketPuertoTabControl2;
+private: System::Windows::Forms::Label^  labelSocketCOMServerTabControl2;
+private: System::Windows::Forms::Button^  buttonSocketDisconectTabControl2;
+private: System::Windows::Forms::TextBox^  textBoxSocketLowByteTabControl2;
+private: System::Windows::Forms::Button^  buttonSocketCancelButtonTabControl2;
+private: System::Windows::Forms::TextBox^  textBoxSocketHightByteTabControl2;
+private: System::Windows::Forms::Button^  buttonSocketAceptButtonTabControl2;
+private: System::Windows::Forms::Button^  buttonSocketEnviarTabControl2;
+private: System::Windows::Forms::Button^  buttonSocketRedireccionarTabControl2;
+private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer5;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape22;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape5;
+private: System::Windows::Forms::TabControl^  tabControl2;
+private: System::Windows::Forms::Button^  buttonNOAcceso;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape31;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape30;
+private: System::Windows::Forms::TabPage^  tabPageWeb;
+private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer8;
+private: System::Windows::Forms::Timer^  timer3;
 
-	private: System::ComponentModel::IContainer^  components;
+private: System::ComponentModel::IContainer^  components;
 	public:		
 		MyForm(void)
 		{
 			InitializeComponent();
 			c=new Connection*[1]();
 			contVerif=0;
-			COM_Soket=false;
+			Web=COM=SocketServer=COM_Soket=WebSocket=false;
 			contVistaCarga=0;
 			contClienteVista=0;
 			VerifCOM=VerifSocket=true;
@@ -161,6 +480,8 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->MaximumSize = System::Drawing::Size(300, 300);
 			this->MinimumSize = System::Drawing::Size(300, 300);
 			this->ClientSize = System::Drawing::Size(300, 300);
+			this->labelMostrarHost->Location = System::Drawing::Point(51, 51);
+		    this->labelMostrarHost->Size = System::Drawing::Size(168, 72);
 			//
 			//TODO: Add the constructor code here
 			//
@@ -171,13 +492,8 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 		/// </summary>
 		~MyForm()
 		{
-			delete c[0];
-			if(COM_Soket)
-			{
-				delete c[1];
-				COM_Soket=false;
-			}
-			delete[]c;
+			delete th,thSocketCliente,thWebSocketCliente,m1,m2,m3;
+			CerrarTodasConexiones();
 			if (components)
 			{
 				delete components;
@@ -194,6 +510,10 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 			this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
+			this->tabPageAbout = (gcnew System::Windows::Forms::TabPage());
+			this->flowLayoutPanel2 = (gcnew System::Windows::Forms::FlowLayoutPanel());
+			this->label5 = (gcnew System::Windows::Forms::Label());
+			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->tabPageCOM = (gcnew System::Windows::Forms::TabPage());
 			this->checkBox1COMVelocidad = (gcnew System::Windows::Forms::CheckBox());
 			this->checkBox1COMPuerto = (gcnew System::Windows::Forms::CheckBox());
@@ -238,47 +558,18 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->shapeContainer3 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
 			this->rectangleShape20 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape3 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
-			this->tabPageAbout = (gcnew System::Windows::Forms::TabPage());
-			this->flowLayoutPanel2 = (gcnew System::Windows::Forms::FlowLayoutPanel());
-			this->label5 = (gcnew System::Windows::Forms::Label());
-			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->textBoxSocketHightByteTabControl2 = (gcnew System::Windows::Forms::TextBox());
-			this->buttonSocketEnviarTabControl2 = (gcnew System::Windows::Forms::Button());
+			this->tabPageWeb = (gcnew System::Windows::Forms::TabPage());
+			this->buttonConnectarHost = (gcnew System::Windows::Forms::Button());
+			this->buttonDescanectarServerWeb = (gcnew System::Windows::Forms::Button());
+			this->labelMostrarHost = (gcnew System::Windows::Forms::Label());
+			this->label1ServerWeb = (gcnew System::Windows::Forms::Label());
+			this->labelHost = (gcnew System::Windows::Forms::Label());
+			this->comboBoxHost = (gcnew System::Windows::Forms::ComboBox());
+			this->textBoxHostPuerto = (gcnew System::Windows::Forms::TextBox());
+			this->labelPuertoWeb = (gcnew System::Windows::Forms::Label());
+			this->shapeContainer8 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape25 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
-			this->buttonSocketRedireccionarTabControl2 = (gcnew System::Windows::Forms::Button());
-			this->buttonSocketAceptButtonTabControl2 = (gcnew System::Windows::Forms::Button());
-			this->buttonSocketCancelButtonTabControl2 = (gcnew System::Windows::Forms::Button());
-			this->tabControl2 = (gcnew System::Windows::Forms::TabControl());
-			this->tabPageSocketServerTabControl2 = (gcnew System::Windows::Forms::TabPage());
-			this->labelSocketAddrTabControl2 = (gcnew System::Windows::Forms::Label());
-			this->textBoxSocketDrawTabControl2 = (gcnew System::Windows::Forms::CheckBox());
-			this->buttonSocketAceptFocusTabControl2 = (gcnew System::Windows::Forms::Button());
-			this->buttonSocketFocusTabControl2 = (gcnew System::Windows::Forms::Button());
-			this->checkBoxSocketIPTabControl2 = (gcnew System::Windows::Forms::CheckBox());
-			this->checkBoxSocketPuertoTabControl2 = (gcnew System::Windows::Forms::CheckBox());
-			this->labelSocketCOMServerTabControl2 = (gcnew System::Windows::Forms::Label());
-			this->buttonSocketDisconectTabControl2 = (gcnew System::Windows::Forms::Button());
-			this->textBoxSocketLowByteTabControl2 = (gcnew System::Windows::Forms::TextBox());
-			this->shapeContainer5 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
-			this->rectangleShape22 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
-			this->rectangleShape5 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
-			this->tabPageSocketClientesTabControl2 = (gcnew System::Windows::Forms::TabPage());
-			this->flowLayoutPanel1 = (gcnew System::Windows::Forms::FlowLayoutPanel());
-			this->labelSocketClientesTabControl2 = (gcnew System::Windows::Forms::Label());
-			this->buttonDesconectar = (gcnew System::Windows::Forms::Button());
-			this->button30 = (gcnew System::Windows::Forms::Button());
-			this->buttonAcceso = (gcnew System::Windows::Forms::Button());
-			this->button29 = (gcnew System::Windows::Forms::Button());
-			this->button28 = (gcnew System::Windows::Forms::Button());
-			this->button27 = (gcnew System::Windows::Forms::Button());
-			this->button26 = (gcnew System::Windows::Forms::Button());
-			this->button25 = (gcnew System::Windows::Forms::Button());
-			this->button24 = (gcnew System::Windows::Forms::Button());
-			this->button23 = (gcnew System::Windows::Forms::Button());
-			this->button22 = (gcnew System::Windows::Forms::Button());
-			this->button21 = (gcnew System::Windows::Forms::Button());
-			this->label9 = (gcnew System::Windows::Forms::Label());
-			this->label8 = (gcnew System::Windows::Forms::Label());
 			this->tabControl3 = (gcnew System::Windows::Forms::TabControl());
 			this->tabPage2 = (gcnew System::Windows::Forms::TabPage());
 			this->labelSocketPuenteTabControl3 = (gcnew System::Windows::Forms::Label());
@@ -286,6 +577,7 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->buttonDesconectarPuente = (gcnew System::Windows::Forms::Button());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->shapeContainer4 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape28 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape24 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape23 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape19 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
@@ -304,32 +596,124 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->rectangleShape6 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape4 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->timer2 = (gcnew System::Windows::Forms::Timer(this->components));
+			this->tabPageSocketClientesTabControl2 = (gcnew System::Windows::Forms::TabPage());
+			this->buttonNOAcceso = (gcnew System::Windows::Forms::Button());
+			this->flowLayoutPanel1 = (gcnew System::Windows::Forms::FlowLayoutPanel());
+			this->labelSocketClientesTabControl2 = (gcnew System::Windows::Forms::Label());
+			this->buttonDesconectar = (gcnew System::Windows::Forms::Button());
+			this->button30 = (gcnew System::Windows::Forms::Button());
+			this->buttonAcceso = (gcnew System::Windows::Forms::Button());
+			this->button29 = (gcnew System::Windows::Forms::Button());
+			this->button28 = (gcnew System::Windows::Forms::Button());
+			this->button27 = (gcnew System::Windows::Forms::Button());
+			this->button26 = (gcnew System::Windows::Forms::Button());
+			this->button25 = (gcnew System::Windows::Forms::Button());
+			this->button24 = (gcnew System::Windows::Forms::Button());
+			this->button23 = (gcnew System::Windows::Forms::Button());
+			this->button22 = (gcnew System::Windows::Forms::Button());
+			this->button21 = (gcnew System::Windows::Forms::Button());
+			this->label9 = (gcnew System::Windows::Forms::Label());
+			this->label8 = (gcnew System::Windows::Forms::Label());
+			this->shapeContainer7 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape31 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
+			this->rectangleShape30 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
+			this->rectangleShapeClientes = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
+			this->tabPageSocketServerTabControl2 = (gcnew System::Windows::Forms::TabPage());
+			this->labelSocketAddrTabControl2 = (gcnew System::Windows::Forms::Label());
+			this->textBoxSocketDrawTabControl2 = (gcnew System::Windows::Forms::CheckBox());
+			this->buttonSocketAceptFocusTabControl2 = (gcnew System::Windows::Forms::Button());
+			this->buttonSocketFocusTabControl2 = (gcnew System::Windows::Forms::Button());
+			this->checkBoxSocketIPTabControl2 = (gcnew System::Windows::Forms::CheckBox());
+			this->checkBoxSocketPuertoTabControl2 = (gcnew System::Windows::Forms::CheckBox());
+			this->labelSocketCOMServerTabControl2 = (gcnew System::Windows::Forms::Label());
+			this->buttonSocketDisconectTabControl2 = (gcnew System::Windows::Forms::Button());
+			this->textBoxSocketLowByteTabControl2 = (gcnew System::Windows::Forms::TextBox());
+			this->buttonSocketCancelButtonTabControl2 = (gcnew System::Windows::Forms::Button());
+			this->textBoxSocketHightByteTabControl2 = (gcnew System::Windows::Forms::TextBox());
+			this->buttonSocketAceptButtonTabControl2 = (gcnew System::Windows::Forms::Button());
+			this->buttonSocketEnviarTabControl2 = (gcnew System::Windows::Forms::Button());
+			this->buttonSocketRedireccionarTabControl2 = (gcnew System::Windows::Forms::Button());
+			this->shapeContainer5 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape22 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
+			this->rectangleShape5 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
+			this->tabControl2 = (gcnew System::Windows::Forms::TabControl());
 			this->timer3 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->tabControl1->SuspendLayout();
+			this->tabPageAbout->SuspendLayout();
+			this->flowLayoutPanel2->SuspendLayout();
 			this->tabPageCOM->SuspendLayout();
 			this->tabPagePuente->SuspendLayout();
 			this->tabPageSocket->SuspendLayout();
-			this->tabPageAbout->SuspendLayout();
-			this->flowLayoutPanel2->SuspendLayout();
-			this->tabControl2->SuspendLayout();
-			this->tabPageSocketServerTabControl2->SuspendLayout();
-			this->tabPageSocketClientesTabControl2->SuspendLayout();
-			this->flowLayoutPanel1->SuspendLayout();
+			this->tabPageWeb->SuspendLayout();
 			this->tabControl3->SuspendLayout();
 			this->tabPage2->SuspendLayout();
+			this->tabPageSocketClientesTabControl2->SuspendLayout();
+			this->flowLayoutPanel1->SuspendLayout();
+			this->tabPageSocketServerTabControl2->SuspendLayout();
+			this->tabControl2->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// tabControl1
 			// 
+			this->tabControl1->Controls->Add(this->tabPageAbout);
 			this->tabControl1->Controls->Add(this->tabPageCOM);
 			this->tabControl1->Controls->Add(this->tabPagePuente);
 			this->tabControl1->Controls->Add(this->tabPageSocket);
-			this->tabControl1->Controls->Add(this->tabPageAbout);
+			this->tabControl1->Controls->Add(this->tabPageWeb);
 			this->tabControl1->Location = System::Drawing::Point(300, 30);
 			this->tabControl1->Name = L"tabControl1";
-			this->tabControl1->SelectedIndex = 3;
+			this->tabControl1->SelectedIndex = 0;
 			this->tabControl1->Size = System::Drawing::Size(282, 264);
 			this->tabControl1->TabIndex = 0;
+			// 
+			// tabPageAbout
+			// 
+			this->tabPageAbout->BackColor = System::Drawing::Color::DarkGray;
+			this->tabPageAbout->Controls->Add(this->flowLayoutPanel2);
+			this->tabPageAbout->Controls->Add(this->label1);
+			this->tabPageAbout->Location = System::Drawing::Point(4, 22);
+			this->tabPageAbout->Name = L"tabPageAbout";
+			this->tabPageAbout->Padding = System::Windows::Forms::Padding(3);
+			this->tabPageAbout->Size = System::Drawing::Size(274, 238);
+			this->tabPageAbout->TabIndex = 3;
+			this->tabPageAbout->Text = L"ESE.CS";
+			// 
+			// flowLayoutPanel2
+			// 
+			this->flowLayoutPanel2->BackColor = System::Drawing::Color::Gainsboro;
+			this->flowLayoutPanel2->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+			this->flowLayoutPanel2->Controls->Add(this->label5);
+			this->flowLayoutPanel2->Location = System::Drawing::Point(0, 45);
+			this->flowLayoutPanel2->Margin = System::Windows::Forms::Padding(0);
+			this->flowLayoutPanel2->Name = L"flowLayoutPanel2";
+			this->flowLayoutPanel2->Padding = System::Windows::Forms::Padding(0, 3, 0, 0);
+			this->flowLayoutPanel2->RightToLeft = System::Windows::Forms::RightToLeft::No;
+			this->flowLayoutPanel2->Size = System::Drawing::Size(271, 190);
+			this->flowLayoutPanel2->TabIndex = 13;
+			// 
+			// label5
+			// 
+			this->label5->AutoSize = true;
+			this->label5->Font = (gcnew System::Drawing::Font(L"Palatino Linotype", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label5->Location = System::Drawing::Point(3, 3);
+			this->label5->Name = L"label5";
+			this->label5->Padding = System::Windows::Forms::Padding(0, 5, 0, 0);
+			this->label5->Size = System::Drawing::Size(255, 203);
+			this->label5->TabIndex = 2;
+			this->label5->Text = resources->GetString(L"label5.Text");
+			this->label5->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 18.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label1->Location = System::Drawing::Point(3, 12);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(268, 30);
+			this->label1->TabIndex = 1;
+			this->label1->Text = L"ESE_GRS-Simulador";
 			// 
 			// tabPageCOM
 			// 
@@ -424,19 +808,23 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// 
 			this->textBoxCOMVelocidad->AutoCompleteCustomSource->AddRange(gcnew cli::array< System::String^  >(5) {L"COM1\t", L"COM2", 
 				L"COM3", L"COM4", L"COM5"});
+			this->textBoxCOMVelocidad->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
 			this->textBoxCOMVelocidad->Location = System::Drawing::Point(110, 140);
 			this->textBoxCOMVelocidad->Name = L"textBoxCOMVelocidad";
-			this->textBoxCOMVelocidad->Size = System::Drawing::Size(87, 20);
+			this->textBoxCOMVelocidad->Size = System::Drawing::Size(87, 21);
 			this->textBoxCOMVelocidad->TabIndex = 1;
 			this->textBoxCOMVelocidad->Text = L"115200";
 			this->textBoxCOMVelocidad->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxCOMIniciarConnection_TextChanged);
 			// 
 			// textBoxCOMPuerto
 			// 
+			this->textBoxCOMPuerto->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
 			this->textBoxCOMPuerto->ForeColor = System::Drawing::SystemColors::WindowText;
 			this->textBoxCOMPuerto->Location = System::Drawing::Point(110, 101);
 			this->textBoxCOMPuerto->Name = L"textBoxCOMPuerto";
-			this->textBoxCOMPuerto->Size = System::Drawing::Size(87, 20);
+			this->textBoxCOMPuerto->Size = System::Drawing::Size(87, 21);
 			this->textBoxCOMPuerto->TabIndex = 0;
 			this->textBoxCOMPuerto->Text = L"COM2";
 			this->textBoxCOMPuerto->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxCOMIniciarConnection_TextChanged);
@@ -490,16 +878,18 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->tabPagePuente->Size = System::Drawing::Size(274, 238);
 			this->tabPagePuente->TabIndex = 1;
 			this->tabPagePuente->Tag = L"";
-			this->tabPagePuente->Text = L"Puente";
+			this->tabPagePuente->Text = L"PuenteCOM";
 			// 
 			// comboBoxSocketIPPuente
 			// 
+			this->comboBoxSocketIPPuente->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 8.25F, System::Drawing::FontStyle::Regular, 
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->comboBoxSocketIPPuente->FormattingEnabled = true;
 			this->comboBoxSocketIPPuente->Items->AddRange(gcnew cli::array< System::Object^  >(2) {L"INADDR_ANY", L"127.0.0.1"});
 			this->comboBoxSocketIPPuente->Location = System::Drawing::Point(165, 110);
 			this->comboBoxSocketIPPuente->Name = L"comboBoxSocketIPPuente";
 			this->comboBoxSocketIPPuente->RightToLeft = System::Windows::Forms::RightToLeft::No;
-			this->comboBoxSocketIPPuente->Size = System::Drawing::Size(96, 21);
+			this->comboBoxSocketIPPuente->Size = System::Drawing::Size(96, 22);
 			this->comboBoxSocketIPPuente->TabIndex = 19;
 			this->comboBoxSocketIPPuente->Text = L"INADDR_ANY";
 			this->comboBoxSocketIPPuente->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketPuente_TextChanged);
@@ -609,9 +999,11 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// 
 			// textBoxSocketPuertoPuente
 			// 
+			this->textBoxSocketPuertoPuente->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 8.25F, System::Drawing::FontStyle::Regular, 
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->textBoxSocketPuertoPuente->Location = System::Drawing::Point(165, 155);
 			this->textBoxSocketPuertoPuente->Name = L"textBoxSocketPuertoPuente";
-			this->textBoxSocketPuertoPuente->Size = System::Drawing::Size(91, 20);
+			this->textBoxSocketPuertoPuente->Size = System::Drawing::Size(91, 21);
 			this->textBoxSocketPuertoPuente->TabIndex = 8;
 			this->textBoxSocketPuertoPuente->Text = L"55555";
 			this->textBoxSocketPuertoPuente->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
@@ -619,9 +1011,11 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// 
 			// textBoxCOMVelocidadPuente
 			// 
+			this->textBoxCOMVelocidadPuente->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 8.25F, System::Drawing::FontStyle::Regular, 
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->textBoxCOMVelocidadPuente->Location = System::Drawing::Point(19, 154);
 			this->textBoxCOMVelocidadPuente->Name = L"textBoxCOMVelocidadPuente";
-			this->textBoxCOMVelocidadPuente->Size = System::Drawing::Size(94, 20);
+			this->textBoxCOMVelocidadPuente->Size = System::Drawing::Size(94, 21);
 			this->textBoxCOMVelocidadPuente->TabIndex = 6;
 			this->textBoxCOMVelocidadPuente->Text = L"115200";
 			this->textBoxCOMVelocidadPuente->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
@@ -629,9 +1023,11 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// 
 			// textBoxCOMPuertoPuente
 			// 
+			this->textBoxCOMPuertoPuente->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 8.25F, System::Drawing::FontStyle::Regular, 
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->textBoxCOMPuertoPuente->Location = System::Drawing::Point(19, 111);
 			this->textBoxCOMPuertoPuente->Name = L"textBoxCOMPuertoPuente";
-			this->textBoxCOMPuertoPuente->Size = System::Drawing::Size(94, 20);
+			this->textBoxCOMPuertoPuente->Size = System::Drawing::Size(94, 21);
 			this->textBoxCOMPuertoPuente->TabIndex = 5;
 			this->textBoxCOMPuertoPuente->Text = L"COM2";
 			this->textBoxCOMPuertoPuente->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
@@ -664,11 +1060,11 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->labelPuentePuente->AutoSize = true;
 			this->labelPuentePuente->Font = (gcnew System::Drawing::Font(L"Modern No. 20", 20.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->labelPuentePuente->Location = System::Drawing::Point(87, 10);
+			this->labelPuentePuente->Location = System::Drawing::Point(60, 10);
 			this->labelPuentePuente->Name = L"labelPuentePuente";
-			this->labelPuentePuente->Size = System::Drawing::Size(95, 29);
+			this->labelPuentePuente->Size = System::Drawing::Size(162, 29);
 			this->labelPuentePuente->TabIndex = 2;
-			this->labelPuentePuente->Text = L"Puente";
+			this->labelPuentePuente->Text = L"Puente COM";
 			// 
 			// shapeContainer1
 			// 
@@ -699,6 +1095,7 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// 
 			// tabPageSocket
 			// 
+			this->tabPageSocket->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
 			this->tabPageSocket->Controls->Add(this->comboBoxSocketIP);
 			this->tabPageSocket->Controls->Add(this->checkBoxSocketPuerto);
 			this->tabPageSocket->Controls->Add(this->checkBoxSocketIP);
@@ -713,16 +1110,18 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->tabPageSocket->Padding = System::Windows::Forms::Padding(3);
 			this->tabPageSocket->Size = System::Drawing::Size(274, 238);
 			this->tabPageSocket->TabIndex = 2;
-			this->tabPageSocket->Text = L"Socket";
+			this->tabPageSocket->Text = L"PuenteWEB";
 			this->tabPageSocket->UseVisualStyleBackColor = true;
 			// 
 			// comboBoxSocketIP
 			// 
+			this->comboBoxSocketIP->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
 			this->comboBoxSocketIP->FormattingEnabled = true;
 			this->comboBoxSocketIP->Items->AddRange(gcnew cli::array< System::Object^  >(2) {L"INADDR_ANY", L"127.0.0.1"});
 			this->comboBoxSocketIP->Location = System::Drawing::Point(95, 98);
 			this->comboBoxSocketIP->Name = L"comboBoxSocketIP";
-			this->comboBoxSocketIP->Size = System::Drawing::Size(95, 21);
+			this->comboBoxSocketIP->Size = System::Drawing::Size(95, 22);
 			this->comboBoxSocketIP->TabIndex = 11;
 			this->comboBoxSocketIP->Text = L"INADDR_ANY";
 			this->comboBoxSocketIP->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketIniciarConnection_TextChanged);
@@ -778,7 +1177,9 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// label6
 			// 
 			this->label6->AutoSize = true;
-			this->label6->Location = System::Drawing::Point(125, 126);
+			this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label6->Location = System::Drawing::Point(123, 133);
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(38, 13);
 			this->label6->TabIndex = 3;
@@ -787,19 +1188,21 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// labelSocketServer
 			// 
 			this->labelSocketServer->AutoSize = true;
-			this->labelSocketServer->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 15.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->labelSocketServer->Location = System::Drawing::Point(53, 17);
+			this->labelSocketServer->Font = (gcnew System::Drawing::Font(L"MS Reference Sans Serif", 15.75F, System::Drawing::FontStyle::Bold, 
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->labelSocketServer->Location = System::Drawing::Point(72, 17);
 			this->labelSocketServer->Name = L"labelSocketServer";
-			this->labelSocketServer->Size = System::Drawing::Size(181, 25);
+			this->labelSocketServer->Size = System::Drawing::Size(150, 26);
 			this->labelSocketServer->TabIndex = 2;
-			this->labelSocketServer->Text = L"Socket Server";
+			this->labelSocketServer->Text = L"Puente WEB";
 			// 
 			// textBoxSocketPuerto
 			// 
-			this->textBoxSocketPuerto->Location = System::Drawing::Point(104, 146);
+			this->textBoxSocketPuerto->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->textBoxSocketPuerto->Location = System::Drawing::Point(104, 153);
 			this->textBoxSocketPuerto->Name = L"textBoxSocketPuerto";
-			this->textBoxSocketPuerto->Size = System::Drawing::Size(75, 20);
+			this->textBoxSocketPuerto->Size = System::Drawing::Size(75, 21);
 			this->textBoxSocketPuerto->TabIndex = 0;
 			this->textBoxSocketPuerto->Text = L"55555";
 			this->textBoxSocketPuerto->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
@@ -812,7 +1215,7 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->shapeContainer3->Name = L"shapeContainer3";
 			this->shapeContainer3->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(2) {this->rectangleShape20, 
 				this->rectangleShape3});
-			this->shapeContainer3->Size = System::Drawing::Size(268, 232);
+			this->shapeContainer3->Size = System::Drawing::Size(264, 228);
 			this->shapeContainer3->TabIndex = 10;
 			this->shapeContainer3->TabStop = false;
 			// 
@@ -829,281 +1232,363 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->rectangleShape3->Name = L"rectangleShape3";
 			this->rectangleShape3->Size = System::Drawing::Size(214, 44);
 			// 
-			// tabPageAbout
+			// tabPageWeb
 			// 
-			this->tabPageAbout->Controls->Add(this->flowLayoutPanel2);
-			this->tabPageAbout->Controls->Add(this->label1);
-			this->tabPageAbout->Location = System::Drawing::Point(4, 22);
-			this->tabPageAbout->Name = L"tabPageAbout";
-			this->tabPageAbout->Padding = System::Windows::Forms::Padding(3);
-			this->tabPageAbout->Size = System::Drawing::Size(274, 238);
-			this->tabPageAbout->TabIndex = 3;
-			this->tabPageAbout->Text = L"!";
-			this->tabPageAbout->UseVisualStyleBackColor = true;
+			this->tabPageWeb->Controls->Add(this->buttonConnectarHost);
+			this->tabPageWeb->Controls->Add(this->buttonDescanectarServerWeb);
+			this->tabPageWeb->Controls->Add(this->labelMostrarHost);
+			this->tabPageWeb->Controls->Add(this->label1ServerWeb);
+			this->tabPageWeb->Controls->Add(this->labelHost);
+			this->tabPageWeb->Controls->Add(this->comboBoxHost);
+			this->tabPageWeb->Controls->Add(this->textBoxHostPuerto);
+			this->tabPageWeb->Controls->Add(this->labelPuertoWeb);
+			this->tabPageWeb->Controls->Add(this->shapeContainer8);
+			this->tabPageWeb->Location = System::Drawing::Point(4, 22);
+			this->tabPageWeb->Name = L"tabPageWeb";
+			this->tabPageWeb->Size = System::Drawing::Size(274, 238);
+			this->tabPageWeb->TabIndex = 4;
+			this->tabPageWeb->Text = L"Web";
+			this->tabPageWeb->UseVisualStyleBackColor = true;
 			// 
-			// flowLayoutPanel2
+			// buttonConnectarHost
 			// 
-			this->flowLayoutPanel2->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
-			this->flowLayoutPanel2->Controls->Add(this->label5);
-			this->flowLayoutPanel2->Location = System::Drawing::Point(0, 45);
-			this->flowLayoutPanel2->Margin = System::Windows::Forms::Padding(0);
-			this->flowLayoutPanel2->Name = L"flowLayoutPanel2";
-			this->flowLayoutPanel2->Padding = System::Windows::Forms::Padding(0, 3, 0, 0);
-			this->flowLayoutPanel2->RightToLeft = System::Windows::Forms::RightToLeft::No;
-			this->flowLayoutPanel2->Size = System::Drawing::Size(271, 190);
-			this->flowLayoutPanel2->TabIndex = 13;
-			// 
-			// label5
-			// 
-			this->label5->AutoSize = true;
-			this->label5->Font = (gcnew System::Drawing::Font(L"Palatino Linotype", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
+			this->buttonConnectarHost->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label5->Location = System::Drawing::Point(3, 3);
-			this->label5->Name = L"label5";
-			this->label5->Padding = System::Windows::Forms::Padding(0, 5, 0, 0);
-			this->label5->Size = System::Drawing::Size(255, 203);
-			this->label5->TabIndex = 2;
-			this->label5->Text = resources->GetString(L"label5.Text");
-			this->label5->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->buttonConnectarHost->Location = System::Drawing::Point(84, 175);
+			this->buttonConnectarHost->Name = L"buttonConnectarHost";
+			this->buttonConnectarHost->Size = System::Drawing::Size(100, 23);
+			this->buttonConnectarHost->TabIndex = 6;
+			this->buttonConnectarHost->Text = L"Conectar";
+			this->buttonConnectarHost->UseVisualStyleBackColor = true;
+			this->buttonConnectarHost->Click += gcnew System::EventHandler(this, &MyForm::MybuttonConnectarHost_Click);
 			// 
-			// label1
+			// buttonDescanectarServerWeb
 			// 
-			this->label1->AutoSize = true;
-			this->label1->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 18.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->label1->Location = System::Drawing::Point(3, 12);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(268, 30);
-			this->label1->TabIndex = 1;
-			this->label1->Text = L"ESE_GRS-Simulador";
-			// 
-			// textBoxSocketHightByteTabControl2
-			// 
-			this->textBoxSocketHightByteTabControl2->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 12, System::Drawing::FontStyle::Regular, 
+			this->buttonDescanectarServerWeb->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 9.75F, System::Drawing::FontStyle::Regular, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->textBoxSocketHightByteTabControl2->Location = System::Drawing::Point(35, 88);
-			this->textBoxSocketHightByteTabControl2->MaxLength = 8;
-			this->textBoxSocketHightByteTabControl2->Name = L"textBoxSocketHightByteTabControl2";
-			this->textBoxSocketHightByteTabControl2->Size = System::Drawing::Size(93, 27);
-			this->textBoxSocketHightByteTabControl2->TabIndex = 5;
-			this->textBoxSocketHightByteTabControl2->Text = L"00000001";
-			this->textBoxSocketHightByteTabControl2->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketBytesTabControl2_TextChanged);
+			this->buttonDescanectarServerWeb->Location = System::Drawing::Point(70, 212);
+			this->buttonDescanectarServerWeb->Name = L"buttonDescanectarServerWeb";
+			this->buttonDescanectarServerWeb->Size = System::Drawing::Size(127, 23);
+			this->buttonDescanectarServerWeb->TabIndex = 7;
+			this->buttonDescanectarServerWeb->Text = L"Desonectar";
+			this->buttonDescanectarServerWeb->UseVisualStyleBackColor = true;
+			this->buttonDescanectarServerWeb->Visible = false;
+			this->buttonDescanectarServerWeb->Click += gcnew System::EventHandler(this, &MyForm::MYbuttonDescanectarServerWeb_Click);
 			// 
-			// buttonSocketEnviarTabControl2
+			// labelMostrarHost
 			// 
-			this->buttonSocketEnviarTabControl2->Cursor = System::Windows::Forms::Cursors::Hand;
-			this->buttonSocketEnviarTabControl2->Location = System::Drawing::Point(46, 181);
-			this->buttonSocketEnviarTabControl2->Name = L"buttonSocketEnviarTabControl2";
-			this->buttonSocketEnviarTabControl2->Size = System::Drawing::Size(71, 23);
-			this->buttonSocketEnviarTabControl2->TabIndex = 4;
-			this->buttonSocketEnviarTabControl2->Text = L"Enviar";
-			this->buttonSocketEnviarTabControl2->UseVisualStyleBackColor = true;
-			this->buttonSocketEnviarTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketEnviarTabControl2_Click);
+			this->labelMostrarHost->BackColor = System::Drawing::Color::Lime;
+			this->labelMostrarHost->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->labelMostrarHost->Location = System::Drawing::Point(12, 46);
+			this->labelMostrarHost->Name = L"labelMostrarHost";
+			this->labelMostrarHost->Size = System::Drawing::Size(29, 31);
+			this->labelMostrarHost->TabIndex = 8;
+			this->labelMostrarHost->Text = L"localhost";
+			this->labelMostrarHost->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->labelMostrarHost->Visible = false;
+			// 
+			// label1ServerWeb
+			// 
+			this->label1ServerWeb->AutoSize = true;
+			this->label1ServerWeb->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 18, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label1ServerWeb->Location = System::Drawing::Point(56, 13);
+			this->label1ServerWeb->Name = L"label1ServerWeb";
+			this->label1ServerWeb->Size = System::Drawing::Size(153, 29);
+			this->label1ServerWeb->TabIndex = 2;
+			this->label1ServerWeb->Text = L"Server Web";
+			// 
+			// labelHost
+			// 
+			this->labelHost->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->labelHost->Location = System::Drawing::Point(58, 53);
+			this->labelHost->Name = L"labelHost";
+			this->labelHost->Size = System::Drawing::Size(142, 18);
+			this->labelHost->TabIndex = 4;
+			this->labelHost->Text = L"Host";
+			this->labelHost->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			// 
+			// comboBoxHost
+			// 
+			this->comboBoxHost->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->comboBoxHost->FormattingEnabled = true;
+			this->comboBoxHost->Location = System::Drawing::Point(73, 80);
+			this->comboBoxHost->Name = L"comboBoxHost";
+			this->comboBoxHost->Size = System::Drawing::Size(127, 24);
+			this->comboBoxHost->TabIndex = 0;
+			this->comboBoxHost->Text = L"localhost";
+			// 
+			// textBoxHostPuerto
+			// 
+			this->textBoxHostPuerto->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->textBoxHostPuerto->Location = System::Drawing::Point(70, 140);
+			this->textBoxHostPuerto->Name = L"textBoxHostPuerto";
+			this->textBoxHostPuerto->Size = System::Drawing::Size(127, 23);
+			this->textBoxHostPuerto->TabIndex = 1;
+			this->textBoxHostPuerto->Text = L"8080";
+			this->textBoxHostPuerto->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
+			// 
+			// labelPuertoWeb
+			// 
+			this->labelPuertoWeb->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->labelPuertoWeb->Location = System::Drawing::Point(58, 113);
+			this->labelPuertoWeb->Name = L"labelPuertoWeb";
+			this->labelPuertoWeb->Size = System::Drawing::Size(142, 16);
+			this->labelPuertoWeb->TabIndex = 5;
+			this->labelPuertoWeb->Text = L"Puerto";
+			this->labelPuertoWeb->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			// 
+			// shapeContainer8
+			// 
+			this->shapeContainer8->Location = System::Drawing::Point(0, 0);
+			this->shapeContainer8->Margin = System::Windows::Forms::Padding(0);
+			this->shapeContainer8->Name = L"shapeContainer8";
+			this->shapeContainer8->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(1) {this->rectangleShape25});
+			this->shapeContainer8->Size = System::Drawing::Size(274, 238);
+			this->shapeContainer8->TabIndex = 9;
+			this->shapeContainer8->TabStop = false;
+			// 
+			// rectangleShape25
+			// 
+			this->rectangleShape25->BackColor = System::Drawing::Color::Transparent;
+			this->rectangleShape25->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape25->Location = System::Drawing::Point(48, 7);
+			this->rectangleShape25->Name = L"rectangleShape25";
+			this->rectangleShape25->Size = System::Drawing::Size(171, 204);
 			// 
 			// timer1
 			// 
 			this->timer1->Interval = 500;
 			this->timer1->Tick += gcnew System::EventHandler(this, &MyForm::timer1_Tick);
 			// 
-			// buttonSocketRedireccionarTabControl2
+			// tabControl3
 			// 
-			this->buttonSocketRedireccionarTabControl2->Location = System::Drawing::Point(178, 121);
-			this->buttonSocketRedireccionarTabControl2->Name = L"buttonSocketRedireccionarTabControl2";
-			this->buttonSocketRedireccionarTabControl2->Size = System::Drawing::Size(56, 26);
-			this->buttonSocketRedireccionarTabControl2->TabIndex = 7;
-			this->buttonSocketRedireccionarTabControl2->Text = L"R";
-			this->buttonSocketRedireccionarTabControl2->UseVisualStyleBackColor = true;
-			this->buttonSocketRedireccionarTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonRedireccionar_Click);
+			this->tabControl3->Controls->Add(this->tabPage2);
+			this->tabControl3->Location = System::Drawing::Point(588, 30);
+			this->tabControl3->Name = L"tabControl3";
+			this->tabControl3->SelectedIndex = 0;
+			this->tabControl3->Size = System::Drawing::Size(282, 264);
+			this->tabControl3->TabIndex = 11;
+			this->tabControl3->Visible = false;
 			// 
-			// buttonSocketAceptButtonTabControl2
+			// tabPage2
 			// 
-			this->buttonSocketAceptButtonTabControl2->BackColor = System::Drawing::Color::Lime;
-			this->buttonSocketAceptButtonTabControl2->ForeColor = System::Drawing::SystemColors::ControlText;
-			this->buttonSocketAceptButtonTabControl2->Location = System::Drawing::Point(178, 149);
-			this->buttonSocketAceptButtonTabControl2->Name = L"buttonSocketAceptButtonTabControl2";
-			this->buttonSocketAceptButtonTabControl2->Size = System::Drawing::Size(74, 12);
-			this->buttonSocketAceptButtonTabControl2->TabIndex = 8;
-			this->buttonSocketAceptButtonTabControl2->UseVisualStyleBackColor = false;
-			this->buttonSocketAceptButtonTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketAceptButtonTabControl2_Click);
+			this->tabPage2->Controls->Add(this->labelSocketPuenteTabControl3);
+			this->tabPage2->Controls->Add(this->labelCOMPuenteTabControl3);
+			this->tabPage2->Controls->Add(this->buttonDesconectarPuente);
+			this->tabPage2->Controls->Add(this->label4);
+			this->tabPage2->Controls->Add(this->shapeContainer4);
+			this->tabPage2->Location = System::Drawing::Point(4, 22);
+			this->tabPage2->Name = L"tabPage2";
+			this->tabPage2->Padding = System::Windows::Forms::Padding(3);
+			this->tabPage2->Size = System::Drawing::Size(274, 238);
+			this->tabPage2->TabIndex = 1;
+			this->tabPage2->Text = L"COM-Socket";
+			this->tabPage2->UseVisualStyleBackColor = true;
 			// 
-			// buttonSocketCancelButtonTabControl2
+			// labelSocketPuenteTabControl3
 			// 
-			this->buttonSocketCancelButtonTabControl2->BackColor = System::Drawing::Color::Red;
-			this->buttonSocketCancelButtonTabControl2->Location = System::Drawing::Point(240, 95);
-			this->buttonSocketCancelButtonTabControl2->Name = L"buttonSocketCancelButtonTabControl2";
-			this->buttonSocketCancelButtonTabControl2->Size = System::Drawing::Size(12, 51);
-			this->buttonSocketCancelButtonTabControl2->TabIndex = 9;
-			this->buttonSocketCancelButtonTabControl2->UseVisualStyleBackColor = false;
-			this->buttonSocketCancelButtonTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketCancelButtonTabControl2_Click);
-			// 
-			// tabControl2
-			// 
-			this->tabControl2->Controls->Add(this->tabPageSocketServerTabControl2);
-			this->tabControl2->Controls->Add(this->tabPageSocketClientesTabControl2);
-			this->tabControl2->Location = System::Drawing::Point(12, 30);
-			this->tabControl2->Name = L"tabControl2";
-			this->tabControl2->SelectedIndex = 0;
-			this->tabControl2->Size = System::Drawing::Size(282, 264);
-			this->tabControl2->TabIndex = 10;
-			this->tabControl2->Visible = false;
-			// 
-			// tabPageSocketServerTabControl2
-			// 
-			this->tabPageSocketServerTabControl2->Controls->Add(this->labelSocketAddrTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->textBoxSocketDrawTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketAceptFocusTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketFocusTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->checkBoxSocketIPTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->checkBoxSocketPuertoTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->labelSocketCOMServerTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketDisconectTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->textBoxSocketLowByteTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketCancelButtonTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->textBoxSocketHightByteTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketAceptButtonTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketEnviarTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketRedireccionarTabControl2);
-			this->tabPageSocketServerTabControl2->Controls->Add(this->shapeContainer5);
-			this->tabPageSocketServerTabControl2->Location = System::Drawing::Point(4, 22);
-			this->tabPageSocketServerTabControl2->Name = L"tabPageSocketServerTabControl2";
-			this->tabPageSocketServerTabControl2->Padding = System::Windows::Forms::Padding(3);
-			this->tabPageSocketServerTabControl2->Size = System::Drawing::Size(274, 238);
-			this->tabPageSocketServerTabControl2->TabIndex = 0;
-			this->tabPageSocketServerTabControl2->Text = L"Server";
-			this->tabPageSocketServerTabControl2->UseVisualStyleBackColor = true;
-			// 
-			// labelSocketAddrTabControl2
-			// 
-			this->labelSocketAddrTabControl2->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 12, System::Drawing::FontStyle::Regular, 
+			this->labelSocketPuenteTabControl3->BackColor = System::Drawing::Color::Chartreuse;
+			this->labelSocketPuenteTabControl3->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 14.25F, System::Drawing::FontStyle::Bold, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->labelSocketAddrTabControl2->Location = System::Drawing::Point(3, 51);
-			this->labelSocketAddrTabControl2->Name = L"labelSocketAddrTabControl2";
-			this->labelSocketAddrTabControl2->Size = System::Drawing::Size(271, 19);
-			this->labelSocketAddrTabControl2->TabIndex = 17;
-			this->labelSocketAddrTabControl2->Text = L"127.0.0.1:5555";
-			this->labelSocketAddrTabControl2->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
-			this->labelSocketAddrTabControl2->DoubleClick += gcnew System::EventHandler(this, &MyForm::labelSocketAddrTabControl2_DoubleClick);
+			this->labelSocketPuenteTabControl3->Location = System::Drawing::Point(6, 170);
+			this->labelSocketPuenteTabControl3->Name = L"labelSocketPuenteTabControl3";
+			this->labelSocketPuenteTabControl3->Size = System::Drawing::Size(262, 28);
+			this->labelSocketPuenteTabControl3->TabIndex = 3;
+			this->labelSocketPuenteTabControl3->Text = L"127.0.0.1:5555";
+			this->labelSocketPuenteTabControl3->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->labelSocketPuenteTabControl3->DoubleClick += gcnew System::EventHandler(this, &MyForm::labelSocketPuenteTabControl3_DoubleClick);
 			// 
-			// textBoxSocketDrawTabControl2
+			// labelCOMPuenteTabControl3
 			// 
-			this->textBoxSocketDrawTabControl2->AutoSize = true;
-			this->textBoxSocketDrawTabControl2->Location = System::Drawing::Point(46, 158);
-			this->textBoxSocketDrawTabControl2->Name = L"textBoxSocketDrawTabControl2";
-			this->textBoxSocketDrawTabControl2->Size = System::Drawing::Size(53, 17);
-			this->textBoxSocketDrawTabControl2->TabIndex = 16;
-			this->textBoxSocketDrawTabControl2->Text = L"Pintar";
-			this->textBoxSocketDrawTabControl2->UseVisualStyleBackColor = true;
-			this->textBoxSocketDrawTabControl2->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBoxSocketDrawTabControl2_Click);
-			// 
-			// buttonSocketAceptFocusTabControl2
-			// 
-			this->buttonSocketAceptFocusTabControl2->Location = System::Drawing::Point(209, 95);
-			this->buttonSocketAceptFocusTabControl2->Name = L"buttonSocketAceptFocusTabControl2";
-			this->buttonSocketAceptFocusTabControl2->Size = System::Drawing::Size(25, 23);
-			this->buttonSocketAceptFocusTabControl2->TabIndex = 15;
-			this->buttonSocketAceptFocusTabControl2->Text = L"A";
-			this->buttonSocketAceptFocusTabControl2->UseVisualStyleBackColor = true;
-			this->buttonSocketAceptFocusTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketAceptFocusTabControl2_Click);
-			// 
-			// buttonSocketFocusTabControl2
-			// 
-			this->buttonSocketFocusTabControl2->Location = System::Drawing::Point(178, 95);
-			this->buttonSocketFocusTabControl2->Name = L"buttonSocketFocusTabControl2";
-			this->buttonSocketFocusTabControl2->Size = System::Drawing::Size(25, 24);
-			this->buttonSocketFocusTabControl2->TabIndex = 14;
-			this->buttonSocketFocusTabControl2->Text = L"F";
-			this->buttonSocketFocusTabControl2->UseVisualStyleBackColor = true;
-			this->buttonSocketFocusTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketFocusTabControl2_Click);
-			// 
-			// checkBoxSocketIPTabControl2
-			// 
-			this->checkBoxSocketIPTabControl2->AutoSize = true;
-			this->checkBoxSocketIPTabControl2->BackColor = System::Drawing::Color::Green;
-			this->checkBoxSocketIPTabControl2->Checked = true;
-			this->checkBoxSocketIPTabControl2->CheckState = System::Windows::Forms::CheckState::Checked;
-			this->checkBoxSocketIPTabControl2->Cursor = System::Windows::Forms::Cursors::No;
-			this->checkBoxSocketIPTabControl2->Location = System::Drawing::Point(14, 132);
-			this->checkBoxSocketIPTabControl2->Name = L"checkBoxSocketIPTabControl2";
-			this->checkBoxSocketIPTabControl2->Size = System::Drawing::Size(15, 14);
-			this->checkBoxSocketIPTabControl2->TabIndex = 13;
-			this->checkBoxSocketIPTabControl2->UseVisualStyleBackColor = false;
-			this->checkBoxSocketIPTabControl2->Click += gcnew System::EventHandler(this, &MyForm::checkBoxSocketsPuertoTabControl2_Click);
-			// 
-			// checkBoxSocketPuertoTabControl2
-			// 
-			this->checkBoxSocketPuertoTabControl2->AutoSize = true;
-			this->checkBoxSocketPuertoTabControl2->BackColor = System::Drawing::Color::Green;
-			this->checkBoxSocketPuertoTabControl2->Checked = true;
-			this->checkBoxSocketPuertoTabControl2->CheckState = System::Windows::Forms::CheckState::Checked;
-			this->checkBoxSocketPuertoTabControl2->Cursor = System::Windows::Forms::Cursors::No;
-			this->checkBoxSocketPuertoTabControl2->Location = System::Drawing::Point(14, 93);
-			this->checkBoxSocketPuertoTabControl2->Name = L"checkBoxSocketPuertoTabControl2";
-			this->checkBoxSocketPuertoTabControl2->Size = System::Drawing::Size(15, 14);
-			this->checkBoxSocketPuertoTabControl2->TabIndex = 12;
-			this->checkBoxSocketPuertoTabControl2->UseVisualStyleBackColor = false;
-			this->checkBoxSocketPuertoTabControl2->Click += gcnew System::EventHandler(this, &MyForm::checkBoxSocketsIPTabControl2_Click);
-			// 
-			// labelSocketCOMServerTabControl2
-			// 
-			this->labelSocketCOMServerTabControl2->AutoSize = true;
-			this->labelSocketCOMServerTabControl2->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 20.25F, System::Drawing::FontStyle::Bold, 
+			this->labelCOMPuenteTabControl3->BackColor = System::Drawing::Color::Chartreuse;
+			this->labelCOMPuenteTabControl3->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 14.25F, System::Drawing::FontStyle::Bold, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->labelSocketCOMServerTabControl2->Location = System::Drawing::Point(29, 10);
-			this->labelSocketCOMServerTabControl2->Name = L"labelSocketCOMServerTabControl2";
-			this->labelSocketCOMServerTabControl2->Size = System::Drawing::Size(223, 32);
-			this->labelSocketCOMServerTabControl2->TabIndex = 11;
-			this->labelSocketCOMServerTabControl2->Text = L"Socket Server";
+			this->labelCOMPuenteTabControl3->Location = System::Drawing::Point(6, 63);
+			this->labelCOMPuenteTabControl3->Name = L"labelCOMPuenteTabControl3";
+			this->labelCOMPuenteTabControl3->RightToLeft = System::Windows::Forms::RightToLeft::Yes;
+			this->labelCOMPuenteTabControl3->Size = System::Drawing::Size(262, 28);
+			this->labelCOMPuenteTabControl3->TabIndex = 2;
+			this->labelCOMPuenteTabControl3->Text = L"COM2:115200";
+			this->labelCOMPuenteTabControl3->TextAlign = System::Drawing::ContentAlignment::TopCenter;
 			// 
-			// buttonSocketDisconectTabControl2
+			// buttonDesconectarPuente
 			// 
-			this->buttonSocketDisconectTabControl2->Cursor = System::Windows::Forms::Cursors::Hand;
-			this->buttonSocketDisconectTabControl2->Location = System::Drawing::Point(191, 209);
-			this->buttonSocketDisconectTabControl2->Name = L"buttonSocketDisconectTabControl2";
-			this->buttonSocketDisconectTabControl2->Size = System::Drawing::Size(77, 23);
-			this->buttonSocketDisconectTabControl2->TabIndex = 10;
-			this->buttonSocketDisconectTabControl2->Text = L"Desconectar";
-			this->buttonSocketDisconectTabControl2->UseVisualStyleBackColor = true;
-			this->buttonSocketDisconectTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketDisconectTabControl2_Click);
+			this->buttonDesconectarPuente->BackColor = System::Drawing::Color::Transparent;
+			this->buttonDesconectarPuente->Cursor = System::Windows::Forms::Cursors::Hand;
+			this->buttonDesconectarPuente->Location = System::Drawing::Point(187, 204);
+			this->buttonDesconectarPuente->Name = L"buttonDesconectarPuente";
+			this->buttonDesconectarPuente->Size = System::Drawing::Size(84, 23);
+			this->buttonDesconectarPuente->TabIndex = 1;
+			this->buttonDesconectarPuente->Text = L"Desconectar";
+			this->buttonDesconectarPuente->UseVisualStyleBackColor = false;
+			this->buttonDesconectarPuente->Click += gcnew System::EventHandler(this, &MyForm::buttonDesconectarPuente_Click);
 			// 
-			// textBoxSocketLowByteTabControl2
+			// label4
 			// 
-			this->textBoxSocketLowByteTabControl2->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 12, System::Drawing::FontStyle::Regular, 
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->textBoxSocketLowByteTabControl2->Location = System::Drawing::Point(35, 125);
-			this->textBoxSocketLowByteTabControl2->MaxLength = 8;
-			this->textBoxSocketLowByteTabControl2->Name = L"textBoxSocketLowByteTabControl2";
-			this->textBoxSocketLowByteTabControl2->Size = System::Drawing::Size(93, 27);
-			this->textBoxSocketLowByteTabControl2->TabIndex = 6;
-			this->textBoxSocketLowByteTabControl2->Text = L"00000001";
-			this->textBoxSocketLowByteTabControl2->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketBytesTabControl2_TextChanged);
+			this->label4->AutoSize = true;
+			this->label4->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 20.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label4->Location = System::Drawing::Point(81, 10);
+			this->label4->Name = L"label4";
+			this->label4->Size = System::Drawing::Size(111, 32);
+			this->label4->TabIndex = 0;
+			this->label4->Text = L"Puente";
 			// 
-			// shapeContainer5
+			// shapeContainer4
 			// 
-			this->shapeContainer5->Location = System::Drawing::Point(3, 3);
-			this->shapeContainer5->Margin = System::Windows::Forms::Padding(0);
-			this->shapeContainer5->Name = L"shapeContainer5";
-			this->shapeContainer5->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(2) {this->rectangleShape22, 
-				this->rectangleShape5});
-			this->shapeContainer5->Size = System::Drawing::Size(268, 232);
-			this->shapeContainer5->TabIndex = 18;
-			this->shapeContainer5->TabStop = false;
+			this->shapeContainer4->Location = System::Drawing::Point(3, 3);
+			this->shapeContainer4->Margin = System::Windows::Forms::Padding(0);
+			this->shapeContainer4->Name = L"shapeContainer4";
+			this->shapeContainer4->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(18) {this->rectangleShape28, 
+				this->rectangleShape24, this->rectangleShape23, this->rectangleShape19, this->rectangleShape18, this->rectangleShape17, this->rectangleShape16, 
+				this->rectangleShape15, this->rectangleShape14, this->rectangleShape13, this->rectangleShape12, this->rectangleShape11, this->rectangleShape10, 
+				this->rectangleShape9, this->rectangleShape8, this->rectangleShape7, this->rectangleShape6, this->rectangleShape4});
+			this->shapeContainer4->Size = System::Drawing::Size(268, 232);
+			this->shapeContainer4->TabIndex = 4;
+			this->shapeContainer4->TabStop = false;
 			// 
-			// rectangleShape22
+			// rectangleShape28
 			// 
-			this->rectangleShape22->Location = System::Drawing::Point(6, 72);
-			this->rectangleShape22->Name = L"rectangleShape22";
-			this->rectangleShape22->Size = System::Drawing::Size(133, 139);
+			this->rectangleShape28->BackColor = System::Drawing::Color::Chartreuse;
+			this->rectangleShape28->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape28->Location = System::Drawing::Point(145, 60);
+			this->rectangleShape28->Name = L"rectangleShape28";
+			this->rectangleShape28->Size = System::Drawing::Size(133, 134);
 			// 
-			// rectangleShape5
+			// rectangleShape24
 			// 
-			this->rectangleShape5->BackColor = System::Drawing::Color::WhiteSmoke;
-			this->rectangleShape5->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape5->Location = System::Drawing::Point(165, 81);
-			this->rectangleShape5->Name = L"rectangleShape5";
-			this->rectangleShape5->Size = System::Drawing::Size(93, 86);
+			this->rectangleShape24->BackColor = System::Drawing::Color::Chartreuse;
+			this->rectangleShape24->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape24->Location = System::Drawing::Point(1, 60);
+			this->rectangleShape24->Name = L"rectangleShape24";
+			this->rectangleShape24->Size = System::Drawing::Size(133, 134);
+			// 
+			// rectangleShape23
+			// 
+			this->rectangleShape23->Location = System::Drawing::Point(62, 2);
+			this->rectangleShape23->Name = L"rectangleShape23";
+			this->rectangleShape23->Size = System::Drawing::Size(141, 45);
+			// 
+			// rectangleShape19
+			// 
+			this->rectangleShape19->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape19->Location = System::Drawing::Point(137, 160);
+			this->rectangleShape19->Name = L"rectangleShape19";
+			this->rectangleShape19->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape18
+			// 
+			this->rectangleShape18->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape18->Location = System::Drawing::Point(137, 155);
+			this->rectangleShape18->Name = L"rectangleShape18";
+			this->rectangleShape18->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape17
+			// 
+			this->rectangleShape17->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape17->Location = System::Drawing::Point(137, 150);
+			this->rectangleShape17->Name = L"rectangleShape17";
+			this->rectangleShape17->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape16
+			// 
+			this->rectangleShape16->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape16->Location = System::Drawing::Point(137, 145);
+			this->rectangleShape16->Name = L"rectangleShape16";
+			this->rectangleShape16->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape15
+			// 
+			this->rectangleShape15->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape15->Location = System::Drawing::Point(137, 140);
+			this->rectangleShape15->Name = L"rectangleShape15";
+			this->rectangleShape15->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape14
+			// 
+			this->rectangleShape14->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape14->Location = System::Drawing::Point(137, 135);
+			this->rectangleShape14->Name = L"rectangleShape14";
+			this->rectangleShape14->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape13
+			// 
+			this->rectangleShape13->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape13->Location = System::Drawing::Point(137, 130);
+			this->rectangleShape13->Name = L"rectangleShape13";
+			this->rectangleShape13->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape12
+			// 
+			this->rectangleShape12->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape12->Location = System::Drawing::Point(137, 125);
+			this->rectangleShape12->Name = L"rectangleShape12";
+			this->rectangleShape12->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape11
+			// 
+			this->rectangleShape11->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape11->Location = System::Drawing::Point(137, 120);
+			this->rectangleShape11->Name = L"rectangleShape11";
+			this->rectangleShape11->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape10
+			// 
+			this->rectangleShape10->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape10->Location = System::Drawing::Point(137, 115);
+			this->rectangleShape10->Name = L"rectangleShape10";
+			this->rectangleShape10->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape9
+			// 
+			this->rectangleShape9->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape9->Location = System::Drawing::Point(137, 110);
+			this->rectangleShape9->Name = L"rectangleShape9";
+			this->rectangleShape9->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape8
+			// 
+			this->rectangleShape8->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape8->Location = System::Drawing::Point(137, 105);
+			this->rectangleShape8->Name = L"rectangleShape8";
+			this->rectangleShape8->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape7
+			// 
+			this->rectangleShape7->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape7->Location = System::Drawing::Point(137, 100);
+			this->rectangleShape7->Name = L"rectangleShape7";
+			this->rectangleShape7->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape6
+			// 
+			this->rectangleShape6->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape6->Location = System::Drawing::Point(137, 95);
+			this->rectangleShape6->Name = L"rectangleShape6";
+			this->rectangleShape6->Size = System::Drawing::Size(5, 5);
+			// 
+			// rectangleShape4
+			// 
+			this->rectangleShape4->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape4->Location = System::Drawing::Point(137, 90);
+			this->rectangleShape4->Name = L"rectangleShape4";
+			this->rectangleShape4->Size = System::Drawing::Size(5, 5);
+			// 
+			// timer2
+			// 
+			this->timer2->Interval = 500;
+			this->timer2->Tick += gcnew System::EventHandler(this, &MyForm::timer2_Tick);
 			// 
 			// tabPageSocketClientesTabControl2
 			// 
+			this->tabPageSocketClientesTabControl2->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+			this->tabPageSocketClientesTabControl2->Controls->Add(this->buttonNOAcceso);
 			this->tabPageSocketClientesTabControl2->Controls->Add(this->flowLayoutPanel1);
 			this->tabPageSocketClientesTabControl2->Controls->Add(this->buttonDesconectar);
 			this->tabPageSocketClientesTabControl2->Controls->Add(this->button30);
@@ -1119,6 +1604,7 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->tabPageSocketClientesTabControl2->Controls->Add(this->button21);
 			this->tabPageSocketClientesTabControl2->Controls->Add(this->label9);
 			this->tabPageSocketClientesTabControl2->Controls->Add(this->label8);
+			this->tabPageSocketClientesTabControl2->Controls->Add(this->shapeContainer7);
 			this->tabPageSocketClientesTabControl2->Location = System::Drawing::Point(4, 22);
 			this->tabPageSocketClientesTabControl2->Name = L"tabPageSocketClientesTabControl2";
 			this->tabPageSocketClientesTabControl2->Padding = System::Windows::Forms::Padding(3);
@@ -1127,6 +1613,18 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->tabPageSocketClientesTabControl2->Text = L"Clientes ";
 			this->tabPageSocketClientesTabControl2->UseVisualStyleBackColor = true;
 			// 
+			// buttonNOAcceso
+			// 
+			this->buttonNOAcceso->Cursor = System::Windows::Forms::Cursors::Hand;
+			this->buttonNOAcceso->Enabled = false;
+			this->buttonNOAcceso->Location = System::Drawing::Point(197, 183);
+			this->buttonNOAcceso->Name = L"buttonNOAcceso";
+			this->buttonNOAcceso->Size = System::Drawing::Size(67, 23);
+			this->buttonNOAcceso->TabIndex = 14;
+			this->buttonNOAcceso->Text = L"NoAcceso";
+			this->buttonNOAcceso->UseVisualStyleBackColor = true;
+			this->buttonNOAcceso->Click += gcnew System::EventHandler(this, &MyForm::buttonNOAcceso_Click);
+			// 
 			// flowLayoutPanel1
 			// 
 			this->flowLayoutPanel1->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
@@ -1134,7 +1632,7 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->flowLayoutPanel1->Location = System::Drawing::Point(134, 3);
 			this->flowLayoutPanel1->Name = L"flowLayoutPanel1";
 			this->flowLayoutPanel1->RightToLeft = System::Windows::Forms::RightToLeft::No;
-			this->flowLayoutPanel1->Size = System::Drawing::Size(140, 203);
+			this->flowLayoutPanel1->Size = System::Drawing::Size(140, 159);
 			this->flowLayoutPanel1->TabIndex = 12;
 			// 
 			// labelSocketClientesTabControl2
@@ -1155,9 +1653,9 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// 
 			this->buttonDesconectar->Cursor = System::Windows::Forms::Cursors::Hand;
 			this->buttonDesconectar->Enabled = false;
-			this->buttonDesconectar->Location = System::Drawing::Point(193, 210);
+			this->buttonDesconectar->Location = System::Drawing::Point(135, 210);
 			this->buttonDesconectar->Name = L"buttonDesconectar";
-			this->buttonDesconectar->Size = System::Drawing::Size(81, 23);
+			this->buttonDesconectar->Size = System::Drawing::Size(129, 23);
 			this->buttonDesconectar->TabIndex = 1;
 			this->buttonDesconectar->Text = L"Desconectar";
 			this->buttonDesconectar->UseVisualStyleBackColor = true;
@@ -1180,9 +1678,9 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			// 
 			this->buttonAcceso->Cursor = System::Windows::Forms::Cursors::Hand;
 			this->buttonAcceso->Enabled = false;
-			this->buttonAcceso->Location = System::Drawing::Point(134, 209);
+			this->buttonAcceso->Location = System::Drawing::Point(135, 183);
 			this->buttonAcceso->Name = L"buttonAcceso";
-			this->buttonAcceso->Size = System::Drawing::Size(57, 23);
+			this->buttonAcceso->Size = System::Drawing::Size(60, 23);
 			this->buttonAcceso->TabIndex = 2;
 			this->buttonAcceso->Text = L"Acceso";
 			this->buttonAcceso->UseVisualStyleBackColor = true;
@@ -1327,211 +1825,266 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->label8->TabIndex = 0;
 			this->label8->Text = L"Clientes";
 			// 
-			// tabControl3
+			// shapeContainer7
 			// 
-			this->tabControl3->Controls->Add(this->tabPage2);
-			this->tabControl3->Location = System::Drawing::Point(588, 30);
-			this->tabControl3->Name = L"tabControl3";
-			this->tabControl3->SelectedIndex = 0;
-			this->tabControl3->Size = System::Drawing::Size(282, 264);
-			this->tabControl3->TabIndex = 11;
-			this->tabControl3->Visible = false;
+			this->shapeContainer7->Location = System::Drawing::Point(3, 3);
+			this->shapeContainer7->Margin = System::Windows::Forms::Padding(0);
+			this->shapeContainer7->Name = L"shapeContainer7";
+			this->shapeContainer7->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(3) {this->rectangleShape31, 
+				this->rectangleShape30, this->rectangleShapeClientes});
+			this->shapeContainer7->Size = System::Drawing::Size(264, 228);
+			this->shapeContainer7->TabIndex = 13;
+			this->shapeContainer7->TabStop = false;
 			// 
-			// tabPage2
+			// rectangleShape31
 			// 
-			this->tabPage2->Controls->Add(this->labelSocketPuenteTabControl3);
-			this->tabPage2->Controls->Add(this->labelCOMPuenteTabControl3);
-			this->tabPage2->Controls->Add(this->buttonDesconectarPuente);
-			this->tabPage2->Controls->Add(this->label4);
-			this->tabPage2->Controls->Add(this->shapeContainer4);
-			this->tabPage2->Location = System::Drawing::Point(4, 22);
-			this->tabPage2->Name = L"tabPage2";
-			this->tabPage2->Padding = System::Windows::Forms::Padding(3);
-			this->tabPage2->Size = System::Drawing::Size(274, 238);
-			this->tabPage2->TabIndex = 1;
-			this->tabPage2->Text = L"COM-Socket";
-			this->tabPage2->UseVisualStyleBackColor = true;
+			this->rectangleShape31->BackColor = System::Drawing::Color::Lime;
+			this->rectangleShape31->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape31->Location = System::Drawing::Point(195, 163);
+			this->rectangleShape31->Name = L"rectangleShape31";
+			this->rectangleShape31->Size = System::Drawing::Size(63, 12);
+			this->rectangleShape31->Visible = false;
 			// 
-			// labelSocketPuenteTabControl3
+			// rectangleShape30
 			// 
-			this->labelSocketPuenteTabControl3->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 14.25F, System::Drawing::FontStyle::Bold, 
+			this->rectangleShape30->BackColor = System::Drawing::Color::Purple;
+			this->rectangleShape30->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape30->Location = System::Drawing::Point(134, 163);
+			this->rectangleShape30->Name = L"rectangleShape30";
+			this->rectangleShape30->Size = System::Drawing::Size(57, 12);
+			this->rectangleShape30->Visible = false;
+			// 
+			// rectangleShapeClientes
+			// 
+			this->rectangleShapeClientes->Location = System::Drawing::Point(4, 6);
+			this->rectangleShapeClientes->Name = L"rectangleShapeClientes";
+			this->rectangleShapeClientes->Size = System::Drawing::Size(118, 81);
+			// 
+			// tabPageSocketServerTabControl2
+			// 
+			this->tabPageSocketServerTabControl2->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+			this->tabPageSocketServerTabControl2->Controls->Add(this->labelSocketAddrTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->textBoxSocketDrawTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketAceptFocusTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketFocusTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->checkBoxSocketIPTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->checkBoxSocketPuertoTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->labelSocketCOMServerTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketDisconectTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->textBoxSocketLowByteTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketCancelButtonTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->textBoxSocketHightByteTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketAceptButtonTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketEnviarTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->buttonSocketRedireccionarTabControl2);
+			this->tabPageSocketServerTabControl2->Controls->Add(this->shapeContainer5);
+			this->tabPageSocketServerTabControl2->Location = System::Drawing::Point(4, 22);
+			this->tabPageSocketServerTabControl2->Name = L"tabPageSocketServerTabControl2";
+			this->tabPageSocketServerTabControl2->Padding = System::Windows::Forms::Padding(3);
+			this->tabPageSocketServerTabControl2->Size = System::Drawing::Size(274, 238);
+			this->tabPageSocketServerTabControl2->TabIndex = 0;
+			this->tabPageSocketServerTabControl2->Text = L"Server";
+			this->tabPageSocketServerTabControl2->UseVisualStyleBackColor = true;
+			// 
+			// labelSocketAddrTabControl2
+			// 
+			this->labelSocketAddrTabControl2->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 12, System::Drawing::FontStyle::Regular, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->labelSocketPuenteTabControl3->Location = System::Drawing::Point(6, 170);
-			this->labelSocketPuenteTabControl3->Name = L"labelSocketPuenteTabControl3";
-			this->labelSocketPuenteTabControl3->Size = System::Drawing::Size(262, 22);
-			this->labelSocketPuenteTabControl3->TabIndex = 3;
-			this->labelSocketPuenteTabControl3->Text = L"127.0.0.1:5555";
-			this->labelSocketPuenteTabControl3->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
-			this->labelSocketPuenteTabControl3->DoubleClick += gcnew System::EventHandler(this, &MyForm::labelSocketPuenteTabControl3_DoubleClick);
+			this->labelSocketAddrTabControl2->Location = System::Drawing::Point(3, 51);
+			this->labelSocketAddrTabControl2->Name = L"labelSocketAddrTabControl2";
+			this->labelSocketAddrTabControl2->Size = System::Drawing::Size(271, 19);
+			this->labelSocketAddrTabControl2->TabIndex = 17;
+			this->labelSocketAddrTabControl2->Text = L"127.0.0.1:5555";
+			this->labelSocketAddrTabControl2->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->labelSocketAddrTabControl2->DoubleClick += gcnew System::EventHandler(this, &MyForm::labelSocketAddrTabControl2_DoubleClick);
 			// 
-			// labelCOMPuenteTabControl3
+			// textBoxSocketDrawTabControl2
 			// 
-			this->labelCOMPuenteTabControl3->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 14.25F, System::Drawing::FontStyle::Bold, 
+			this->textBoxSocketDrawTabControl2->AutoSize = true;
+			this->textBoxSocketDrawTabControl2->Location = System::Drawing::Point(46, 158);
+			this->textBoxSocketDrawTabControl2->Name = L"textBoxSocketDrawTabControl2";
+			this->textBoxSocketDrawTabControl2->Size = System::Drawing::Size(53, 17);
+			this->textBoxSocketDrawTabControl2->TabIndex = 16;
+			this->textBoxSocketDrawTabControl2->Text = L"Pintar";
+			this->textBoxSocketDrawTabControl2->UseVisualStyleBackColor = true;
+			this->textBoxSocketDrawTabControl2->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBoxSocketDrawTabControl2_Click);
+			// 
+			// buttonSocketAceptFocusTabControl2
+			// 
+			this->buttonSocketAceptFocusTabControl2->Location = System::Drawing::Point(209, 95);
+			this->buttonSocketAceptFocusTabControl2->Name = L"buttonSocketAceptFocusTabControl2";
+			this->buttonSocketAceptFocusTabControl2->Size = System::Drawing::Size(25, 23);
+			this->buttonSocketAceptFocusTabControl2->TabIndex = 15;
+			this->buttonSocketAceptFocusTabControl2->Text = L"A";
+			this->buttonSocketAceptFocusTabControl2->UseVisualStyleBackColor = true;
+			this->buttonSocketAceptFocusTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketAceptFocusTabControl2_Click);
+			// 
+			// buttonSocketFocusTabControl2
+			// 
+			this->buttonSocketFocusTabControl2->Location = System::Drawing::Point(178, 95);
+			this->buttonSocketFocusTabControl2->Name = L"buttonSocketFocusTabControl2";
+			this->buttonSocketFocusTabControl2->Size = System::Drawing::Size(25, 24);
+			this->buttonSocketFocusTabControl2->TabIndex = 14;
+			this->buttonSocketFocusTabControl2->Text = L"F";
+			this->buttonSocketFocusTabControl2->UseVisualStyleBackColor = true;
+			this->buttonSocketFocusTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketFocusTabControl2_Click);
+			// 
+			// checkBoxSocketIPTabControl2
+			// 
+			this->checkBoxSocketIPTabControl2->AutoSize = true;
+			this->checkBoxSocketIPTabControl2->BackColor = System::Drawing::Color::Green;
+			this->checkBoxSocketIPTabControl2->Checked = true;
+			this->checkBoxSocketIPTabControl2->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->checkBoxSocketIPTabControl2->Cursor = System::Windows::Forms::Cursors::No;
+			this->checkBoxSocketIPTabControl2->Location = System::Drawing::Point(14, 132);
+			this->checkBoxSocketIPTabControl2->Name = L"checkBoxSocketIPTabControl2";
+			this->checkBoxSocketIPTabControl2->Size = System::Drawing::Size(15, 14);
+			this->checkBoxSocketIPTabControl2->TabIndex = 13;
+			this->checkBoxSocketIPTabControl2->UseVisualStyleBackColor = false;
+			this->checkBoxSocketIPTabControl2->Click += gcnew System::EventHandler(this, &MyForm::checkBoxSocketsPuertoTabControl2_Click);
+			// 
+			// checkBoxSocketPuertoTabControl2
+			// 
+			this->checkBoxSocketPuertoTabControl2->AutoSize = true;
+			this->checkBoxSocketPuertoTabControl2->BackColor = System::Drawing::Color::Green;
+			this->checkBoxSocketPuertoTabControl2->Checked = true;
+			this->checkBoxSocketPuertoTabControl2->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->checkBoxSocketPuertoTabControl2->Cursor = System::Windows::Forms::Cursors::No;
+			this->checkBoxSocketPuertoTabControl2->Location = System::Drawing::Point(14, 93);
+			this->checkBoxSocketPuertoTabControl2->Name = L"checkBoxSocketPuertoTabControl2";
+			this->checkBoxSocketPuertoTabControl2->Size = System::Drawing::Size(15, 14);
+			this->checkBoxSocketPuertoTabControl2->TabIndex = 12;
+			this->checkBoxSocketPuertoTabControl2->UseVisualStyleBackColor = false;
+			this->checkBoxSocketPuertoTabControl2->Click += gcnew System::EventHandler(this, &MyForm::checkBoxSocketsIPTabControl2_Click);
+			// 
+			// labelSocketCOMServerTabControl2
+			// 
+			this->labelSocketCOMServerTabControl2->AutoSize = true;
+			this->labelSocketCOMServerTabControl2->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 20.25F, System::Drawing::FontStyle::Bold, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->labelCOMPuenteTabControl3->Location = System::Drawing::Point(6, 69);
-			this->labelCOMPuenteTabControl3->Name = L"labelCOMPuenteTabControl3";
-			this->labelCOMPuenteTabControl3->RightToLeft = System::Windows::Forms::RightToLeft::Yes;
-			this->labelCOMPuenteTabControl3->Size = System::Drawing::Size(262, 22);
-			this->labelCOMPuenteTabControl3->TabIndex = 2;
-			this->labelCOMPuenteTabControl3->Text = L"COM2:115200";
-			this->labelCOMPuenteTabControl3->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			this->labelSocketCOMServerTabControl2->Location = System::Drawing::Point(29, 10);
+			this->labelSocketCOMServerTabControl2->Name = L"labelSocketCOMServerTabControl2";
+			this->labelSocketCOMServerTabControl2->Size = System::Drawing::Size(223, 32);
+			this->labelSocketCOMServerTabControl2->TabIndex = 11;
+			this->labelSocketCOMServerTabControl2->Text = L"Socket Server";
 			// 
-			// buttonDesconectarPuente
+			// buttonSocketDisconectTabControl2
 			// 
-			this->buttonDesconectarPuente->BackColor = System::Drawing::Color::Transparent;
-			this->buttonDesconectarPuente->Cursor = System::Windows::Forms::Cursors::Hand;
-			this->buttonDesconectarPuente->Location = System::Drawing::Point(187, 204);
-			this->buttonDesconectarPuente->Name = L"buttonDesconectarPuente";
-			this->buttonDesconectarPuente->Size = System::Drawing::Size(84, 23);
-			this->buttonDesconectarPuente->TabIndex = 1;
-			this->buttonDesconectarPuente->Text = L"Desconectar";
-			this->buttonDesconectarPuente->UseVisualStyleBackColor = false;
-			this->buttonDesconectarPuente->Click += gcnew System::EventHandler(this, &MyForm::buttonDesconectarPuente_Click);
+			this->buttonSocketDisconectTabControl2->Cursor = System::Windows::Forms::Cursors::Hand;
+			this->buttonSocketDisconectTabControl2->Location = System::Drawing::Point(191, 209);
+			this->buttonSocketDisconectTabControl2->Name = L"buttonSocketDisconectTabControl2";
+			this->buttonSocketDisconectTabControl2->Size = System::Drawing::Size(77, 23);
+			this->buttonSocketDisconectTabControl2->TabIndex = 10;
+			this->buttonSocketDisconectTabControl2->Text = L"Desconectar";
+			this->buttonSocketDisconectTabControl2->UseVisualStyleBackColor = true;
+			this->buttonSocketDisconectTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketDisconectTabControl2_Click);
 			// 
-			// label4
+			// textBoxSocketLowByteTabControl2
 			// 
-			this->label4->AutoSize = true;
-			this->label4->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 20.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->label4->Location = System::Drawing::Point(81, 10);
-			this->label4->Name = L"label4";
-			this->label4->Size = System::Drawing::Size(111, 32);
-			this->label4->TabIndex = 0;
-			this->label4->Text = L"Puente";
+			this->textBoxSocketLowByteTabControl2->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 12, System::Drawing::FontStyle::Regular, 
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->textBoxSocketLowByteTabControl2->Location = System::Drawing::Point(35, 125);
+			this->textBoxSocketLowByteTabControl2->MaxLength = 8;
+			this->textBoxSocketLowByteTabControl2->Name = L"textBoxSocketLowByteTabControl2";
+			this->textBoxSocketLowByteTabControl2->Size = System::Drawing::Size(93, 27);
+			this->textBoxSocketLowByteTabControl2->TabIndex = 6;
+			this->textBoxSocketLowByteTabControl2->Text = L"00000001";
+			this->textBoxSocketLowByteTabControl2->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketBytesTabControl2_TextChanged);
 			// 
-			// shapeContainer4
+			// buttonSocketCancelButtonTabControl2
 			// 
-			this->shapeContainer4->Location = System::Drawing::Point(3, 3);
-			this->shapeContainer4->Margin = System::Windows::Forms::Padding(0);
-			this->shapeContainer4->Name = L"shapeContainer4";
-			this->shapeContainer4->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(17) {this->rectangleShape24, 
-				this->rectangleShape23, this->rectangleShape19, this->rectangleShape18, this->rectangleShape17, this->rectangleShape16, this->rectangleShape15, 
-				this->rectangleShape14, this->rectangleShape13, this->rectangleShape12, this->rectangleShape11, this->rectangleShape10, this->rectangleShape9, 
-				this->rectangleShape8, this->rectangleShape7, this->rectangleShape6, this->rectangleShape4});
-			this->shapeContainer4->Size = System::Drawing::Size(268, 232);
-			this->shapeContainer4->TabIndex = 4;
-			this->shapeContainer4->TabStop = false;
+			this->buttonSocketCancelButtonTabControl2->BackColor = System::Drawing::Color::Red;
+			this->buttonSocketCancelButtonTabControl2->Location = System::Drawing::Point(240, 95);
+			this->buttonSocketCancelButtonTabControl2->Name = L"buttonSocketCancelButtonTabControl2";
+			this->buttonSocketCancelButtonTabControl2->Size = System::Drawing::Size(12, 51);
+			this->buttonSocketCancelButtonTabControl2->TabIndex = 9;
+			this->buttonSocketCancelButtonTabControl2->UseVisualStyleBackColor = false;
+			this->buttonSocketCancelButtonTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketCancelButtonTabControl2_Click);
 			// 
-			// rectangleShape24
+			// textBoxSocketHightByteTabControl2
 			// 
-			this->rectangleShape24->Location = System::Drawing::Point(1, 56);
-			this->rectangleShape24->Name = L"rectangleShape24";
-			this->rectangleShape24->Size = System::Drawing::Size(265, 144);
+			this->textBoxSocketHightByteTabControl2->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 12, System::Drawing::FontStyle::Regular, 
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->textBoxSocketHightByteTabControl2->Location = System::Drawing::Point(35, 88);
+			this->textBoxSocketHightByteTabControl2->MaxLength = 8;
+			this->textBoxSocketHightByteTabControl2->Name = L"textBoxSocketHightByteTabControl2";
+			this->textBoxSocketHightByteTabControl2->Size = System::Drawing::Size(93, 27);
+			this->textBoxSocketHightByteTabControl2->TabIndex = 5;
+			this->textBoxSocketHightByteTabControl2->Text = L"00000001";
+			this->textBoxSocketHightByteTabControl2->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxSocketBytesTabControl2_TextChanged);
 			// 
-			// rectangleShape23
+			// buttonSocketAceptButtonTabControl2
 			// 
-			this->rectangleShape23->Location = System::Drawing::Point(62, 2);
-			this->rectangleShape23->Name = L"rectangleShape23";
-			this->rectangleShape23->Size = System::Drawing::Size(141, 45);
+			this->buttonSocketAceptButtonTabControl2->BackColor = System::Drawing::Color::Lime;
+			this->buttonSocketAceptButtonTabControl2->ForeColor = System::Drawing::SystemColors::ControlText;
+			this->buttonSocketAceptButtonTabControl2->Location = System::Drawing::Point(178, 149);
+			this->buttonSocketAceptButtonTabControl2->Name = L"buttonSocketAceptButtonTabControl2";
+			this->buttonSocketAceptButtonTabControl2->Size = System::Drawing::Size(74, 12);
+			this->buttonSocketAceptButtonTabControl2->TabIndex = 8;
+			this->buttonSocketAceptButtonTabControl2->UseVisualStyleBackColor = false;
+			this->buttonSocketAceptButtonTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketAceptButtonTabControl2_Click);
 			// 
-			// rectangleShape19
+			// buttonSocketEnviarTabControl2
 			// 
-			this->rectangleShape19->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape19->Location = System::Drawing::Point(137, 160);
-			this->rectangleShape19->Name = L"rectangleShape19";
-			this->rectangleShape19->Size = System::Drawing::Size(5, 5);
+			this->buttonSocketEnviarTabControl2->Cursor = System::Windows::Forms::Cursors::Hand;
+			this->buttonSocketEnviarTabControl2->Location = System::Drawing::Point(35, 181);
+			this->buttonSocketEnviarTabControl2->Name = L"buttonSocketEnviarTabControl2";
+			this->buttonSocketEnviarTabControl2->Size = System::Drawing::Size(82, 23);
+			this->buttonSocketEnviarTabControl2->TabIndex = 4;
+			this->buttonSocketEnviarTabControl2->Text = L"Enviar";
+			this->buttonSocketEnviarTabControl2->UseVisualStyleBackColor = true;
+			this->buttonSocketEnviarTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonSocketEnviarTabControl2_Click);
 			// 
-			// rectangleShape18
+			// buttonSocketRedireccionarTabControl2
 			// 
-			this->rectangleShape18->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape18->Location = System::Drawing::Point(137, 155);
-			this->rectangleShape18->Name = L"rectangleShape18";
-			this->rectangleShape18->Size = System::Drawing::Size(5, 5);
+			this->buttonSocketRedireccionarTabControl2->Location = System::Drawing::Point(178, 121);
+			this->buttonSocketRedireccionarTabControl2->Name = L"buttonSocketRedireccionarTabControl2";
+			this->buttonSocketRedireccionarTabControl2->Size = System::Drawing::Size(56, 26);
+			this->buttonSocketRedireccionarTabControl2->TabIndex = 7;
+			this->buttonSocketRedireccionarTabControl2->Text = L"R";
+			this->buttonSocketRedireccionarTabControl2->UseVisualStyleBackColor = true;
+			this->buttonSocketRedireccionarTabControl2->Click += gcnew System::EventHandler(this, &MyForm::buttonRedireccionar_Click);
 			// 
-			// rectangleShape17
+			// shapeContainer5
 			// 
-			this->rectangleShape17->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape17->Location = System::Drawing::Point(137, 150);
-			this->rectangleShape17->Name = L"rectangleShape17";
-			this->rectangleShape17->Size = System::Drawing::Size(5, 5);
+			this->shapeContainer5->Location = System::Drawing::Point(3, 3);
+			this->shapeContainer5->Margin = System::Windows::Forms::Padding(0);
+			this->shapeContainer5->Name = L"shapeContainer5";
+			this->shapeContainer5->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(2) {this->rectangleShape22, 
+				this->rectangleShape5});
+			this->shapeContainer5->Size = System::Drawing::Size(264, 228);
+			this->shapeContainer5->TabIndex = 18;
+			this->shapeContainer5->TabStop = false;
 			// 
-			// rectangleShape16
+			// rectangleShape22
 			// 
-			this->rectangleShape16->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape16->Location = System::Drawing::Point(137, 145);
-			this->rectangleShape16->Name = L"rectangleShape16";
-			this->rectangleShape16->Size = System::Drawing::Size(5, 5);
+			this->rectangleShape22->Location = System::Drawing::Point(6, 72);
+			this->rectangleShape22->Name = L"rectangleShape22";
+			this->rectangleShape22->Size = System::Drawing::Size(133, 141);
 			// 
-			// rectangleShape15
+			// rectangleShape5
 			// 
-			this->rectangleShape15->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape15->Location = System::Drawing::Point(137, 140);
-			this->rectangleShape15->Name = L"rectangleShape15";
-			this->rectangleShape15->Size = System::Drawing::Size(5, 5);
+			this->rectangleShape5->BackColor = System::Drawing::Color::WhiteSmoke;
+			this->rectangleShape5->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape5->Location = System::Drawing::Point(165, 81);
+			this->rectangleShape5->Name = L"rectangleShape5";
+			this->rectangleShape5->Size = System::Drawing::Size(93, 86);
 			// 
-			// rectangleShape14
+			// tabControl2
 			// 
-			this->rectangleShape14->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape14->Location = System::Drawing::Point(137, 135);
-			this->rectangleShape14->Name = L"rectangleShape14";
-			this->rectangleShape14->Size = System::Drawing::Size(5, 5);
+			this->tabControl2->Controls->Add(this->tabPageSocketServerTabControl2);
+			this->tabControl2->Controls->Add(this->tabPageSocketClientesTabControl2);
+			this->tabControl2->Location = System::Drawing::Point(12, 30);
+			this->tabControl2->Name = L"tabControl2";
+			this->tabControl2->SelectedIndex = 0;
+			this->tabControl2->Size = System::Drawing::Size(282, 264);
+			this->tabControl2->TabIndex = 10;
+			this->tabControl2->Visible = false;
 			// 
-			// rectangleShape13
+			// timer3
 			// 
-			this->rectangleShape13->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape13->Location = System::Drawing::Point(137, 130);
-			this->rectangleShape13->Name = L"rectangleShape13";
-			this->rectangleShape13->Size = System::Drawing::Size(5, 5);
-			// 
-			// rectangleShape12
-			// 
-			this->rectangleShape12->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape12->Location = System::Drawing::Point(137, 125);
-			this->rectangleShape12->Name = L"rectangleShape12";
-			this->rectangleShape12->Size = System::Drawing::Size(5, 5);
-			// 
-			// rectangleShape11
-			// 
-			this->rectangleShape11->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape11->Location = System::Drawing::Point(137, 120);
-			this->rectangleShape11->Name = L"rectangleShape11";
-			this->rectangleShape11->Size = System::Drawing::Size(5, 5);
-			// 
-			// rectangleShape10
-			// 
-			this->rectangleShape10->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape10->Location = System::Drawing::Point(137, 115);
-			this->rectangleShape10->Name = L"rectangleShape10";
-			this->rectangleShape10->Size = System::Drawing::Size(5, 5);
-			// 
-			// rectangleShape9
-			// 
-			this->rectangleShape9->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape9->Location = System::Drawing::Point(137, 110);
-			this->rectangleShape9->Name = L"rectangleShape9";
-			this->rectangleShape9->Size = System::Drawing::Size(5, 5);
-			// 
-			// rectangleShape8
-			// 
-			this->rectangleShape8->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape8->Location = System::Drawing::Point(137, 105);
-			this->rectangleShape8->Name = L"rectangleShape8";
-			this->rectangleShape8->Size = System::Drawing::Size(5, 5);
-			// 
-			// rectangleShape7
-			// 
-			this->rectangleShape7->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape7->Location = System::Drawing::Point(137, 100);
-			this->rectangleShape7->Name = L"rectangleShape7";
-			this->rectangleShape7->Size = System::Drawing::Size(5, 5);
-			// 
-			// rectangleShape6
-			// 
-			this->rectangleShape6->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape6->Location = System::Drawing::Point(137, 95);
-			this->rectangleShape6->Name = L"rectangleShape6";
-			this->rectangleShape6->Size = System::Drawing::Size(5, 5);
-			// 
-			// rectangleShape4
-			// 
-			this->rectangleShape4->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape4->Location = System::Drawing::Point(137, 90);
-			this->rectangleShape4->Name = L"rectangleShape4";
-			this->rectangleShape4->Size = System::Drawing::Size(5, 5);
-			// 
-			// timer2
-			// 
-			this->timer2->Tick += gcnew System::EventHandler(this, &MyForm::timer2_Tick);
+			this->timer3->Interval = 500;
+			this->timer3->Tick += gcnew System::EventHandler(this, &MyForm::timer3_Tick);
 			// 
 			// MyForm
 			// 
@@ -1547,26 +2100,28 @@ private: System::Windows::Forms::ComboBox^  comboBoxSocketIPPuente;
 			this->Name = L"MyForm";
 			this->Text = L"ESE_GRS_Connection_Simulator";
 			this->tabControl1->ResumeLayout(false);
+			this->tabPageAbout->ResumeLayout(false);
+			this->tabPageAbout->PerformLayout();
+			this->flowLayoutPanel2->ResumeLayout(false);
+			this->flowLayoutPanel2->PerformLayout();
 			this->tabPageCOM->ResumeLayout(false);
 			this->tabPageCOM->PerformLayout();
 			this->tabPagePuente->ResumeLayout(false);
 			this->tabPagePuente->PerformLayout();
 			this->tabPageSocket->ResumeLayout(false);
 			this->tabPageSocket->PerformLayout();
-			this->tabPageAbout->ResumeLayout(false);
-			this->tabPageAbout->PerformLayout();
-			this->flowLayoutPanel2->ResumeLayout(false);
-			this->flowLayoutPanel2->PerformLayout();
-			this->tabControl2->ResumeLayout(false);
-			this->tabPageSocketServerTabControl2->ResumeLayout(false);
-			this->tabPageSocketServerTabControl2->PerformLayout();
+			this->tabPageWeb->ResumeLayout(false);
+			this->tabPageWeb->PerformLayout();
+			this->tabControl3->ResumeLayout(false);
+			this->tabPage2->ResumeLayout(false);
+			this->tabPage2->PerformLayout();
 			this->tabPageSocketClientesTabControl2->ResumeLayout(false);
 			this->tabPageSocketClientesTabControl2->PerformLayout();
 			this->flowLayoutPanel1->ResumeLayout(false);
 			this->flowLayoutPanel1->PerformLayout();
-			this->tabControl3->ResumeLayout(false);
-			this->tabPage2->ResumeLayout(false);
-			this->tabPage2->PerformLayout();
+			this->tabPageSocketServerTabControl2->ResumeLayout(false);
+			this->tabPageSocketServerTabControl2->PerformLayout();
+			this->tabControl2->ResumeLayout(false);
 			this->ResumeLayout(false);
 
 		}
@@ -2161,7 +2716,6 @@ private: System::Void labelSocketAddrTabControl2_DoubleClick(System::Object^  se
 				 s+=":";
 				 s+=to_string(c[0]->getunsigned());
 				 labelSocketAddrTabControl2->Text=gcnew String(s.c_str());
-				 labelSocketAddrTabControl2->Text=gcnew String(s.c_str());
 			 }
 		 }
 private: System::Void labelSocketPuenteTabControl3_DoubleClick(System::Object^  sender, System::EventArgs^  e) {
@@ -2173,28 +2727,20 @@ private: System::Void labelSocketPuenteTabControl3_DoubleClick(System::Object^  
 				 labelSocketPuenteTabControl3->Text=gcnew String(s.c_str());
 			 }
 		 }
-
 //////////////////////////////////////////////Button//////////////////////////////////////////////////////////
 private: System::Void ButtonIniciarConnection_Click(System::Object^  sender, System::EventArgs^  e) {
-			 delete c[0];
-			 if(COM_Soket)
+			 CerrarTodasConexiones();
+			 if(tabControl1->SelectedIndex==1)
 			 {
-				delete c[1];
-				COM_Soket=false;
-			 }
-			 delete[]c;
-			 c=new Connection*[1]();
-			 c[0]=new Socket_Server();
-			 delete c[0];
-			 if(tabControl1->SelectedIndex==0)
-			 {
+				 c=new Connection*[1]();
 				 c[0]=new PuertoSerie();
 				 const char*txb1=context.marshal_as<const char*>( textBoxCOMPuerto->Text);
 				 const char*txb2=context.marshal_as<const char*>(textBoxCOMVelocidad->Text);
 				 c[0]->inicializa(txb1,atol(txb2));
 			 }
-			 else if(tabControl1->SelectedIndex==2)
+			 else if(tabControl1->SelectedIndex==3)
 			 {
+				 c=new Connection*[4]();
 				 c[0]=new Socket_Server();
 				 const char*txb3=context.marshal_as<const char*>( comboBoxSocketIP->Text);
 				 const char*txb4=context.marshal_as<const char*>(textBoxSocketPuerto->Text);
@@ -2204,14 +2750,49 @@ private: System::Void ButtonIniciarConnection_Click(System::Object^  sender, Sys
 				 return;
 			 if(!c[0]->Error())
 			 {
-				 if(tabControl1->SelectedIndex==0)
+				 if(tabControl1->SelectedIndex==1)
 				 {
+					 COM=true;
 					 Escenario2();
 				 }
-				 else if(tabControl1->SelectedIndex==2)
+				 else if(tabControl1->SelectedIndex==3)
 				 {
 					th=gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(SelectThreadExtern));
 					th->Start();
+					c[3]=new Socket_Client();
+					if(!c[3]->inicializa(c[0]->getChar(),c[0]->getunsigned()))
+					{
+						string s("SocketCliente_ESE:");
+						s+=c[3]->ErrorStr();
+						System::Windows::Forms::MessageBox::Show(gcnew System::String(s.c_str()));
+					}
+					char toSend[3];
+					toSend[0]=(char)35;
+					toSend[1]=(char)1;
+					toSend[2]=0;
+					c[3]->Trasmitir(toSend);
+					fd_set descriptoresLectura;
+					struct timeval tv;
+					tv.tv_sec=3;
+					tv.tv_usec=55555;
+					FD_ZERO(&descriptoresLectura);
+					FD_SET(c[3]->GetSocket(),&descriptoresLectura);
+
+					select(c[3]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+					bool err=true;
+					char*ToREciv;
+					if(FD_ISSET(c[3]->GetSocket(),&descriptoresLectura))
+					{
+							ToREciv=c[3]->Recibir();
+							if(ToREciv!=NULL)
+								if(ToREciv[0]==(char)35)
+									err=false;
+					}
+					if(err)
+					{
+						System::Windows::Forms::MessageBox::Show("SocketCliente_ESE: No Autenticado como ESE");
+					}
+					SocketServer=true;
 					timer1->Enabled=true;
 					Escenario1();
 				 }
@@ -2222,65 +2803,68 @@ private: System::Void ButtonIniciarConnection_Click(System::Object^  sender, Sys
 			 }
 		 }
 private: System::Void buttonRedireccionar_Click(System::Object^  sender, System::EventArgs^  e) {
-			 c[0]->Trasmitir(ToBinary("00000001","00000111"),NULL,true);
+			 if(COM_Soket||SocketServer)
+				 c[3]->Trasmitir(ToBinary("00000001","00000111"),NULL,true);
+			 else
+				c[0]->Trasmitir(ToBinary("00000001","00000111"),NULL,true);
 			 contVerif=0;
 		 }
 private: System::Void buttonSocketEnviarTabControl2_Click(System::Object^  sender, System::EventArgs^  e) {
 			 const char*txb1=context.marshal_as<const char*>( textBoxSocketHightByteTabControl2->Text);
 			 const char*txb2=context.marshal_as<const char*>(textBoxSocketLowByteTabControl2->Text);
-			 c[0]->Trasmitir(ToBinary(txb1,txb2),NULL,true);
+			 if(COM_Soket||SocketServer)
+				c[3]->Trasmitir(ToBinary(txb1,txb2),NULL,true);
+			  else
+				c[0]->Trasmitir(ToBinary(txb1,txb2),NULL,true);
 			 if(strcmp(txb2,"00000111"))
 				Verific();
 		 }
 private: System::Void buttonSocketFocusTabControl2_Click(System::Object^  sender, System::EventArgs^  e) {
-			  c[0]->Trasmitir(ToBinary("00000001","00001111"),NULL,true);
+			 if(COM_Soket||SocketServer)
+				c[3]->Trasmitir(ToBinary("00000001","00001011"),NULL,true);
+			  else
+				c[0]->Trasmitir(ToBinary("00000001","00001011"),NULL,true);
 			  Verific();
 		 }
 private: System::Void buttonSocketAceptFocusTabControl2_Click(System::Object^  sender, System::EventArgs^  e) {
-			  c[0]->Trasmitir(ToBinary("00000001","00001011"),NULL,true);
+			  if(COM_Soket||SocketServer)
+				c[3]->Trasmitir(ToBinary("00000001","00001111"),NULL,true);
+			 else
+				c[0]->Trasmitir(ToBinary("00000001","00001111"),NULL,true);
 			  Verific();
 		 }
 private: System::Void buttonSocketAceptButtonTabControl2_Click(System::Object^  sender, System::EventArgs^  e) {
-			  c[0]->Trasmitir(ToBinary("00000001","00010011"),NULL,true);
+			 if(COM_Soket||SocketServer)
+				c[3]->Trasmitir(ToBinary("00000001","00010011"),NULL,true);
+			 else
+				c[0]->Trasmitir(ToBinary("00000001","00010011"),NULL,true);
 			  Verific();
 		 }
 private: System::Void buttonSocketCancelButtonTabControl2_Click(System::Object^  sender, System::EventArgs^  e) {
+			 if(COM_Soket||SocketServer)
+				c[3]->Trasmitir(ToBinary("00000001","00010111"),NULL,true);
+			 else
 			  c[0]->Trasmitir(ToBinary("00000001","00010111"),NULL,true);
 			  Verific();
 		 }
 private: System::Void buttonSocketDisconectTabControl2_Click(System::Object^  sender, System::EventArgs^  e) {
-			 m2.WaitOne();
-			 timer1->Enabled=false;
-			 Escenario0();
-			 delete c[0];
-			 m2.ReleaseMutex();
-			 if(COM_Soket)
-			 {
-				delete c[1];
-				COM_Soket=false;
-			 }
-			 delete[]c;
+			 CerrarTodasConexiones();
 			 c=new Connection*[1]();
 		 }
 private: System::Void buttonInitConecctionPuente_Click(System::Object^  sender, System::EventArgs^  e) {
-			 delete c[0];
-			 if(COM_Soket)
-			 {
-				delete c[1];
-				COM_Soket=false;
-			 }
-			 delete[]c;
-			 c=new Connection*[2];
+ 
+			 CerrarTodasConexiones();
+			 c=new Connection*[5];
 			 c[0]=new Socket_Server();
-			 c[1]=new PuertoSerie();
-			 COM_Soket=true;
+			 c[3]=new Socket_Client();
+			 c[4]=new PuertoSerie();
 			 const char*txb1=context.marshal_as<const char*>( comboBoxSocketIPPuente->Text);
 			 const char*txb2=context.marshal_as<const char*>(textBoxSocketPuertoPuente->Text);
 			 const char*txb3=context.marshal_as<const char*>( textBoxCOMPuertoPuente->Text);
 			 const char*txb4=context.marshal_as<const char*>(textBoxCOMVelocidadPuente->Text);
-			 if(!c[1]->inicializa(txb3,atol(txb4)))
+			 if(!c[4]->inicializa(txb3,atol(txb4)))
 			 {
-				 System::Windows::Forms::MessageBox::Show(System::String(c[1]->ErrorStr()).ToString());
+				 System::Windows::Forms::MessageBox::Show(System::String(c[4]->ErrorStr()).ToString());
 				 this->rectangleShape1->BackColor = System::Drawing::Color::Red;
 				 return;
 			 }
@@ -2291,30 +2875,57 @@ private: System::Void buttonInitConecctionPuente_Click(System::Object^  sender, 
 				 this->rectangleShape2->BackColor = System::Drawing::Color::Red;
 				 return;
 			 }
+			 if(!c[3]->inicializa(c[0]->getChar(),atol(txb2)))
+			 {
+				 System::Windows::Forms::MessageBox::Show(System::String(c[3]->ErrorStr()).ToString());
+				 this->rectangleShape1->BackColor = System::Drawing::Color::Yellow;
+				 this->rectangleShape2->BackColor = System::Drawing::Color::Yellow;
+				 return;
+			 }
 			 this->rectangleShape2->BackColor = System::Drawing::Color::Green;
-			 ThreadCOM=true;
+			 COM_Soket=true;
 			 timer2->Enabled=true;
 			 th=gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(SelectThreadExtern));
 			 th->Start();
+			 char toSend[3];
+			 toSend[0]=(char)35;
+			 toSend[1]=(char)1;
+			 toSend[2]=0;
+			 c[3]->Trasmitir(toSend);
+			 fd_set descriptoresLectura;
+		 	 struct timeval tv;
+			 tv.tv_sec=3;
+		 	 tv.tv_usec=55555;
+			 FD_ZERO(&descriptoresLectura);
+			 FD_SET(c[3]->GetSocket(),&descriptoresLectura);
+			 select(c[3]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+			 bool err=true;
+			 char*toReciv;
+			 if(FD_ISSET(c[3]->GetSocket(),&descriptoresLectura))
+			 {
+				 toReciv=c[3]->Recibir();
+				 if(toReciv!=NULL)
+				 {
+					if(toReciv[0]==(char)35)
+				    {
+						err=false;
+				    }
+			    }
+			 }
+			 if(err)
+			 {
+				 System::Windows::Forms::MessageBox::Show(gcnew System::String("Error al acceder como ESE_GRS COM"));
+				 this->rectangleShape1->BackColor = System::Drawing::Color::Yellow;
+				 this->rectangleShape2->BackColor = System::Drawing::Color::Yellow;
+				 buttonDesconectarPuente_Click(gcnew System::Object,gcnew System::EventArgs);
+				 return;
+			 }
 			 timer1->Enabled=true; 
-			 c[0]->SocketServer_SetESE(true);
 			 Escenario3();
 		 }
 private: System::Void buttonDesconectarPuente_Click(System::Object^  sender, System::EventArgs^  e) {
-			 m1.WaitOne();
-			 m2.WaitOne();
-			 timer2->Enabled=false;
-			 timer1->Enabled=false;
-			 ThreadCOM=false;
-			 delete c[0];
-			 delete c[1];
-			 m1.ReleaseMutex();
-			 m2.ReleaseMutex();
-			 delete[]c;
-			 COM_Soket=false;
+			 CerrarTodasConexiones();
 			 c=new Connection*[1]();
-			 this->rectangleShape1->BackColor = System::Drawing::Color::Transparent;
-			 this->rectangleShape2->BackColor = System::Drawing::Color::Transparent;
 			 Escenario0();
 		 }
 private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -2351,12 +2962,294 @@ private: System::Void button30_Click(System::Object^  sender, System::EventArgs^
 			  VistaClientes(9);
 		 }
 private: System::Void buttonDesconectar_Click(System::Object^  sender, System::EventArgs^  e) {
+			 c[0]->SocketServer_QuitarUser(contClienteVista);
 			 c[0]->SetBoolCerrarSocket(true);
 			 c[0]->SocketServer_CerrarSocketByIndex(contClienteVista);
 			 buttonAcceso->BackColor=System::Drawing::Color::Transparent;
+			 flowLayoutPanel1->BackColor=System::Drawing::Color::Transparent;
 		 }
 private: System::Void buttonAcceso_Click(System::Object^  sender, System::EventArgs^  e) {
-			 c[0]->SocketServer_CambiarUser(contClienteVista);
+			 c[0]->SocketServer_PonerUser(contClienteVista);
+		 }
+private: System::Void MybuttonConnectarHost_Click(System::Object^  sender, System::EventArgs^  e) 
+		 {
+			 if(SocketServer||COM_Soket)
+			 {
+				 CerrarWebPuente();
+				 c[1]=new WebSocket_Client();
+				 c[2]=new Socket_Client();
+				 const char*txb1=context.marshal_as<const char*>( comboBoxHost->Text);
+				 const char*txb2=context.marshal_as<const char*>(textBoxHostPuerto->Text);
+				 if(!c[1]->inicializa(txb1,atol(txb2)))
+				 {
+					 System::Windows::Forms::MessageBox::Show(System::String(c[1]->ErrorStr()).ToString());
+					 return;
+				 }
+				 if(!c[2]->inicializa(c[0]->getChar(),c[0]->getunsigned()))
+				 {
+					 c[1]->CloseConnection();
+					 System::Windows::Forms::MessageBox::Show(System::String(c[2]->ErrorStr()).ToString());
+					 return;
+				 }
+				 char toSend[3];
+				 toSend[0]=(char)107;
+				 toSend[1]=(char)1;
+				 toSend[2]=0;
+				 c[1]->Trasmitir(toSend);
+				 fd_set descriptoresLectura;
+				 struct timeval tv;
+				 tv.tv_sec=3;
+		 		 tv.tv_usec=55555;
+				 FD_ZERO(&descriptoresLectura);
+				 FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+				 select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+				 bool err=true;
+				 char*toReciv;
+				 if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+				 {
+					 toReciv=c[1]->Recibir();
+					 if(toReciv!=NULL)
+						 if(toReciv[0]==(char)107)
+				 			err=false;
+				 }
+				 if(err)
+				 {
+					System::Windows::Forms::MessageBox::Show("SocketCliente_WEBPuente: No Autenticado como WebPuente en Web");
+					c[1]->CloseConnection();
+					c[2]->CloseConnection();
+					return;
+				 }
+				 c[2]->Trasmitir(toSend);
+				 FD_ZERO(&descriptoresLectura);
+				 FD_SET(c[2]->GetSocket(),&descriptoresLectura);
+				 select(c[2]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+				 err=true;
+				 if(FD_ISSET(c[2]->GetSocket(),&descriptoresLectura))
+				 {
+					 toReciv=c[2]->Recibir();
+					 if(toReciv!=NULL)
+						 if(toReciv[0]==(char)107)
+				 			err=false;
+				 }
+				 if(err)
+				 {
+					System::Windows::Forms::MessageBox::Show("SocketCliente_WEBPuente: No Autenticado como WebPuente en ServerSocket");
+					c[1]->CloseConnection();
+					c[2]->CloseConnection();
+					return;
+				 }
+				 
+				toSend[0]=(char)99;
+				c[1]->Trasmitir(toSend);
+				FD_ZERO(&descriptoresLectura);
+				FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+				select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+				err=true;
+				if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+				{
+					toReciv=c[1]->Recibir();
+					if(toReciv!=NULL)
+						if(toReciv[0]==(char)99)
+						{
+							err=false;
+							switch (toReciv[1])
+							{
+							case 4:
+								if(c[0]->SocketServer_ClientUserIndex()!=-1)
+								{
+									System::Windows::Forms::MessageBox::Show("User perdido del ServerSocket");
+									c[0]->SocketServer_QuitarOnlyUSER(c[0]->SocketServer_ClientUserIndex());
+								}
+								toSend[0]=(char)51;
+								c[2]->Trasmitir(toSend);
+								if(c[0]->SocketServer_ClientESEIndex()!=-1)
+								{
+									System::Windows::Forms::MessageBox::Show("ESE perdido del ServerSocket");
+									c[0]->SocketServer_QuitarOnlyESE(c[0]->SocketServer_ClientESEIndex());
+								}
+								toSend[0]=(char)35;
+								c[2]->Trasmitir(toSend);
+								break;
+							case 3:
+								if(c[0]->SocketServer_ClientESEIndex()!=-1)
+								{
+									System::Windows::Forms::MessageBox::Show("ESE perdido del ServerSocket");
+									c[0]->SocketServer_QuitarOnlyESE(c[0]->SocketServer_ClientESEIndex());
+								}
+								toSend[0]=(char)35;
+								c[2]->Trasmitir(toSend);
+								if(c[0]->SocketServer_ClientUserIndex()!=-1)
+								{
+									bool err1=true;
+									toSend[0]=(char)51;
+									c[1]->Trasmitir(toSend);
+									FD_ZERO(&descriptoresLectura);
+									FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+									select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+									if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+									{
+										toReciv=c[1]->Recibir();
+										if(toReciv!=NULL)
+											if(toReciv[0]==(char)51)
+												err1=false;
+									}
+									if(err1)
+									{
+										System::Windows::Forms::MessageBox::Show("User perdido del ServerSocket");
+										c[0]->SocketServer_QuitarOnlyUSER(c[0]->SocketServer_ClientUserIndex());
+									}
+								}
+								break;
+							case 2:
+								if(c[0]->SocketServer_ClientUserIndex()!=-1)
+								{
+									System::Windows::Forms::MessageBox::Show("User perdido del ServerSocket");
+									c[0]->SocketServer_QuitarOnlyUSER(c[0]->SocketServer_ClientUserIndex());
+								}
+								toSend[0]=(char)51;
+								c[2]->Trasmitir(toSend);
+								if(c[0]->SocketServer_ClientESEIndex()!=-1)
+								{
+									bool err1=true;
+									toSend[0]=(char)35;
+									c[1]->Trasmitir(toSend);
+									FD_ZERO(&descriptoresLectura);
+									FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+									select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+									if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+									{
+										toReciv=c[1]->Recibir();
+										if(toReciv!=NULL)
+											if(toReciv[0]==(char)35)
+												err1=false;
+									}
+									if(err1)
+									{
+										System::Windows::Forms::MessageBox::Show("ESE perdido del ServerSocket");
+										c[0]->SocketServer_QuitarOnlyESE(c[0]->SocketServer_ClientESEIndex());
+									}
+								}
+								break;
+							case 1:
+								if(c[0]->SocketServer_ClientESEIndex()!=-1)
+								{
+									bool err1=true;
+									toSend[0]=(char)35;
+									c[1]->Trasmitir(toSend);
+									FD_ZERO(&descriptoresLectura);
+									FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+									select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+									if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+									{
+										toReciv=c[1]->Recibir();
+										if(toReciv!=NULL)
+											if(toReciv[0]==(char)35)
+												err1=false;
+									}
+									if(err1)
+									{
+										System::Windows::Forms::MessageBox::Show("ESE perdido del ServerSocket");
+										c[0]->SocketServer_QuitarOnlyESE(c[0]->SocketServer_ClientESEIndex());
+									}
+								}
+								if(c[0]->SocketServer_ClientUserIndex()!=-1)
+								{
+									bool err1=true;
+									toSend[0]=(char)51;
+									c[1]->Trasmitir(toSend);
+									FD_ZERO(&descriptoresLectura);
+									FD_SET(c[1]->GetSocket(),&descriptoresLectura);
+									select(c[1]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+									if(FD_ISSET(c[1]->GetSocket(),&descriptoresLectura))
+									{
+										toReciv=c[1]->Recibir();
+										if(toReciv!=NULL)
+											if(toReciv[0]==(char)51)
+												err1=false;
+									}
+									if(err1)
+									{
+										System::Windows::Forms::MessageBox::Show("User perdido del ServerSocket");
+										c[0]->SocketServer_QuitarOnlyUSER(c[0]->SocketServer_ClientUserIndex());
+									}
+								}
+								break;
+							}
+						}
+				}
+				if(err)
+				{
+					System::Windows::Forms::MessageBox::Show("ERROR en la comunicacion SocketServer-Web");
+					c[1]->CloseConnection();
+					c[2]->CloseConnection();
+					return;
+				}
+
+					 
+				/////////////////////////////////////////////////////////////////////////////////
+
+
+
+				 thWebSocketCliente=gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(ThreadWebSocketClient));
+				 thSocketCliente=gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(ThreadSocketClient));
+				 thWebSocketCliente->Start();
+				 thSocketCliente->Start();
+				 WebSocket=true;
+				 MiniEscenario4();
+			 }
+			 else
+			 {
+				 CerrarTodasConexiones();
+				 c=new Connection*[1]();
+				 c[0]=new WebSocket_Client();
+				 const char*txb1=context.marshal_as<const char*>( comboBoxHost->Text);
+				 const char*txb2=context.marshal_as<const char*>(textBoxHostPuerto->Text);
+				 if(!c[0]->inicializa(txb1,atol(txb2)))
+				 {
+					 System::Windows::Forms::MessageBox::Show(System::String(c[0]->ErrorStr()).ToString());
+					 return;
+				 }
+				 char toSend[3];
+				 toSend[0]=(char)35;
+				 toSend[1]=(char)1;
+				 toSend[2]=0;
+				 c[0]->Trasmitir(toSend);
+				 fd_set descriptoresLectura;
+				 struct timeval tv;
+				 tv.tv_sec=3;
+		 		 tv.tv_usec=55555;
+				 FD_ZERO(&descriptoresLectura);
+				 FD_SET(c[0]->GetSocket(),&descriptoresLectura);
+
+				 select(c[0]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+				 bool err=true;
+				 char*toREciv;
+				 if(FD_ISSET(c[0]->GetSocket(),&descriptoresLectura))
+				 {
+					 toREciv=c[0]->Recibir();
+						if(toREciv[0]==(char)35)
+							err=false;
+				 }
+				 if(err)
+				 {
+					System::Windows::Forms::MessageBox::Show("SocketCliente_WEBPuente: No Autenticado como WebPuente");
+					c[0]->CloseConnection();
+					return;
+				 }
+				 th=gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(ThreadWeb));
+				 th->Start();
+				 timer3->Enabled=true;
+				 Web=true;
+				 Escenario5();
+
+			 }
+		 }
+private: System::Void MYbuttonDescanectarServerWeb_Click(System::Object^  sender, System::EventArgs^  e) 
+{
+		CerrarWebPuente();
+}
+private: System::Void buttonNOAcceso_Click(System::Object^  sender, System::EventArgs^  e) {
+			 c[0]->SocketServer_QuitarUser(contClienteVista);
 		 }
 //////////////////////////////////////////////CheckBox//////////////////////////////////////////////////////////
 private: System::Void checkBoxCOMPuerto_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -2713,13 +3606,19 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
 	{
 		c[0]->ActStatusClient(false);
 		unsigned cont=c[0]->GetContClients();
-		m2.ReleaseMutex();
 		String^s=gcnew String("Clientes: ");
 		String^s1=cont.ToString();
 		s+=s1;
 		labelSocketClientesTabControl2->Visible=false;
 		buttonAcceso->Enabled=false;
 		buttonDesconectar->Enabled=false;
+		buttonNOAcceso->Enabled=false;
+		buttonAcceso->BackColor=System::Drawing::Color::Transparent;
+		buttonDesconectar->BackColor=System::Drawing::Color::Transparent;
+		buttonNOAcceso->BackColor=System::Drawing::Color::Transparent;
+		flowLayoutPanel1->BackColor=System::Drawing::Color::Transparent;
+		rectangleShape30->BackColor=System::Drawing::Color::Transparent;
+		rectangleShape31->BackColor=System::Drawing::Color::Transparent;
 		button30->Visible=false;
 		button30->BackColor=System::Drawing::Color::Transparent;
 		button29->Visible=false;
@@ -2742,6 +3641,11 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
 		button21->BackColor=System::Drawing::Color::Transparent;
 		unsigned User=c[0]->SocketServer_ClientUserIndex()+1;
 		unsigned ESE=c[0]->SocketServer_ClientESEIndex()+1;
+		unsigned PuenteWeb=c[0]->SocketServer_ClientPuenteWebIndex()+1;
+		if(PuenteWeb!=-1&&PuenteWeb==User)
+			rectangleShape30->BackColor=System::Drawing::Color::Lime;
+		if(PuenteWeb!=-1&&PuenteWeb==ESE)
+			rectangleShape31->BackColor=System::Drawing::Color::Purple;
 		switch (cont)
 		{
 		case 10:
@@ -2831,46 +3735,146 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
 			button21->BackColor=System::Drawing::Color::Purple;
 			break;
 		}
-			tabPageSocketClientesTabControl2->Text=s;
-			label9->Text=s1;
+		switch (PuenteWeb)
+		{
+		case 10:
+			if(ErrorThWebSocketClient)
+				button30->BackColor=System::Drawing::Color::Red;
+			else
+				button30->BackColor=System::Drawing::Color::Orange;
+			break;
+		case 9:
+			if(ErrorThWebSocketClient)
+				button29->BackColor=System::Drawing::Color::Red;
+			else
+				button29->BackColor=System::Drawing::Color::Orange;
+			break;
+		case 8:
+			if(ErrorThWebSocketClient)
+				button28->BackColor=System::Drawing::Color::Red;
+			else
+				button28->BackColor=System::Drawing::Color::Orange;
+			break;
+		case 7:
+			if(ErrorThWebSocketClient)
+				button27->BackColor=System::Drawing::Color::Red;
+			else
+				button27->BackColor=System::Drawing::Color::Orange;
+			break;
+		case 6:
+			if(ErrorThWebSocketClient)
+				button26->BackColor=System::Drawing::Color::Red;
+			else
+				button26->BackColor=System::Drawing::Color::Orange;
+			break;
+		case 5:
+			if(ErrorThWebSocketClient)
+				button25->BackColor=System::Drawing::Color::Red;
+			else
+				button25->BackColor=System::Drawing::Color::Orange;
+			break;
+		case 4:
+			if(ErrorThWebSocketClient)
+				button24->BackColor=System::Drawing::Color::Red;
+			else
+				button24->BackColor=System::Drawing::Color::Orange;
+			break;
+		case 3:
+			if(ErrorThWebSocketClient)
+				button23->BackColor=System::Drawing::Color::Red;
+			else
+				button23->BackColor=System::Drawing::Color::Orange;
+			break;
+		case 2:
+			if(ErrorThWebSocketClient)
+				button22->BackColor=System::Drawing::Color::Red;
+			else
+				button22->BackColor=System::Drawing::Color::Orange;
+			break;
+		case 1:
+			if(ErrorThWebSocketClient)
+				button21->BackColor=System::Drawing::Color::Red;
+			else
+				button21->BackColor=System::Drawing::Color::Orange;
+			break;
+		}
+		if(CerrarCOM_Web)
+		{
+			CerrarCOM_Web=false;
+			CerrarWebPuente();
+		}
+		else if(PuenteWeb!=-1)
+		{
+			if(ErrorThWebSocketClient)
+				labelMostrarHost->BackColor=System::Drawing::Color::Red;
+			else
+				labelMostrarHost->BackColor=System::Drawing::Color::Lime;
+		}
+		
+
+
+		tabPageSocketClientesTabControl2->Text=s;
+		label9->Text=s1;
+		m2.ReleaseMutex();
+		return;
 	}
+	m2.ReleaseMutex();
 }
 private: System::Void timer2_Tick(System::Object^  sender, System::EventArgs^  e) {
 			char*Data;
 			m1.WaitOne();
-			if(!ThreadCOM)
+			if(!COM_Soket)
 			{
 				m1.ReleaseMutex();
 				return;
 			}
-			Data=c[1]->Recibir();
+			Data=c[4]->Recibir();
 			if(Data!=NULL)
 			{
-				c[0]->Trasmitir(Data);
+				c[3]->Trasmitir(Data);
 				VistaDeCarga();
-				delete[]Data;
 			}
 			m1.ReleaseMutex();
 			
 		}
+private: System::Void timer3_Tick(System::Object^  sender, System::EventArgs^  e) {
+		if(c[0]->StatusClient())
+		{
+			if(CerrarCOM_Web)
+			{
+				CerrarWebPuente();
+				return;
+			}
+			if(ErrorThWebSocketClient)
+				MiniEscenario6();
+			else
+				MiniEscenario7();
+			c[0]->ActStatusClient(false);
+		}
+}
 /////////////////////////////////////////////Functions/////////////////////////////////////////////////////////
 private:
-	void Escenario0(){
+	void Escenario0(){//main
+		tabControl1->Controls->Remove(tabPageWeb);
+		tabControl1->Controls->Add(tabPageWeb);
 		this->tabControl3->Visible=false;
 		this->tabControl2->Visible=false;
 		this->tabControl1->Visible=true;
-
+		this->rectangleShape1->BackColor = System::Drawing::Color::Transparent;
+		this->rectangleShape2->BackColor = System::Drawing::Color::Transparent;
 	}
-	void Escenario1()
+	void Escenario1()//PuenteSocketServer
 			{
 				string s=c[0]->getChar();
 				s+=":";
 				s+=to_string(c[0]->getunsigned());
 				labelSocketAddrTabControl2->Text=gcnew String(s.c_str());
+				tabControl2->Controls->Remove(tabPageWeb);
+				tabControl2->Controls->Add(tabPageWeb);
 				tabControl2->Controls->Remove(tabPageSocketClientesTabControl2);
 				tabControl2->Controls->Add(tabPageSocketClientesTabControl2);
 				this->tabPageSocketServerTabControl2->Text = L"Server";
-				labelSocketCOMServerTabControl2->Text=gcnew String("Socket Server");
+				labelSocketCOMServerTabControl2->Text=gcnew String(" Puente Web");
 				tabPageSocketClientesTabControl2->Text="Clientes";
 				label9->Text="0";
 				this->tabControl1->Visible=false;
@@ -2887,24 +3891,28 @@ private:
 				button22->Visible=false;
 				button21->Visible=false;
 			};
-	void Escenario2(){
+	void Escenario2(){//COM
 		string s=c[0]->getChar();
 		s+=":";
 		s+=to_string(c[0]->getunsigned());
 		labelSocketAddrTabControl2->Text=gcnew String(s.c_str());
 		tabControl2->Controls->Remove(tabPageSocketClientesTabControl2);
+		tabControl2->Controls->Remove(tabPageWeb);
 		this->tabPageSocketServerTabControl2->Text = L"COM";
 		labelSocketCOMServerTabControl2->Text=gcnew String("Puerto Serie");
 		tabControl1->Visible=false;
 		tabControl2->Visible=true;
 		tabControl3->Visible=false;
 	}
-	void Escenario3()
+	void Escenario3()//PUNETECOM
 	{
 		string s=c[0]->getChar();
 		s+=":";
 		s+=to_string(c[0]->getunsigned());
 		labelSocketPuenteTabControl3->Text=gcnew String(s.c_str());
+		tabControl3->Controls->Remove(tabPageWeb);
+		tabControl3->Controls->Add(tabPageWeb);
+		tabControl3->Controls->Remove(tabPageSocketClientesTabControl2);
 		tabControl3->Controls->Add(tabPageSocketClientesTabControl2);
 		tabPageSocketClientesTabControl2->Text="Clientes";
 		contVistaCarga=14;
@@ -2923,6 +3931,163 @@ private:
 		tabControl2->Visible=false;
 		tabControl1->Visible=false;
 	};
+	void Escenario5()//WEB
+	{
+		string s=c[0]->getChar();
+		s+=":";
+		s+=to_string(c[0]->getunsigned());
+		labelSocketAddrTabControl2->Text=gcnew String(s.c_str());
+		tabControl2->Controls->Remove(tabPageSocketClientesTabControl2);
+		labelSocketCOMServerTabControl2->Text=gcnew String("    Web");
+		tabControl2->Controls->Remove(tabPageWeb);
+		this->tabControl1->Visible=false;
+		this->tabControl2->Visible=true;
+		this->tabControl3->Visible=false;
+	}
+	void MiniEscenario4()
+	{
+		string s("Conectado:\n");
+		s+=c[1]->getChar();
+		s+="\n:";
+		s+=to_string(c[1]->getunsigned());
+		labelMostrarHost->Text=gcnew String(s.c_str());
+		comboBoxHost->Visible=false;
+		textBoxHostPuerto->Visible=false;
+		buttonConnectarHost->Visible=false;
+		rectangleShape25->Visible=false;
+		labelHost->Visible=false;
+		labelPuertoWeb->Visible=false;
+		buttonDescanectarServerWeb->Visible=true;
+		labelMostrarHost->Visible=true;
+		labelMostrarHost->BackColor=System::Drawing::Color::Lime;
+	}
+	void MiniEscenario5()
+	{
+		comboBoxHost->Visible=true;
+		textBoxHostPuerto->Visible=true;
+		buttonConnectarHost->Visible=true;
+	    rectangleShape25->Visible=true;
+		labelHost->Visible=true;
+		labelPuertoWeb->Visible=true;
+		buttonDescanectarServerWeb->Visible=false;
+		labelMostrarHost->Visible=false;
+	}
+	void MiniEscenario6()
+	{
+		labelSocketCOMServerTabControl2->BackColor=System::Drawing::Color::Red;
+		labelSocketCOMServerTabControl2->Text=gcnew String("Reconectando");
+
+		labelSocketAddrTabControl2->Enabled=false;
+		rectangleShape22->Enabled=false;
+		checkBoxSocketPuertoTabControl2->Enabled=false;
+		checkBoxSocketIPTabControl2->Enabled=false;
+		textBoxSocketHightByteTabControl2->Enabled=false;
+		textBoxSocketLowByteTabControl2->Enabled=false;
+		textBoxSocketDrawTabControl2->Enabled=false;
+		buttonSocketEnviarTabControl2->Enabled=false;
+		rectangleShape5->Enabled=false;
+		buttonSocketFocusTabControl2->Enabled=false;
+		buttonSocketAceptFocusTabControl2->Enabled=false;
+		buttonSocketRedireccionarTabControl2->Enabled=false;
+		buttonSocketCancelButtonTabControl2->Enabled=false;
+		buttonSocketAceptButtonTabControl2->Enabled=false;
+
+	}
+	void MiniEscenario7()
+	{
+		labelSocketCOMServerTabControl2->BackColor=System::Drawing::Color::Transparent;
+		labelSocketCOMServerTabControl2->Text=gcnew String("   Web");
+
+		labelSocketAddrTabControl2->Enabled=true;
+		rectangleShape22->Enabled=true;
+		checkBoxSocketPuertoTabControl2->Enabled=true;
+		checkBoxSocketIPTabControl2->Enabled=true;
+		textBoxSocketHightByteTabControl2->Enabled=true;
+		textBoxSocketLowByteTabControl2->Enabled=true;
+		textBoxSocketDrawTabControl2->Enabled=true;
+		buttonSocketEnviarTabControl2->Enabled=true;
+		rectangleShape5->Enabled=true;
+		buttonSocketFocusTabControl2->Enabled=true;
+		buttonSocketAceptFocusTabControl2->Enabled=true;
+		buttonSocketRedireccionarTabControl2->Enabled=true;
+		buttonSocketCancelButtonTabControl2->Enabled=true;
+		buttonSocketAceptButtonTabControl2->Enabled=true;
+	}
+	void CerrarCOM()
+	{
+
+		if(COM)
+		{
+			COM=false;
+			Escenario0();
+		}
+	}
+	void CerrarWebPuente()
+	{
+		if(WebSocket)
+		{
+			WebSocket=false;
+			SalirThreadSinError=true;
+			ErrorThWebSocketClient=false;
+			c[1]->CloseConnection();
+			c[2]->CloseConnection();
+			thWebSocketCliente->Join();
+			thSocketCliente->Join();
+			delete c[1];
+			delete c[2];
+			MiniEscenario5();
+		}
+		else if(Web)
+		{
+			Web=false;
+			SalirThreadSinError=true;
+			c[0]->CloseConnection();
+			timer3->Enabled=false;
+			th->Join();
+			MiniEscenario7();
+			Escenario0();
+		}
+	}
+	void CerrarSocketServer()
+	{
+		if(SocketServer)
+		{
+			m2.WaitOne();
+			timer1->Enabled=false;
+			Escenario0();
+			SocketServer=false;
+			c[0]->CloseConnection();
+			th->Join();
+			delete c[3];
+			m2.ReleaseMutex();
+		}
+	}
+	void CerrarTodasConexiones()
+	{
+			CerrarCOMPuente();
+			CerrarSocketServer();
+			CerrarWebPuente();
+			CerrarCOM();
+			delete c[0];
+			delete[]c;
+	}
+    void CerrarCOMPuente()
+	{
+		if(COM_Soket)
+		{
+			m1.WaitOne();
+			m2.WaitOne();
+			timer2->Enabled=false;
+			timer1->Enabled=false;
+			COM_Soket=false;
+			c[0]->CloseConnection();
+			th->Join();
+			delete c[4];
+			delete c[3];
+			m2.ReleaseMutex();
+			m1.ReleaseMutex();
+		}
+	}
 	char*ToBinary(const char*HigthByte,const char*LowByte)
 				{
 					if(strlen(HigthByte)!=8||strlen(LowByte)!=8)
@@ -2970,7 +4135,10 @@ private:
 		if(contVerif==10)
 		{
 			contVerif=0;
-			c[0]->Trasmitir(ToBinary("00000001","00000100"),NULL,true);
+			if(COM_Soket||SocketServer)
+				c[3]->Trasmitir(ToBinary("00000001","00000100"),NULL,true);
+			 else
+				c[0]->Trasmitir(ToBinary("00000001","00000100"),NULL,true);
 		}
 	}
 	void VistaDeCarga()
@@ -2983,95 +4151,106 @@ private:
 		{
 		case 0:
 			rectangleShape19->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape4->BackColor=System::Drawing::Color::Lime;
+			rectangleShape4->BackColor=System::Drawing::Color::Red;
 			break;
 		case 1:
 			rectangleShape4->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape6->BackColor=System::Drawing::Color::Lime;
+			rectangleShape6->BackColor=System::Drawing::Color::Red;
 			break;
 		case 2:
 			rectangleShape6->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape7->BackColor=System::Drawing::Color::Lime;
+			rectangleShape7->BackColor=System::Drawing::Color::Red;
 			break;
 		case 3:
 			rectangleShape7->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape8->BackColor=System::Drawing::Color::Lime;
+			rectangleShape8->BackColor=System::Drawing::Color::Red;
 			break;
 		case 4:
 			rectangleShape8->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape9->BackColor=System::Drawing::Color::Lime;
+			rectangleShape9->BackColor=System::Drawing::Color::Red;
 			break;
 		case 5:
 			rectangleShape9->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape10->BackColor=System::Drawing::Color::Lime;
+			rectangleShape10->BackColor=System::Drawing::Color::Red;
 			break;
 		case 6:
 			rectangleShape10->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape11->BackColor=System::Drawing::Color::Lime;
+			rectangleShape11->BackColor=System::Drawing::Color::Red;
 		case 7:
 			rectangleShape11->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape12->BackColor=System::Drawing::Color::Lime;
+			rectangleShape12->BackColor=System::Drawing::Color::Red;
 			break;
 		case 8:
 			rectangleShape12->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape13->BackColor=System::Drawing::Color::Lime;
+			rectangleShape13->BackColor=System::Drawing::Color::Red;
 			break;
 		case 9:
 			rectangleShape13->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape14->BackColor=System::Drawing::Color::Lime;
+			rectangleShape14->BackColor=System::Drawing::Color::Red;
 			break;
 		case 10:
 			rectangleShape14->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape15->BackColor=System::Drawing::Color::Lime;
+			rectangleShape15->BackColor=System::Drawing::Color::Red;
 			break;
 		case 11:
 			rectangleShape15->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape16->BackColor=System::Drawing::Color::Lime;
+			rectangleShape16->BackColor=System::Drawing::Color::Red;
 			break;
 		case 12:
 			rectangleShape16->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape17->BackColor=System::Drawing::Color::Lime;
+			rectangleShape17->BackColor=System::Drawing::Color::Red;
 			break;
 		case 13:
 			rectangleShape17->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape18->BackColor=System::Drawing::Color::Lime;
+			rectangleShape18->BackColor=System::Drawing::Color::Red;
 			break;
 		case 14:
 			rectangleShape18->BackColor=System::Drawing::Color::Transparent;
-			rectangleShape19->BackColor=System::Drawing::Color::Lime;
+			rectangleShape19->BackColor=System::Drawing::Color::Red;
 			break;
 		}
 	}
 	void VistaClientes(unsigned i)
 	{
-			
+
 			String^s=gcnew String(c[0]->SocketServer_ClienteList(i));
 			labelSocketClientesTabControl2->Text=s;
 			buttonAcceso->Enabled=false;
-			if(c[0]->SocketServer_ClientAcceso(i))
+			buttonNOAcceso->Enabled=false;
+			buttonDesconectar->Enabled=false;
+			rectangleShape30->Visible=false;
+			rectangleShape31->Visible=false;
+			flowLayoutPanel1->BackColor=System::Drawing::Color::Transparent;
+			if(c[0]->SocketServer_ClientIsUser(i))
 			{
-				if(c[0]->SocketServer_ClientIsUser(i))
-				{
-					buttonAcceso->BackColor=System::Drawing::Color::Lime;
-				}
-				else
-				{
-					buttonAcceso->Enabled=true;
-					buttonAcceso->BackColor=System::Drawing::Color::Transparent;
-				}
+				flowLayoutPanel1->BackColor=System::Drawing::Color::LimeGreen;
+				buttonDesconectar->Enabled=true;
+				buttonNOAcceso->Enabled=true;
 			}
 			else if(c[0]->SocketServer_ClientESE(i))
 			{
-				buttonAcceso->BackColor=System::Drawing::Color::Purple;
+				flowLayoutPanel1->BackColor=System::Drawing::Color::MediumPurple;
+				buttonDesconectar->Enabled=true;
 			}
-			else
+			else if(c[0]->SocketServer_ClientAcceso(i))
 			{
-				buttonAcceso->BackColor=System::Drawing::Color::Transparent;
+				buttonAcceso->Enabled=true;
+				buttonDesconectar->Enabled=true;
+			}
+			if(c[0]->SocketServer_ClientPuenteWeb(i))
+			{
+				buttonAcceso->Enabled=false;
+				buttonDesconectar->Enabled=false;
+				buttonNOAcceso->Enabled=false;
+				rectangleShape30->Visible=true;
+				rectangleShape31->Visible=true;
+				flowLayoutPanel1->BackColor=System::Drawing::Color::Orange;
 			}
 			labelSocketClientesTabControl2->Visible=true;
-			buttonDesconectar->Enabled=true;
 			contClienteVista=i;
 	}
+
+
 };
 }
 //textBoxSocketIPPuentep
