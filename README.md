@@ -12,7 +12,7 @@ de clientes.
 ![Foto de ESE_GRS_ConnectionSimulator](https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/blob/master/media/ESE_GRS_ConnectionSimulator.png)
 ![Foto de ESE_GRS_ConnectionSimulator](https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/blob/master/media/ESE_GRS_ConnectionSimulator1.png)
 ![Foto de ESE_GRS_ConnectionSimulator](https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/blob/master/media/ESE_GRS_ConnectionSimulator2.png)
-
+![Foto de ESE_GRS_ConnectionSimulator](https://github.com/Esteban191900/ESE_GRS_ConnectionSimulator/blob/master/media/ESE_GRS_ConnectionSimulator3.png)
 ## Plataforma
 >Windows
 
