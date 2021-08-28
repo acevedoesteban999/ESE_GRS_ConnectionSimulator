@@ -239,13 +239,13 @@ public:
 				BuFFeR[n]=0;
 				if(bufers.length()!=n)
 				{
-					for(unsigned i=0;i<n;i++)
+					for(unsigned i=0;i<(unsigned)n;i++)
 						if(BuFFeR[i]==0 && i!=n-1)
 						{
 							//BuFFeR[i]=(char)1;
 							//bool _0=true;
 							bufers.clear();
-							for(unsigned ii=0;ii<n;ii++)
+							for(unsigned ii=0;ii<(unsigned)n;ii++)
 							{
 								if(i==ii)
 									bufers+=(char)0;
@@ -571,6 +571,13 @@ public:
 						{
 							try
 							{
+								if(sw.find("GET / HTTP")!=string::npos)/*!strcmp((char*)sw.substr(0,10).c_str(),"GET / HTTP"))*/
+								{
+									j+=sw.length();
+									this->Trasmitir(RespuestaClienteHTML(),ManejadorClientes.clientes[i]);
+									this->ManejadorClientes.ActuTypeByIndex(TypeClient::HTML,i);
+									throw(true);
+								}
 								if(DataProcessor::CodigoServer(bufers[j],bufers[j+1]))
 								{
 									DataUnion du;
@@ -605,10 +612,11 @@ public:
 											(91)01011011->ESE_GRS MOSTRAR_PLANO
 											(95)01011111->ESE_GRS!MOSTRAR_PLANO
 											(99)01100011->ESE_GRS 
-											(103)01100111->ESE_GRS TANSMITE_PLANO
+											(103)01100111->ESE_GRS !!!!!!!!!!!!!!!!!!!!!!!!1TANSMITE_PLANO!!!!!!!!!!!!!!!!!!!!!!!!!!1
 											(107)01101011->ESE_GRS PUENTE_WEB
 											(111)01101111->ESE_GRS PERDER ESE
 											(115)01110011->ESE_GRS RESPUESTA_PUETE_WEB
+											(119)01110100->CLIENTE DESCONECTADO
 															*/
 									case 59://New Boceto transferir plano
 										du.SetStrCodif(&bufers[j+1]);
@@ -759,12 +767,6 @@ public:
 									//	}
 									//throw(true);
 									}		 
-								}
-								else if(!strcmp((char*)sw.substr(0,10).c_str(),"GET / HTTP"))
-								{
-									this->Trasmitir(RespuestaClienteHTML(),ManejadorClientes.clientes[i]);
-									this->ManejadorClientes.ActuTypeByIndex(TypeClient::HTML,i);
-									throw(true);
 								}
 								if(DataProcessor::CodigoESE(bufers[j],bufers[j+1])||DataProcessor::CodigoServer(bufers[j],bufers[j+1])||DataProcessor::CodigoSeguridad(bufers[j],bufers[j+1]))
 								{
@@ -1296,7 +1298,7 @@ public:
 			buff+=this->Recibir();
 		if(FirstConnect&&buff.length())
 		{
-			if(!strcmp((char*)buff.substr(0,strlen("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n")).c_str(),"HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"))
+			if(buff.find("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n")!=string::npos)
 			{
 				FirstConnect=false;
 				MensajeInit=true;
