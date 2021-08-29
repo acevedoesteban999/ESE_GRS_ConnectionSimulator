@@ -236,7 +236,8 @@ public:
 			 int n=recv(s?s:server,BuFFeR,1023,0);
 			 if(n!=0&&n!=-1)
 			 {
-				BuFFeR[n]=0;
+				BuFFeR[n]=0;	
+				bufers+=BuFFeR;
 				if(bufers.length()!=n)
 				{
 					for(unsigned i=0;i<(unsigned)n;i++)
@@ -255,10 +256,11 @@ public:
 							//bufers+=BuFFeR;
 							break;
 						}
+						if(!bufers.length())
+							bufers+=BuFFeR;
 				}
 				do
 				{
-					bufers+=BuFFeR;
 					FD_ZERO(&descriptoresLecturaReciv);
 					FD_SET(s?s:server,&descriptoresLecturaReciv);
 					select(s?s:server,&descriptoresLecturaReciv,NULL,NULL,&tvReciv);
@@ -774,6 +776,7 @@ public:
 										Trasmitir((char*)bufers.c_str());
 									else if(SocketServer_ClientESE(i))
 										Trasmitir((char*)bufers.c_str(),NULL,true);
+									j+=bufers.length();
 								}
 							}catch(bool)
 							{
