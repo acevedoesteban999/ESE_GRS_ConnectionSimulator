@@ -517,7 +517,7 @@ public:
 			for (unsigned i=0; i<ManejadorClientes.cont; i++)
 				FD_SET(ManejadorClientes.clientes[i],&descriptoresLectura);
 			select(server,&descriptoresLectura,NULL,NULL,NULL);
-			if(!LoopThread)
+				if(!LoopThread)
 				return;
 			if(CerrandoSoket)
 				continue;
@@ -623,12 +623,15 @@ public:
 									case 59://New Boceto transferir plano
 										du.SetStrCodif(&bufers[j+1]);
 										j+=du.u.Unsigned+strlen(du.u.String)+1-2;
-										break;
+										if(SocketServer_ClientIsUser(i))
+											Trasmitir((char*)bufers.c_str());
+										throw(true);
 									case 35://///////////////////////GANAR ESEGRS////////////////////////////
 										this->ManejadorClientes.ActuTypeByIndex(TypeClient::ESE_GRS,i);
 										if(ManejadorClientes.ESE==i)
 										{
 											toSend[0]=(char)35;
+											ActStatusClient(true);
 										}
 										if(!SocketServer_ClientPuenteWeb(i))
 										{
