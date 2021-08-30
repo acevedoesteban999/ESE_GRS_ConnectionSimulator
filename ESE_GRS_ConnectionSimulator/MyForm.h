@@ -462,6 +462,9 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape30;
 private: System::Windows::Forms::TabPage^  tabPageWeb;
 private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer8;
 private: System::Windows::Forms::Timer^  timer3;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape26;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape27;
+
 
 private: System::ComponentModel::IContainer^  components;
 	public:		
@@ -480,7 +483,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->MaximumSize = System::Drawing::Size(300, 300);
 			this->MinimumSize = System::Drawing::Size(300, 300);
 			this->ClientSize = System::Drawing::Size(300, 300);
-			this->labelMostrarHost->Location = System::Drawing::Point(51, 51);
+			this->labelMostrarHost->Location = System::Drawing::Point(51, 71);
 		    this->labelMostrarHost->Size = System::Drawing::Size(168, 72);
 			//
 			//TODO: Add the constructor code here
@@ -544,6 +547,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->labelCOMPuente = (gcnew System::Windows::Forms::Label());
 			this->labelPuentePuente = (gcnew System::Windows::Forms::Label());
 			this->shapeContainer1 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape26 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape2 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape1 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->tabPageSocket = (gcnew System::Windows::Forms::TabPage());
@@ -568,6 +572,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->textBoxHostPuerto = (gcnew System::Windows::Forms::TextBox());
 			this->labelPuertoWeb = (gcnew System::Windows::Forms::Label());
 			this->shapeContainer8 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape27 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->rectangleShape25 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->tabControl3 = (gcnew System::Windows::Forms::TabControl());
@@ -668,7 +673,7 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			// tabPageAbout
 			// 
-			this->tabPageAbout->BackColor = System::Drawing::Color::DarkGray;
+			this->tabPageAbout->BackColor = System::Drawing::SystemColors::MenuHighlight;
 			this->tabPageAbout->Controls->Add(this->flowLayoutPanel2);
 			this->tabPageAbout->Controls->Add(this->label1);
 			this->tabPageAbout->Location = System::Drawing::Point(4, 22);
@@ -680,26 +685,27 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			// flowLayoutPanel2
 			// 
-			this->flowLayoutPanel2->BackColor = System::Drawing::Color::Gainsboro;
+			this->flowLayoutPanel2->BackColor = System::Drawing::Color::White;
 			this->flowLayoutPanel2->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
 			this->flowLayoutPanel2->Controls->Add(this->label5);
-			this->flowLayoutPanel2->Location = System::Drawing::Point(0, 45);
+			this->flowLayoutPanel2->Location = System::Drawing::Point(8, 45);
 			this->flowLayoutPanel2->Margin = System::Windows::Forms::Padding(0);
 			this->flowLayoutPanel2->Name = L"flowLayoutPanel2";
 			this->flowLayoutPanel2->Padding = System::Windows::Forms::Padding(0, 3, 0, 0);
 			this->flowLayoutPanel2->RightToLeft = System::Windows::Forms::RightToLeft::No;
-			this->flowLayoutPanel2->Size = System::Drawing::Size(271, 190);
+			this->flowLayoutPanel2->Size = System::Drawing::Size(258, 190);
 			this->flowLayoutPanel2->TabIndex = 13;
 			// 
 			// label5
 			// 
 			this->label5->AutoSize = true;
+			this->label5->BackColor = System::Drawing::Color::Transparent;
 			this->label5->Font = (gcnew System::Drawing::Font(L"Palatino Linotype", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
 			this->label5->Location = System::Drawing::Point(3, 3);
 			this->label5->Name = L"label5";
 			this->label5->Padding = System::Windows::Forms::Padding(0, 5, 0, 0);
-			this->label5->Size = System::Drawing::Size(255, 203);
+			this->label5->Size = System::Drawing::Size(242, 203);
 			this->label5->TabIndex = 2;
 			this->label5->Text = resources->GetString(L"label5.Text");
 			this->label5->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
@@ -717,6 +723,7 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			// tabPageCOM
 			// 
+			this->tabPageCOM->BackColor = System::Drawing::Color::OrangeRed;
 			this->tabPageCOM->Controls->Add(this->checkBox1COMVelocidad);
 			this->tabPageCOM->Controls->Add(this->checkBox1COMPuerto);
 			this->tabPageCOM->Controls->Add(this->labelCOM);
@@ -733,7 +740,6 @@ private: System::ComponentModel::IContainer^  components;
 			this->tabPageCOM->Size = System::Drawing::Size(274, 238);
 			this->tabPageCOM->TabIndex = 0;
 			this->tabPageCOM->Text = L"COM";
-			this->tabPageCOM->UseVisualStyleBackColor = true;
 			// 
 			// checkBox1COMVelocidad
 			// 
@@ -767,6 +773,7 @@ private: System::ComponentModel::IContainer^  components;
 			// labelCOM
 			// 
 			this->labelCOM->AutoSize = true;
+			this->labelCOM->BackColor = System::Drawing::Color::OrangeRed;
 			this->labelCOM->Font = (gcnew System::Drawing::Font(L"Arial Rounded MT Bold", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
 			this->labelCOM->Location = System::Drawing::Point(81, 31);
@@ -778,7 +785,7 @@ private: System::ComponentModel::IContainer^  components;
 			// buttonCOMIniciar
 			// 
 			this->buttonCOMIniciar->Cursor = System::Windows::Forms::Cursors::Hand;
-			this->buttonCOMIniciar->Location = System::Drawing::Point(85, 181);
+			this->buttonCOMIniciar->Location = System::Drawing::Point(85, 183);
 			this->buttonCOMIniciar->Name = L"buttonCOMIniciar";
 			this->buttonCOMIniciar->Size = System::Drawing::Size(112, 23);
 			this->buttonCOMIniciar->TabIndex = 4;
@@ -789,6 +796,7 @@ private: System::ComponentModel::IContainer^  components;
 			// label3
 			// 
 			this->label3->AutoSize = true;
+			this->label3->BackColor = System::Drawing::Color::White;
 			this->label3->Location = System::Drawing::Point(37, 144);
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(54, 13);
@@ -798,6 +806,7 @@ private: System::ComponentModel::IContainer^  components;
 			// label2
 			// 
 			this->label2->AutoSize = true;
+			this->label2->BackColor = System::Drawing::Color::White;
 			this->label2->Location = System::Drawing::Point(53, 106);
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(38, 13);
@@ -842,19 +851,23 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			// rectangleShape21
 			// 
-			this->rectangleShape21->Location = System::Drawing::Point(16, 83);
+			this->rectangleShape21->BackColor = System::Drawing::Color::White;
+			this->rectangleShape21->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape21->Location = System::Drawing::Point(28, 77);
 			this->rectangleShape21->Name = L"rectangleShape21";
-			this->rectangleShape21->Size = System::Drawing::Size(239, 131);
+			this->rectangleShape21->Size = System::Drawing::Size(216, 137);
 			// 
 			// ovalShape1
 			// 
+			this->ovalShape1->BackColor = System::Drawing::Color::OrangeRed;
+			this->ovalShape1->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
 			this->ovalShape1->Location = System::Drawing::Point(54, 9);
 			this->ovalShape1->Name = L"ovalShape1";
 			this->ovalShape1->Size = System::Drawing::Size(166, 62);
 			// 
 			// tabPagePuente
 			// 
-			this->tabPagePuente->BackColor = System::Drawing::Color::White;
+			this->tabPagePuente->BackColor = System::Drawing::Color::LawnGreen;
 			this->tabPagePuente->Controls->Add(this->comboBoxSocketIPPuente);
 			this->tabPagePuente->Controls->Add(this->buttonInitConecctionPuente);
 			this->tabPagePuente->Controls->Add(this->checkBoxSocketPuertoPuente);
@@ -899,7 +912,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->buttonInitConecctionPuente->Cursor = System::Windows::Forms::Cursors::Hand;
 			this->buttonInitConecctionPuente->Location = System::Drawing::Point(80, 204);
 			this->buttonInitConecctionPuente->Name = L"buttonInitConecctionPuente";
-			this->buttonInitConecctionPuente->Size = System::Drawing::Size(102, 23);
+			this->buttonInitConecctionPuente->Size = System::Drawing::Size(109, 23);
 			this->buttonInitConecctionPuente->TabIndex = 17;
 			this->buttonInitConecctionPuente->Text = L"Iniciar";
 			this->buttonInitConecctionPuente->UseVisualStyleBackColor = true;
@@ -964,6 +977,7 @@ private: System::ComponentModel::IContainer^  components;
 			// labelSocketPuertoPuente
 			// 
 			this->labelSocketPuertoPuente->AutoSize = true;
+			this->labelSocketPuertoPuente->BackColor = System::Drawing::Color::White;
 			this->labelSocketPuertoPuente->Location = System::Drawing::Point(194, 138);
 			this->labelSocketPuertoPuente->Name = L"labelSocketPuertoPuente";
 			this->labelSocketPuertoPuente->Size = System::Drawing::Size(38, 13);
@@ -973,6 +987,7 @@ private: System::ComponentModel::IContainer^  components;
 			// labelSocketIPPuente
 			// 
 			this->labelSocketIPPuente->AutoSize = true;
+			this->labelSocketIPPuente->BackColor = System::Drawing::Color::White;
 			this->labelSocketIPPuente->Location = System::Drawing::Point(205, 91);
 			this->labelSocketIPPuente->Name = L"labelSocketIPPuente";
 			this->labelSocketIPPuente->Size = System::Drawing::Size(17, 13);
@@ -982,6 +997,7 @@ private: System::ComponentModel::IContainer^  components;
 			// labelCOMVelocidadPuente
 			// 
 			this->labelCOMVelocidadPuente->AutoSize = true;
+			this->labelCOMVelocidadPuente->BackColor = System::Drawing::Color::White;
 			this->labelCOMVelocidadPuente->Location = System::Drawing::Point(37, 134);
 			this->labelCOMVelocidadPuente->Name = L"labelCOMVelocidadPuente";
 			this->labelCOMVelocidadPuente->Size = System::Drawing::Size(54, 13);
@@ -991,6 +1007,7 @@ private: System::ComponentModel::IContainer^  components;
 			// labelCOMPuertoPuente
 			// 
 			this->labelCOMPuertoPuente->AutoSize = true;
+			this->labelCOMPuertoPuente->BackColor = System::Drawing::Color::White;
 			this->labelCOMPuertoPuente->Location = System::Drawing::Point(51, 91);
 			this->labelCOMPuertoPuente->Name = L"labelCOMPuertoPuente";
 			this->labelCOMPuertoPuente->Size = System::Drawing::Size(38, 13);
@@ -1036,6 +1053,7 @@ private: System::ComponentModel::IContainer^  components;
 			// labelSocketPuente
 			// 
 			this->labelSocketPuente->AutoSize = true;
+			this->labelSocketPuente->BackColor = System::Drawing::Color::White;
 			this->labelSocketPuente->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
 			this->labelSocketPuente->Location = System::Drawing::Point(171, 58);
@@ -1047,6 +1065,7 @@ private: System::ComponentModel::IContainer^  components;
 			// labelCOMPuente
 			// 
 			this->labelCOMPuente->AutoSize = true;
+			this->labelCOMPuente->BackColor = System::Drawing::Color::White;
 			this->labelCOMPuente->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
 			this->labelCOMPuente->Location = System::Drawing::Point(48, 59);
@@ -1058,11 +1077,12 @@ private: System::ComponentModel::IContainer^  components;
 			// labelPuentePuente
 			// 
 			this->labelPuentePuente->AutoSize = true;
-			this->labelPuentePuente->Font = (gcnew System::Drawing::Font(L"Modern No. 20", 20.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
+			this->labelPuentePuente->BackColor = System::Drawing::Color::LawnGreen;
+			this->labelPuentePuente->Font = (gcnew System::Drawing::Font(L"Modern No. 20", 18, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->labelPuentePuente->Location = System::Drawing::Point(60, 10);
+			this->labelPuentePuente->Location = System::Drawing::Point(65, 10);
 			this->labelPuentePuente->Name = L"labelPuentePuente";
-			this->labelPuentePuente->Size = System::Drawing::Size(162, 29);
+			this->labelPuentePuente->Size = System::Drawing::Size(147, 25);
 			this->labelPuentePuente->TabIndex = 2;
 			this->labelPuentePuente->Text = L"Puente COM";
 			// 
@@ -1071,30 +1091,39 @@ private: System::ComponentModel::IContainer^  components;
 			this->shapeContainer1->Location = System::Drawing::Point(3, 3);
 			this->shapeContainer1->Margin = System::Windows::Forms::Padding(0);
 			this->shapeContainer1->Name = L"shapeContainer1";
-			this->shapeContainer1->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(2) {this->rectangleShape2, 
-				this->rectangleShape1});
+			this->shapeContainer1->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(3) {this->rectangleShape26, 
+				this->rectangleShape2, this->rectangleShape1});
 			this->shapeContainer1->Size = System::Drawing::Size(268, 232);
 			this->shapeContainer1->TabIndex = 18;
 			this->shapeContainer1->TabStop = false;
 			// 
+			// rectangleShape26
+			// 
+			this->rectangleShape26->BackColor = System::Drawing::Color::LawnGreen;
+			this->rectangleShape26->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape26->Location = System::Drawing::Point(49, 2);
+			this->rectangleShape26->Name = L"rectangleShape26";
+			this->rectangleShape26->Size = System::Drawing::Size(175, 37);
+			// 
 			// rectangleShape2
 			// 
-			this->rectangleShape2->BackColor = System::Drawing::Color::Transparent;
+			this->rectangleShape2->BackColor = System::Drawing::Color::White;
 			this->rectangleShape2->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape2->Location = System::Drawing::Point(137, 42);
+			this->rectangleShape2->Location = System::Drawing::Point(137, 45);
 			this->rectangleShape2->Name = L"rectangleShape2";
-			this->rectangleShape2->Size = System::Drawing::Size(125, 150);
+			this->rectangleShape2->Size = System::Drawing::Size(125, 148);
 			// 
 			// rectangleShape1
 			// 
-			this->rectangleShape1->BackColor = System::Drawing::Color::Transparent;
+			this->rectangleShape1->BackColor = System::Drawing::Color::White;
 			this->rectangleShape1->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape1->Location = System::Drawing::Point(5, 42);
+			this->rectangleShape1->Location = System::Drawing::Point(5, 45);
 			this->rectangleShape1->Name = L"rectangleShape1";
-			this->rectangleShape1->Size = System::Drawing::Size(128, 150);
+			this->rectangleShape1->Size = System::Drawing::Size(128, 147);
 			// 
 			// tabPageSocket
 			// 
+			this->tabPageSocket->BackColor = System::Drawing::Color::DimGray;
 			this->tabPageSocket->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
 			this->tabPageSocket->Controls->Add(this->comboBoxSocketIP);
 			this->tabPageSocket->Controls->Add(this->checkBoxSocketPuerto);
@@ -1111,7 +1140,6 @@ private: System::ComponentModel::IContainer^  components;
 			this->tabPageSocket->Size = System::Drawing::Size(274, 238);
 			this->tabPageSocket->TabIndex = 2;
 			this->tabPageSocket->Text = L"PuenteWEB";
-			this->tabPageSocket->UseVisualStyleBackColor = true;
 			// 
 			// comboBoxSocketIP
 			// 
@@ -1119,7 +1147,7 @@ private: System::ComponentModel::IContainer^  components;
 				static_cast<System::Byte>(0)));
 			this->comboBoxSocketIP->FormattingEnabled = true;
 			this->comboBoxSocketIP->Items->AddRange(gcnew cli::array< System::Object^  >(2) {L"INADDR_ANY", L"127.0.0.1"});
-			this->comboBoxSocketIP->Location = System::Drawing::Point(95, 98);
+			this->comboBoxSocketIP->Location = System::Drawing::Point(84, 100);
 			this->comboBoxSocketIP->Name = L"comboBoxSocketIP";
 			this->comboBoxSocketIP->Size = System::Drawing::Size(95, 22);
 			this->comboBoxSocketIP->TabIndex = 11;
@@ -1133,7 +1161,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->checkBoxSocketPuerto->Checked = true;
 			this->checkBoxSocketPuerto->CheckState = System::Windows::Forms::CheckState::Checked;
 			this->checkBoxSocketPuerto->Cursor = System::Windows::Forms::Cursors::No;
-			this->checkBoxSocketPuerto->Location = System::Drawing::Point(199, 149);
+			this->checkBoxSocketPuerto->Location = System::Drawing::Point(199, 156);
 			this->checkBoxSocketPuerto->Name = L"checkBoxSocketPuerto";
 			this->checkBoxSocketPuerto->Size = System::Drawing::Size(15, 14);
 			this->checkBoxSocketPuerto->TabIndex = 9;
@@ -1147,7 +1175,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->checkBoxSocketIP->Checked = true;
 			this->checkBoxSocketIP->CheckState = System::Windows::Forms::CheckState::Checked;
 			this->checkBoxSocketIP->Cursor = System::Windows::Forms::Cursors::No;
-			this->checkBoxSocketIP->Location = System::Drawing::Point(208, 100);
+			this->checkBoxSocketIP->Location = System::Drawing::Point(199, 101);
 			this->checkBoxSocketIP->Name = L"checkBoxSocketIP";
 			this->checkBoxSocketIP->Size = System::Drawing::Size(15, 14);
 			this->checkBoxSocketIP->TabIndex = 8;
@@ -1157,7 +1185,9 @@ private: System::ComponentModel::IContainer^  components;
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(135, 75);
+			this->label7->BackColor = System::Drawing::Color::White;
+			this->label7->ForeColor = System::Drawing::SystemColors::ActiveCaptionText;
+			this->label7->Location = System::Drawing::Point(123, 76);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(17, 13);
 			this->label7->TabIndex = 6;
@@ -1166,9 +1196,9 @@ private: System::ComponentModel::IContainer^  components;
 			// buttonSocketIniciar
 			// 
 			this->buttonSocketIniciar->Cursor = System::Windows::Forms::Cursors::Hand;
-			this->buttonSocketIniciar->Location = System::Drawing::Point(104, 195);
+			this->buttonSocketIniciar->Location = System::Drawing::Point(84, 181);
 			this->buttonSocketIniciar->Name = L"buttonSocketIniciar";
-			this->buttonSocketIniciar->Size = System::Drawing::Size(75, 23);
+			this->buttonSocketIniciar->Size = System::Drawing::Size(95, 23);
 			this->buttonSocketIniciar->TabIndex = 4;
 			this->buttonSocketIniciar->Text = L"Iniciar";
 			this->buttonSocketIniciar->UseVisualStyleBackColor = true;
@@ -1177,9 +1207,10 @@ private: System::ComponentModel::IContainer^  components;
 			// label6
 			// 
 			this->label6->AutoSize = true;
+			this->label6->BackColor = System::Drawing::Color::White;
 			this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label6->Location = System::Drawing::Point(123, 133);
+			this->label6->Location = System::Drawing::Point(111, 128);
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(38, 13);
 			this->label6->TabIndex = 3;
@@ -1188,9 +1219,10 @@ private: System::ComponentModel::IContainer^  components;
 			// labelSocketServer
 			// 
 			this->labelSocketServer->AutoSize = true;
+			this->labelSocketServer->BackColor = System::Drawing::Color::DimGray;
 			this->labelSocketServer->Font = (gcnew System::Drawing::Font(L"MS Reference Sans Serif", 15.75F, System::Drawing::FontStyle::Bold, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->labelSocketServer->Location = System::Drawing::Point(72, 17);
+			this->labelSocketServer->Location = System::Drawing::Point(64, 23);
 			this->labelSocketServer->Name = L"labelSocketServer";
 			this->labelSocketServer->Size = System::Drawing::Size(150, 26);
 			this->labelSocketServer->TabIndex = 2;
@@ -1200,9 +1232,9 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			this->textBoxSocketPuerto->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->textBoxSocketPuerto->Location = System::Drawing::Point(104, 153);
+			this->textBoxSocketPuerto->Location = System::Drawing::Point(84, 149);
 			this->textBoxSocketPuerto->Name = L"textBoxSocketPuerto";
-			this->textBoxSocketPuerto->Size = System::Drawing::Size(75, 21);
+			this->textBoxSocketPuerto->Size = System::Drawing::Size(95, 21);
 			this->textBoxSocketPuerto->TabIndex = 0;
 			this->textBoxSocketPuerto->Text = L"55555";
 			this->textBoxSocketPuerto->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
@@ -1221,19 +1253,24 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			// rectangleShape20
 			// 
-			this->rectangleShape20->Location = System::Drawing::Point(44, 62);
+			this->rectangleShape20->BackColor = System::Drawing::Color::White;
+			this->rectangleShape20->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape20->Location = System::Drawing::Point(49, 64);
 			this->rectangleShape20->Name = L"rectangleShape20";
-			this->rectangleShape20->Size = System::Drawing::Size(191, 165);
+			this->rectangleShape20->Size = System::Drawing::Size(169, 151);
 			// 
 			// rectangleShape3
 			// 
+			this->rectangleShape3->BackColor = System::Drawing::Color::DimGray;
+			this->rectangleShape3->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
 			this->rectangleShape3->BorderStyle = System::Drawing::Drawing2D::DashStyle::Dash;
-			this->rectangleShape3->Location = System::Drawing::Point(30, 5);
+			this->rectangleShape3->Location = System::Drawing::Point(19, 16);
 			this->rectangleShape3->Name = L"rectangleShape3";
-			this->rectangleShape3->Size = System::Drawing::Size(214, 44);
+			this->rectangleShape3->Size = System::Drawing::Size(226, 37);
 			// 
 			// tabPageWeb
 			// 
+			this->tabPageWeb->BackColor = System::Drawing::Color::Turquoise;
 			this->tabPageWeb->Controls->Add(this->buttonConnectarHost);
 			this->tabPageWeb->Controls->Add(this->buttonDescanectarServerWeb);
 			this->tabPageWeb->Controls->Add(this->labelMostrarHost);
@@ -1248,18 +1285,18 @@ private: System::ComponentModel::IContainer^  components;
 			this->tabPageWeb->Size = System::Drawing::Size(274, 238);
 			this->tabPageWeb->TabIndex = 4;
 			this->tabPageWeb->Text = L"Web";
-			this->tabPageWeb->UseVisualStyleBackColor = true;
 			// 
 			// buttonConnectarHost
 			// 
+			this->buttonConnectarHost->BackColor = System::Drawing::Color::White;
 			this->buttonConnectarHost->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->buttonConnectarHost->Location = System::Drawing::Point(84, 175);
+			this->buttonConnectarHost->Location = System::Drawing::Point(84, 183);
 			this->buttonConnectarHost->Name = L"buttonConnectarHost";
 			this->buttonConnectarHost->Size = System::Drawing::Size(100, 23);
 			this->buttonConnectarHost->TabIndex = 6;
 			this->buttonConnectarHost->Text = L"Conectar";
-			this->buttonConnectarHost->UseVisualStyleBackColor = true;
+			this->buttonConnectarHost->UseVisualStyleBackColor = false;
 			this->buttonConnectarHost->Click += gcnew System::EventHandler(this, &MyForm::MybuttonConnectarHost_Click);
 			// 
 			// buttonDescanectarServerWeb
@@ -1277,7 +1314,7 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			// labelMostrarHost
 			// 
-			this->labelMostrarHost->BackColor = System::Drawing::Color::Lime;
+			this->labelMostrarHost->BackColor = System::Drawing::Color::Turquoise;
 			this->labelMostrarHost->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
 			this->labelMostrarHost->Location = System::Drawing::Point(12, 46);
@@ -1291,9 +1328,10 @@ private: System::ComponentModel::IContainer^  components;
 			// label1ServerWeb
 			// 
 			this->label1ServerWeb->AutoSize = true;
+			this->label1ServerWeb->BackColor = System::Drawing::Color::Turquoise;
 			this->label1ServerWeb->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 18, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label1ServerWeb->Location = System::Drawing::Point(56, 13);
+			this->label1ServerWeb->Location = System::Drawing::Point(56, 34);
 			this->label1ServerWeb->Name = L"label1ServerWeb";
 			this->label1ServerWeb->Size = System::Drawing::Size(153, 29);
 			this->label1ServerWeb->TabIndex = 2;
@@ -1301,9 +1339,10 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			// labelHost
 			// 
+			this->labelHost->BackColor = System::Drawing::Color::White;
 			this->labelHost->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->labelHost->Location = System::Drawing::Point(58, 53);
+			this->labelHost->Location = System::Drawing::Point(67, 73);
 			this->labelHost->Name = L"labelHost";
 			this->labelHost->Size = System::Drawing::Size(142, 18);
 			this->labelHost->TabIndex = 4;
@@ -1315,7 +1354,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->comboBoxHost->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
 			this->comboBoxHost->FormattingEnabled = true;
-			this->comboBoxHost->Location = System::Drawing::Point(73, 80);
+			this->comboBoxHost->Location = System::Drawing::Point(70, 97);
 			this->comboBoxHost->Name = L"comboBoxHost";
 			this->comboBoxHost->Size = System::Drawing::Size(127, 24);
 			this->comboBoxHost->TabIndex = 0;
@@ -1325,7 +1364,7 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			this->textBoxHostPuerto->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->textBoxHostPuerto->Location = System::Drawing::Point(70, 140);
+			this->textBoxHostPuerto->Location = System::Drawing::Point(70, 148);
 			this->textBoxHostPuerto->Name = L"textBoxHostPuerto";
 			this->textBoxHostPuerto->Size = System::Drawing::Size(127, 23);
 			this->textBoxHostPuerto->TabIndex = 1;
@@ -1334,9 +1373,10 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			// labelPuertoWeb
 			// 
+			this->labelPuertoWeb->BackColor = System::Drawing::Color::White;
 			this->labelPuertoWeb->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->labelPuertoWeb->Location = System::Drawing::Point(58, 113);
+			this->labelPuertoWeb->Location = System::Drawing::Point(67, 123);
 			this->labelPuertoWeb->Name = L"labelPuertoWeb";
 			this->labelPuertoWeb->Size = System::Drawing::Size(142, 16);
 			this->labelPuertoWeb->TabIndex = 5;
@@ -1348,18 +1388,27 @@ private: System::ComponentModel::IContainer^  components;
 			this->shapeContainer8->Location = System::Drawing::Point(0, 0);
 			this->shapeContainer8->Margin = System::Windows::Forms::Padding(0);
 			this->shapeContainer8->Name = L"shapeContainer8";
-			this->shapeContainer8->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(1) {this->rectangleShape25});
+			this->shapeContainer8->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(2) {this->rectangleShape27, 
+				this->rectangleShape25});
 			this->shapeContainer8->Size = System::Drawing::Size(274, 238);
 			this->shapeContainer8->TabIndex = 9;
 			this->shapeContainer8->TabStop = false;
 			// 
+			// rectangleShape27
+			// 
+			this->rectangleShape27->BackColor = System::Drawing::Color::Turquoise;
+			this->rectangleShape27->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape27->Location = System::Drawing::Point(54, 30);
+			this->rectangleShape27->Name = L"rectangleShape27";
+			this->rectangleShape27->Size = System::Drawing::Size(160, 39);
+			// 
 			// rectangleShape25
 			// 
-			this->rectangleShape25->BackColor = System::Drawing::Color::Transparent;
+			this->rectangleShape25->BackColor = System::Drawing::Color::White;
 			this->rectangleShape25->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
-			this->rectangleShape25->Location = System::Drawing::Point(48, 7);
+			this->rectangleShape25->Location = System::Drawing::Point(48, 13);
 			this->rectangleShape25->Name = L"rectangleShape25";
-			this->rectangleShape25->Size = System::Drawing::Size(171, 204);
+			this->rectangleShape25->Size = System::Drawing::Size(171, 198);
 			// 
 			// timer1
 			// 
@@ -3808,7 +3857,7 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
 			if(ErrorThWebSocketClient)
 				labelMostrarHost->BackColor=System::Drawing::Color::Red;
 			else
-				labelMostrarHost->BackColor=System::Drawing::Color::Lime;
+				labelMostrarHost->BackColor=System::Drawing::Color::Turquoise;
 		}
 		
 
@@ -3959,7 +4008,7 @@ private:
 		labelPuertoWeb->Visible=false;
 		buttonDescanectarServerWeb->Visible=true;
 		labelMostrarHost->Visible=true;
-		labelMostrarHost->BackColor=System::Drawing::Color::Lime;
+		labelMostrarHost->BackColor=System::Drawing::Color::Turquoise;
 	}
 	void MiniEscenario5()
 	{
