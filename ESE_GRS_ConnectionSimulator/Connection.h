@@ -1358,7 +1358,7 @@ public:
 				else
 					ToSend+=(char)129;
 				DataUnion du;
-				du.SetUnsigned(strlen(BuFFeR));
+				du.SetUnsigned(strlen(BuFFeR)); 
 				unsigned uns=du.u.Unsigned;
 				if(uns<=125)
 				{
