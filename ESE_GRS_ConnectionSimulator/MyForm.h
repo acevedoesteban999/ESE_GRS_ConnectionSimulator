@@ -330,7 +330,7 @@ namespace ESE_GRS_ConnectionSimulator {
 	System::Threading::Thread^th,^thSocketCliente,^thWebSocketCliente;
 	System::Threading::Mutex m1,m2,m3;
 	bool VerifCOM,VerifSocket;
-	bool COM,COM_Soket,WebSocket,SocketServer,Web;
+	bool COM,Socket_Cliente,COM_Soket,WebSocket,SocketServer,Web;
 	unsigned contVistaCarga;
 private: System::Windows::Forms::TabControl^  tabControl1;
 private: System::Windows::Forms::TabPage^  tabPageCOM;
@@ -465,6 +465,21 @@ private: System::Windows::Forms::Timer^  timer3;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape26;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape27;
 private: System::Windows::Forms::Label^  label10;
+private: System::Windows::Forms::TabPage^  tabPageSocketCliente;
+private: System::Windows::Forms::Label^  label13;
+private: System::Windows::Forms::CheckBox^  checkBox2;
+private: System::Windows::Forms::CheckBox^  checkBox1;
+
+
+private: System::Windows::Forms::Label^  label12;
+private: System::Windows::Forms::Label^  label11;
+private: System::Windows::Forms::Button^  button1;
+private: System::Windows::Forms::ComboBox^  comboBox2;
+private: System::Windows::Forms::ComboBox^  comboBox1;
+private: Microsoft::VisualBasic::PowerPacks::ShapeContainer^  shapeContainer6;
+private: Microsoft::VisualBasic::PowerPacks::LineShape^  lineShape1;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape32;
+private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape29;
 
 
 private: System::ComponentModel::IContainer^  components;
@@ -474,7 +489,7 @@ private: System::ComponentModel::IContainer^  components;
 			InitializeComponent();
 			c=new Connection*[1]();
 			contVerif=0;
-			Web=COM=SocketServer=COM_Soket=WebSocket=false;
+			Web=COM=SocketServer=COM_Soket=WebSocket=Socket_Cliente=false;
 			contVistaCarga=0;
 			contClienteVista=0;
 			VerifCOM=VerifSocket=true;
@@ -530,6 +545,15 @@ private: System::ComponentModel::IContainer^  components;
 			this->shapeContainer2 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
 			this->rectangleShape21 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->ovalShape1 = (gcnew Microsoft::VisualBasic::PowerPacks::OvalShape());
+			this->tabPageSocketCliente = (gcnew System::Windows::Forms::TabPage());
+			this->comboBox2 = (gcnew System::Windows::Forms::ComboBox());
+			this->comboBox1 = (gcnew System::Windows::Forms::ComboBox());
+			this->label13 = (gcnew System::Windows::Forms::Label());
+			this->checkBox2 = (gcnew System::Windows::Forms::CheckBox());
+			this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
+			this->label12 = (gcnew System::Windows::Forms::Label());
+			this->label11 = (gcnew System::Windows::Forms::Label());
+			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->tabPagePuente = (gcnew System::Windows::Forms::TabPage());
 			this->comboBoxSocketIPPuente = (gcnew System::Windows::Forms::ComboBox());
 			this->buttonInitConecctionPuente = (gcnew System::Windows::Forms::Button());
@@ -644,10 +668,15 @@ private: System::ComponentModel::IContainer^  components;
 			this->rectangleShape5 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
 			this->tabControl2 = (gcnew System::Windows::Forms::TabControl());
 			this->timer3 = (gcnew System::Windows::Forms::Timer(this->components));
+			this->rectangleShape29 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
+			this->shapeContainer6 = (gcnew Microsoft::VisualBasic::PowerPacks::ShapeContainer());
+			this->rectangleShape32 = (gcnew Microsoft::VisualBasic::PowerPacks::RectangleShape());
+			this->lineShape1 = (gcnew Microsoft::VisualBasic::PowerPacks::LineShape());
 			this->tabControl1->SuspendLayout();
 			this->tabPageAbout->SuspendLayout();
 			this->flowLayoutPanel2->SuspendLayout();
 			this->tabPageCOM->SuspendLayout();
+			this->tabPageSocketCliente->SuspendLayout();
 			this->tabPagePuente->SuspendLayout();
 			this->tabPageSocket->SuspendLayout();
 			this->tabPageWeb->SuspendLayout();
@@ -663,13 +692,14 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			this->tabControl1->Controls->Add(this->tabPageAbout);
 			this->tabControl1->Controls->Add(this->tabPageCOM);
+			this->tabControl1->Controls->Add(this->tabPageSocketCliente);
 			this->tabControl1->Controls->Add(this->tabPagePuente);
 			this->tabControl1->Controls->Add(this->tabPageSocket);
 			this->tabControl1->Controls->Add(this->tabPageWeb);
 			this->tabControl1->Location = System::Drawing::Point(300, 30);
 			this->tabControl1->Name = L"tabControl1";
 			this->tabControl1->SelectedIndex = 0;
-			this->tabControl1->Size = System::Drawing::Size(282, 264);
+			this->tabControl1->Size = System::Drawing::Size(290, 264);
 			this->tabControl1->TabIndex = 0;
 			// 
 			// tabPageAbout
@@ -680,9 +710,9 @@ private: System::ComponentModel::IContainer^  components;
 			this->tabPageAbout->Location = System::Drawing::Point(4, 22);
 			this->tabPageAbout->Name = L"tabPageAbout";
 			this->tabPageAbout->Padding = System::Windows::Forms::Padding(3);
-			this->tabPageAbout->Size = System::Drawing::Size(274, 238);
+			this->tabPageAbout->Size = System::Drawing::Size(282, 238);
 			this->tabPageAbout->TabIndex = 3;
-			this->tabPageAbout->Text = L"ESE.CS";
+			this->tabPageAbout->Text = L"ESE_info";
 			// 
 			// label1
 			// 
@@ -754,7 +784,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->tabPageCOM->Location = System::Drawing::Point(4, 22);
 			this->tabPageCOM->Name = L"tabPageCOM";
 			this->tabPageCOM->Padding = System::Windows::Forms::Padding(3);
-			this->tabPageCOM->Size = System::Drawing::Size(274, 238);
+			this->tabPageCOM->Size = System::Drawing::Size(282, 238);
 			this->tabPageCOM->TabIndex = 0;
 			this->tabPageCOM->Text = L"COM";
 			// 
@@ -862,7 +892,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->shapeContainer2->Name = L"shapeContainer2";
 			this->shapeContainer2->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(2) {this->rectangleShape21, 
 				this->ovalShape1});
-			this->shapeContainer2->Size = System::Drawing::Size(268, 232);
+			this->shapeContainer2->Size = System::Drawing::Size(276, 232);
 			this->shapeContainer2->TabIndex = 9;
 			this->shapeContainer2->TabStop = false;
 			// 
@@ -881,6 +911,123 @@ private: System::ComponentModel::IContainer^  components;
 			this->ovalShape1->Location = System::Drawing::Point(54, 9);
 			this->ovalShape1->Name = L"ovalShape1";
 			this->ovalShape1->Size = System::Drawing::Size(166, 62);
+			// 
+			// tabPageSocketCliente
+			// 
+			this->tabPageSocketCliente->BackColor = System::Drawing::Color::Coral;
+			this->tabPageSocketCliente->Controls->Add(this->comboBox2);
+			this->tabPageSocketCliente->Controls->Add(this->comboBox1);
+			this->tabPageSocketCliente->Controls->Add(this->label13);
+			this->tabPageSocketCliente->Controls->Add(this->checkBox2);
+			this->tabPageSocketCliente->Controls->Add(this->checkBox1);
+			this->tabPageSocketCliente->Controls->Add(this->label12);
+			this->tabPageSocketCliente->Controls->Add(this->label11);
+			this->tabPageSocketCliente->Controls->Add(this->button1);
+			this->tabPageSocketCliente->Controls->Add(this->shapeContainer6);
+			this->tabPageSocketCliente->Location = System::Drawing::Point(4, 22);
+			this->tabPageSocketCliente->Name = L"tabPageSocketCliente";
+			this->tabPageSocketCliente->Padding = System::Windows::Forms::Padding(3);
+			this->tabPageSocketCliente->Size = System::Drawing::Size(282, 238);
+			this->tabPageSocketCliente->TabIndex = 5;
+			this->tabPageSocketCliente->Text = L"S.Cliente";
+			// 
+			// comboBox2
+			// 
+			this->comboBox2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->comboBox2->FormattingEnabled = true;
+			this->comboBox2->Location = System::Drawing::Point(95, 130);
+			this->comboBox2->Name = L"comboBox2";
+			this->comboBox2->Size = System::Drawing::Size(107, 24);
+			this->comboBox2->TabIndex = 9;
+			this->comboBox2->Text = L"55555";
+			this->comboBox2->TextChanged += gcnew System::EventHandler(this, &MyForm::textBox1_TextChanged);
+			// 
+			// comboBox1
+			// 
+			this->comboBox1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->comboBox1->FormattingEnabled = true;
+			this->comboBox1->Location = System::Drawing::Point(95, 86);
+			this->comboBox1->Name = L"comboBox1";
+			this->comboBox1->Size = System::Drawing::Size(107, 24);
+			this->comboBox1->TabIndex = 8;
+			this->comboBox1->Text = L"127.0.0.1";
+			this->comboBox1->TextChanged += gcnew System::EventHandler(this, &MyForm::textBox1_TextChanged);
+			// 
+			// label13
+			// 
+			this->label13->BackColor = System::Drawing::Color::White;
+			this->label13->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label13->Location = System::Drawing::Point(21, 91);
+			this->label13->Name = L"label13";
+			this->label13->Size = System::Drawing::Size(54, 18);
+			this->label13->TabIndex = 7;
+			this->label13->Text = L"Ip";
+			this->label13->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			// 
+			// checkBox2
+			// 
+			this->checkBox2->AutoSize = true;
+			this->checkBox2->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(0)), static_cast<System::Int32>(static_cast<System::Byte>(192)), 
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->checkBox2->Checked = true;
+			this->checkBox2->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->checkBox2->Location = System::Drawing::Point(208, 137);
+			this->checkBox2->Name = L"checkBox2";
+			this->checkBox2->Size = System::Drawing::Size(15, 14);
+			this->checkBox2->TabIndex = 6;
+			this->checkBox2->UseVisualStyleBackColor = false;
+			// 
+			// checkBox1
+			// 
+			this->checkBox1->AutoSize = true;
+			this->checkBox1->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(0)), static_cast<System::Int32>(static_cast<System::Byte>(192)), 
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->checkBox1->Checked = true;
+			this->checkBox1->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->checkBox1->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(0)), static_cast<System::Int32>(static_cast<System::Byte>(192)), 
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->checkBox1->Location = System::Drawing::Point(208, 90);
+			this->checkBox1->Name = L"checkBox1";
+			this->checkBox1->Size = System::Drawing::Size(15, 14);
+			this->checkBox1->TabIndex = 5;
+			this->checkBox1->UseVisualStyleBackColor = false;
+			// 
+			// label12
+			// 
+			this->label12->BackColor = System::Drawing::Color::White;
+			this->label12->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label12->Location = System::Drawing::Point(21, 130);
+			this->label12->Name = L"label12";
+			this->label12->Size = System::Drawing::Size(55, 21);
+			this->label12->TabIndex = 2;
+			this->label12->Text = L"Puerto";
+			this->label12->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			// 
+			// label11
+			// 
+			this->label11->AutoSize = true;
+			this->label11->BackColor = System::Drawing::Color::White;
+			this->label11->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 20.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label11->Location = System::Drawing::Point(20, 28);
+			this->label11->Name = L"label11";
+			this->label11->Size = System::Drawing::Size(239, 32);
+			this->label11->TabIndex = 1;
+			this->label11->Text = L"Socket_Cliente";
+			// 
+			// button1
+			// 
+			this->button1->Location = System::Drawing::Point(95, 183);
+			this->button1->Name = L"button1";
+			this->button1->Size = System::Drawing::Size(96, 36);
+			this->button1->TabIndex = 0;
+			this->button1->Text = L"Conectar";
+			this->button1->UseVisualStyleBackColor = true;
+			this->button1->Click += gcnew System::EventHandler(this, &MyForm::ButtonIniciarConnection_Click);
 			// 
 			// tabPagePuente
 			// 
@@ -905,10 +1052,10 @@ private: System::ComponentModel::IContainer^  components;
 			this->tabPagePuente->Location = System::Drawing::Point(4, 22);
 			this->tabPagePuente->Name = L"tabPagePuente";
 			this->tabPagePuente->Padding = System::Windows::Forms::Padding(3);
-			this->tabPagePuente->Size = System::Drawing::Size(274, 238);
+			this->tabPagePuente->Size = System::Drawing::Size(282, 238);
 			this->tabPagePuente->TabIndex = 1;
 			this->tabPagePuente->Tag = L"";
-			this->tabPagePuente->Text = L"PuenteCOM";
+			this->tabPagePuente->Text = L"P.COM";
 			// 
 			// comboBoxSocketIPPuente
 			// 
@@ -1110,7 +1257,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->shapeContainer1->Name = L"shapeContainer1";
 			this->shapeContainer1->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(3) {this->rectangleShape26, 
 				this->rectangleShape2, this->rectangleShape1});
-			this->shapeContainer1->Size = System::Drawing::Size(268, 232);
+			this->shapeContainer1->Size = System::Drawing::Size(276, 232);
 			this->shapeContainer1->TabIndex = 18;
 			this->shapeContainer1->TabStop = false;
 			// 
@@ -1154,9 +1301,9 @@ private: System::ComponentModel::IContainer^  components;
 			this->tabPageSocket->Location = System::Drawing::Point(4, 22);
 			this->tabPageSocket->Name = L"tabPageSocket";
 			this->tabPageSocket->Padding = System::Windows::Forms::Padding(3);
-			this->tabPageSocket->Size = System::Drawing::Size(274, 238);
+			this->tabPageSocket->Size = System::Drawing::Size(282, 238);
 			this->tabPageSocket->TabIndex = 2;
-			this->tabPageSocket->Text = L"PuenteWEB";
+			this->tabPageSocket->Text = L"P.WEB";
 			// 
 			// comboBoxSocketIP
 			// 
@@ -1264,7 +1411,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->shapeContainer3->Name = L"shapeContainer3";
 			this->shapeContainer3->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(2) {this->rectangleShape20, 
 				this->rectangleShape3});
-			this->shapeContainer3->Size = System::Drawing::Size(264, 228);
+			this->shapeContainer3->Size = System::Drawing::Size(272, 228);
 			this->shapeContainer3->TabIndex = 10;
 			this->shapeContainer3->TabStop = false;
 			// 
@@ -1299,7 +1446,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->tabPageWeb->Controls->Add(this->shapeContainer8);
 			this->tabPageWeb->Location = System::Drawing::Point(4, 22);
 			this->tabPageWeb->Name = L"tabPageWeb";
-			this->tabPageWeb->Size = System::Drawing::Size(274, 238);
+			this->tabPageWeb->Size = System::Drawing::Size(282, 238);
 			this->tabPageWeb->TabIndex = 4;
 			this->tabPageWeb->Text = L"Web";
 			// 
@@ -1407,7 +1554,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->shapeContainer8->Name = L"shapeContainer8";
 			this->shapeContainer8->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(2) {this->rectangleShape27, 
 				this->rectangleShape25});
-			this->shapeContainer8->Size = System::Drawing::Size(274, 238);
+			this->shapeContainer8->Size = System::Drawing::Size(282, 238);
 			this->shapeContainer8->TabIndex = 9;
 			this->shapeContainer8->TabStop = false;
 			// 
@@ -2152,6 +2299,41 @@ private: System::ComponentModel::IContainer^  components;
 			this->timer3->Interval = 500;
 			this->timer3->Tick += gcnew System::EventHandler(this, &MyForm::timer3_Tick);
 			// 
+			// rectangleShape29
+			// 
+			this->rectangleShape29->BackColor = System::Drawing::Color::White;
+			this->rectangleShape29->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape29->Location = System::Drawing::Point(13, 16);
+			this->rectangleShape29->Name = L"rectangleShape29";
+			this->rectangleShape29->Size = System::Drawing::Size(248, 48);
+			// 
+			// shapeContainer6
+			// 
+			this->shapeContainer6->Location = System::Drawing::Point(3, 3);
+			this->shapeContainer6->Margin = System::Windows::Forms::Padding(0);
+			this->shapeContainer6->Name = L"shapeContainer6";
+			this->shapeContainer6->Shapes->AddRange(gcnew cli::array< Microsoft::VisualBasic::PowerPacks::Shape^  >(3) {this->lineShape1, 
+				this->rectangleShape32, this->rectangleShape29});
+			this->shapeContainer6->Size = System::Drawing::Size(276, 232);
+			this->shapeContainer6->TabIndex = 10;
+			this->shapeContainer6->TabStop = false;
+			// 
+			// rectangleShape32
+			// 
+			this->rectangleShape32->BackColor = System::Drawing::Color::White;
+			this->rectangleShape32->BackStyle = Microsoft::VisualBasic::PowerPacks::BackStyle::Opaque;
+			this->rectangleShape32->Location = System::Drawing::Point(14, 77);
+			this->rectangleShape32->Name = L"rectangleShape32";
+			this->rectangleShape32->Size = System::Drawing::Size(63, 83);
+			// 
+			// lineShape1
+			// 
+			this->lineShape1->Name = L"lineShape1";
+			this->lineShape1->X1 = 20;
+			this->lineShape1->X2 = 70;
+			this->lineShape1->Y1 = 117;
+			this->lineShape1->Y2 = 117;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -2171,6 +2353,8 @@ private: System::ComponentModel::IContainer^  components;
 			this->flowLayoutPanel2->ResumeLayout(false);
 			this->tabPageCOM->ResumeLayout(false);
 			this->tabPageCOM->PerformLayout();
+			this->tabPageSocketCliente->ResumeLayout(false);
+			this->tabPageSocketCliente->PerformLayout();
 			this->tabPagePuente->ResumeLayout(false);
 			this->tabPagePuente->PerformLayout();
 			this->tabPageSocket->ResumeLayout(false);
@@ -2803,7 +2987,15 @@ private: System::Void ButtonIniciarConnection_Click(System::Object^  sender, Sys
 				 const char*txb2=context.marshal_as<const char*>(textBoxCOMVelocidad->Text);
 				 c[0]->inicializa(txb1,atol(txb2));
 			 }
-			 else if(tabControl1->SelectedIndex==3)
+			 else if(tabControl1->SelectedIndex==2)
+			 {
+				 c=new Connection*[1]();
+				 c[0]=new Socket_Client();
+				 const char*txb1=context.marshal_as<const char*>( comboBox1->Text);
+				 const char*txb2=context.marshal_as<const char*>(comboBox2->Text);
+				 c[0]->inicializa(txb1,atol(txb2));
+			 }
+			 else if(tabControl1->SelectedIndex==4)
 			 {
 				 c=new Connection*[4]();
 				 c[0]=new Socket_Server();
@@ -2820,7 +3012,41 @@ private: System::Void ButtonIniciarConnection_Click(System::Object^  sender, Sys
 					 COM=true;
 					 Escenario2();
 				 }
-				 else if(tabControl1->SelectedIndex==3)
+				 else if(tabControl1->SelectedIndex==2)
+				 {
+					 char toSend[3];
+					toSend[0]=(char)35;
+					toSend[1]=(char)1;
+					toSend[2]=0;
+					c[0]->Trasmitir(toSend);
+					fd_set descriptoresLectura;
+					struct timeval tv;
+					tv.tv_sec=3;
+					tv.tv_usec=55555;
+					FD_ZERO(&descriptoresLectura);
+					FD_SET(c[0]->GetSocket(),&descriptoresLectura);
+
+					select(c[0]->GetSocket(),&descriptoresLectura,NULL,NULL,&tv);
+					bool err=true;
+					char*ToREciv;
+					if(FD_ISSET(c[0]->GetSocket(),&descriptoresLectura))
+					{
+							ToREciv=c[0]->Recibir();
+							if(ToREciv!=NULL)
+								if(ToREciv[0]==(char)35)
+									err=false;
+					}
+					if(err)
+					{
+						System::Windows::Forms::MessageBox::Show("SocketCliente_ESE: No Autenticado como ESE");
+						 Socket_Cliente=true;
+						 c[0]->CloseConnection();
+						return;
+					}
+					 Socket_Cliente=true;
+					 Escenario6();
+				 }
+				 else if(tabControl1->SelectedIndex==4)
 				 {
 					th=gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(SelectThreadExtern));
 					th->Start();
@@ -4009,6 +4235,29 @@ private:
 		this->tabControl2->Visible=true;
 		this->tabControl3->Visible=false;
 	}
+	void Escenario6()
+	{
+		string s=c[0]->getChar();
+		s+=":";
+		s+=to_string(c[0]->getunsigned());
+		labelSocketAddrTabControl2->Text=gcnew String(s.c_str());
+		tabControl2->Controls->Remove(tabPageSocketClientesTabControl2);
+		tabControl2->Controls->Remove(tabPageWeb);
+		this->tabPageSocketServerTabControl2->Text = L"S.Cliente";
+		labelSocketCOMServerTabControl2->Text=gcnew String("Socket_Cliente");
+		tabControl1->Visible=false;
+		tabControl2->Visible=true;
+		tabControl3->Visible=false;
+	};
+	void Escenario7(){
+		tabControl1->Controls->Remove(tabPageWeb);
+		tabControl1->Controls->Add(tabPageWeb);
+		this->tabControl3->Visible=false;
+		this->tabControl2->Visible=false;
+		this->tabControl1->Visible=true;
+		this->rectangleShape1->BackColor = System::Drawing::Color::White;
+		this->rectangleShape2->BackColor = System::Drawing::Color::White;
+	}
 	void MiniEscenario4()
 	{
 		string s("Conectado:\n");
@@ -4087,6 +4336,14 @@ private:
 			Escenario0();
 		}
 	}
+	void CerrarSocketCliente()
+	{
+		if(Socket_Cliente)
+		{
+			Socket_Cliente=false;
+			Escenario7();
+		}
+	}
 	void CerrarWebPuente()
 	{
 		if(WebSocket)
@@ -4132,6 +4389,7 @@ private:
 			CerrarCOMPuente();
 			CerrarSocketServer();
 			CerrarWebPuente();
+			CerrarSocketCliente();
 			CerrarCOM();
 			delete c[0];
 			delete[]c;
@@ -4316,6 +4574,62 @@ private:
 	}
 
 
+private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+			checkBox1->Checked=false;
+			checkBox2->Checked=false;
+			this->checkBox1->BackColor = System::Drawing::Color::Transparent;
+			this->checkBox2->BackColor = System::Drawing::Color::Transparent;
+			unsigned punt=0;
+			unsigned contnum=0;
+			bool lastPunt=false;
+			try
+			{
+				for(unsigned i=0;i<(unsigned)comboBox1->Text->Length;i++)
+				{
+					if(comboBox1->Text[comboBox1->Text->Length-1]=='.')
+						throw(true);
+					if(!isdigit(comboBox1->Text[i]))
+					{
+						if(comboBox1->Text[i]=='.')
+						{
+							if(punt==3||lastPunt)
+								throw(true);
+							punt++;
+							contnum=0;
+							lastPunt=true;
+							continue;
+						}
+						else
+							throw(true);
+	
+					}
+					if(contnum==3)
+						throw(true);
+					contnum++;
+					lastPunt=false;
+				}
+				if(punt==3)
+				{
+					checkBox1->Checked=true;
+					this->checkBox1->BackColor = System::Drawing::Color::Green;
+				}
+			}catch(bool){};
+			try
+			{
+				if(!comboBox2->Text->Length)
+					throw(true);
+				for(unsigned i=0;i<(unsigned)comboBox2->Text->Length;i++)
+					if(!isdigit(comboBox2->Text[i]))
+						throw(true);
+				checkBox2->Checked=true;
+				this->checkBox2->BackColor = System::Drawing::Color::Green;
+			}catch(bool){};
+			if(checkBox1->Checked&&checkBox2->Checked)
+				button1->Enabled=true;
+			else
+				button1->Enabled=false;
+
+		 }
 };
 }
 //textBoxSocketIPPuentep

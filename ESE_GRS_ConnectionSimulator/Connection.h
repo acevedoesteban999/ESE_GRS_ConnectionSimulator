@@ -16,7 +16,7 @@ enum ConnectionType
 	};
 enum TypeClient
 	{
-		Null,HTML,Windows,WEB,ESE_GRS,PUENTE_WEB
+		Null,HTML,Windows,WEB,EsE_GrS,PUENTE_WEB
 	};
 class Connection
 {
@@ -415,7 +415,7 @@ class StackClients
 		}
 		void ActuTypeByIndex(TypeClient t,unsigned i)
 		{
-			if(t==TypeClient::ESE_GRS)
+			if(t==TypeClient::EsE_GrS)
 			{
 				if(ESE==-1)
 				{
@@ -597,27 +597,27 @@ public:
 											(19)000100 11->AceptButton
 											(23)000101 11->CancelButton
 											///////////Comando de Servidor////////
-											(35)00100011->ESE_GRS ESE_GRS_BRAZO
-											(39)00100111->ESE_GRS WINDOWS
-											(43)00101011->ESE_GRS WEB
-											(47)00101111->ESE_GRS HTML
-											(51)00110011->ESE_GRS USER
-											(55)00110111->ESE_GRS!USER
-											(59)00111011->ESE_GRS BOCETO
-											(63)00111111->ESE_GRS!BOCETO
-											(67)01000011->ESE_GRS POINT
-											(71)01000111->ESE_GRS LINE
-											(75)01001011->ESE_GRS STRIPLINE
-											(79)01001111->ESE_GRS SPLINE
-											(83)01010011->ESE_GRS BSPLINE
-											(85)01010111->ESE_GRS CANCEL
-											(91)01011011->ESE_GRS MOSTRAR_PLANO
-											(95)01011111->ESE_GRS!MOSTRAR_PLANO
-											(99)01100011->ESE_GRS 
-											(103)01100111->ESE_GRS !!!!!!!!!!!!!!!!!!!!!!!!1TANSMITE_PLANO!!!!!!!!!!!!!!!!!!!!!!!!!!1
-											(107)01101011->ESE_GRS PUENTE_WEB
-											(111)01101111->ESE_GRS PERDER ESE
-											(115)01110011->ESE_GRS RESPUESTA_PUETE_WEB
+											(35)00100011->EsE_GrS EsE_GrS_BRAZO
+											(39)00100111->EsE_GrS WINDOWS
+											(43)00101011->EsE_GrS WEB
+											(47)00101111->EsE_GrS HTML
+											(51)00110011->EsE_GrS USER
+											(55)00110111->EsE_GrS!USER
+											(59)00111011->EsE_GrS BOCETO
+											(63)00111111->EsE_GrS!BOCETO
+											(67)01000011->EsE_GrS POINT
+											(71)01000111->EsE_GrS LINE
+											(75)01001011->EsE_GrS STRIPLINE
+											(79)01001111->EsE_GrS SPLINE
+											(83)01010011->EsE_GrS BSPLINE
+											(85)01010111->EsE_GrS CANCEL
+											(91)01011011->EsE_GrS MOSTRAR_PLANO
+											(95)01011111->EsE_GrS!MOSTRAR_PLANO
+											(99)01100011->EsE_GrS 
+											(103)01100111->EsE_GrS !!!!!!!!!!!!!!!!!!!!!!!!1TANSMITE_PLANO!!!!!!!!!!!!!!!!!!!!!!!!!!1
+											(107)01101011->EsE_GrS PUENTE_WEB
+											(111)01101111->EsE_GrS PERDER ESE
+											(115)01110011->EsE_GrS RESPUESTA_PUETE_WEB
 											(119)01110100->CLIENTE DESCONECTADO
 															*/
 									case 59://New Boceto transferir plano
@@ -627,7 +627,7 @@ public:
 											Trasmitir((char*)bufers.c_str());
 										throw(true);
 									case 35://///////////////////////GANAR ESEGRS////////////////////////////
-										this->ManejadorClientes.ActuTypeByIndex(TypeClient::ESE_GRS,i);
+										this->ManejadorClientes.ActuTypeByIndex(TypeClient::EsE_GrS,i);
 										if(ManejadorClientes.ESE==i)
 										{
 											toSend[0]=(char)35;
@@ -801,16 +801,16 @@ public:
 			"<head>"
 			"<meta charset=\"UTF-8\">"
 			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
-			"<title>ESE_GRS SERVER</title>"
+			"<title>EsE_GrS SERVER</title>"
 			"</head>"
 			"<body>"
 				"<div style=\"text-align: center;\">"
-				"<h1 >ESE_GRS Server</h1>"
+				"<h1 >EsE_GrS Server</h1>"
 				"<h3 style=\"font-family: Georgia, 'Times New Roman', Times, serif;\">"
 				"Aqui se encuentra alojado el servidor en C++ a partir de Sockets."
 				"Para empezar a  utilizar  nuestros servicios descargue la "
-				"<a href=\"https://github.com/Esteban191900/ESE_GRS-Class\" target=\"_blank\">App" 
-				"para windows</a>, o desde el <a href=\"https://esteban191900.github.io/ESE_GRS_WEBGL_THREEJS/\" target=\"_blank\">"
+				"<a href=\"https://github.com/Esteban191900/EsE_GrS-Class\" target=\"_blank\">App" 
+				"para windows</a>, o desde el <a href=\"https://esteban191900.github.io/EsE_GrS_WEBGL_THREEJS/\" target=\"_blank\">"
 				"simulador online</a>"
             "</h3>"
 			"</body>"
@@ -982,7 +982,7 @@ public:
 		s+="_Id:";
 		s+=to_string(ManejadorClientes.clientes[i]);
 		s+="\n_Tipo:";
-		s+=(ManejadorClientes.clientes[i].t==TypeClient::HTML?"HTML":ManejadorClientes.clientes[i].t==TypeClient::Windows?"WIND":ManejadorClientes.clientes[i].t==TypeClient::WEB?"WEB":ManejadorClientes.clientes[i].t==TypeClient::ESE_GRS?"ESE":"NULL");
+		s+=(ManejadorClientes.clientes[i].t==TypeClient::HTML?"HTML":ManejadorClientes.clientes[i].t==TypeClient::Windows?"WIND":ManejadorClientes.clientes[i].t==TypeClient::WEB?"WEB":ManejadorClientes.clientes[i].t==TypeClient::EsE_GrS?"ESE":"NULL");
 		s+="\n_Acceso:";
 		s+=(ManejadorClientes.user==i||ManejadorClientes.ESE==i)?"TRUE":"FALSE";
 		s+="\n_Ip:";
@@ -1013,7 +1013,7 @@ public:
 		s+="_Id:";
 		s+=to_string(ManejadorClientes.clientes[i]);
 		s+="\n_Tipo:";
-		s+=(ManejadorClientes.clientes[i].t==TypeClient::HTML?"HTML":ManejadorClientes.clientes[i].t==TypeClient::Windows?"WIND":ManejadorClientes.clientes[i].t==TypeClient::WEB?"WEB":ManejadorClientes.clientes[i].t==TypeClient::ESE_GRS?"ESE":ManejadorClientes.clientes[i].t==TypeClient::PUENTE_WEB?"PuenteWeb":"NULL");
+		s+=(ManejadorClientes.clientes[i].t==TypeClient::HTML?"HTML":ManejadorClientes.clientes[i].t==TypeClient::Windows?"WIND":ManejadorClientes.clientes[i].t==TypeClient::WEB?"WEB":ManejadorClientes.clientes[i].t==TypeClient::EsE_GrS?"ESE":ManejadorClientes.clientes[i].t==TypeClient::PUENTE_WEB?"PuenteWeb":"NULL");
 		s+="\n_Acceso:";
 		s+=(ManejadorClientes.user==i||ManejadorClientes.ESE==i)?"TRUE":"FALSE";
 		s+="\n_Ip:";
