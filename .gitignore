@@ -9,3 +9,6 @@ ESE_GRS_ConnectionSimulator/ESE_GRS_ConnectionSimulator.vcxproj.filters
 ESE_GRS_ConnectionSimulator/ESE_GRS_ConnectionSimulator.vcxproj.user
 ESE_GRS_ConnectionSimulator/MyForm.resx
 ESE_GRS_ConnectionSimulator/Debug
+ESE_GRS_ConnectionSimulator/ESE_GRS_ConnectionSimulator.aps
+ESE_GRS_ConnectionSimulator/ESE_GRS_ConnectionSimulator.rc
+ESE_GRS_ConnectionSimulator/resource.h

@@ -1,4 +1,4 @@
-# Proyecto ESE_GRS_ConnectionSimulator v4.4
+# Proyecto ESE_GRS_ConnectionSimulator v4.5
 
 Este proyecto tiene como objetivo el desarrollo de una aplicación
 que permita la simulación entre el brazo ESE_GRS y la 
