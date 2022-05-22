@@ -400,8 +400,8 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape8;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape7;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape6;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape4;
-private: System::Windows::Forms::FlowLayoutPanel^  flowLayoutPanel2;
-private: System::Windows::Forms::Label^  label5;
+
+
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape21;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape20;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape24;
@@ -482,6 +482,7 @@ private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape32;
 private: Microsoft::VisualBasic::PowerPacks::RectangleShape^  rectangleShape29;
 
 
+
 private: System::ComponentModel::IContainer^  components;
 	public:		
 		MyForm(void)
@@ -529,10 +530,8 @@ private: System::ComponentModel::IContainer^  components;
 			this->components = (gcnew System::ComponentModel::Container());
 			this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
 			this->tabPageAbout = (gcnew System::Windows::Forms::TabPage());
-			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->flowLayoutPanel2 = (gcnew System::Windows::Forms::FlowLayoutPanel());
-			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->label10 = (gcnew System::Windows::Forms::Label());
+			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->tabPageCOM = (gcnew System::Windows::Forms::TabPage());
 			this->checkBox1COMVelocidad = (gcnew System::Windows::Forms::CheckBox());
 			this->checkBox1COMPuerto = (gcnew System::Windows::Forms::CheckBox());
@@ -674,7 +673,6 @@ private: System::ComponentModel::IContainer^  components;
 			this->timer3 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->tabControl1->SuspendLayout();
 			this->tabPageAbout->SuspendLayout();
-			this->flowLayoutPanel2->SuspendLayout();
 			this->tabPageCOM->SuspendLayout();
 			this->tabPageSocketCliente->SuspendLayout();
 			this->tabPagePuente->SuspendLayout();
@@ -705,8 +703,8 @@ private: System::ComponentModel::IContainer^  components;
 			// tabPageAbout
 			// 
 			this->tabPageAbout->BackColor = System::Drawing::SystemColors::InactiveBorder;
+			this->tabPageAbout->Controls->Add(this->label10);
 			this->tabPageAbout->Controls->Add(this->label1);
-			this->tabPageAbout->Controls->Add(this->flowLayoutPanel2);
 			this->tabPageAbout->Location = System::Drawing::Point(4, 22);
 			this->tabPageAbout->Name = L"tabPageAbout";
 			this->tabPageAbout->Padding = System::Windows::Forms::Padding(3);
@@ -714,59 +712,31 @@ private: System::ComponentModel::IContainer^  components;
 			this->tabPageAbout->TabIndex = 3;
 			this->tabPageAbout->Text = L"ESE_info";
 			// 
-			// label1
-			// 
-			this->label1->AutoSize = true;
-			this->label1->BackColor = System::Drawing::Color::White;
-			this->label1->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
-			this->label1->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 15.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->label1->Location = System::Drawing::Point(20, 18);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(235, 27);
-			this->label1->TabIndex = 1;
-			this->label1->Text = L"ESE_GRS-Simulador";
-			// 
-			// flowLayoutPanel2
-			// 
-			this->flowLayoutPanel2->BackColor = System::Drawing::Color::White;
-			this->flowLayoutPanel2->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
-			this->flowLayoutPanel2->Controls->Add(this->label5);
-			this->flowLayoutPanel2->Controls->Add(this->label10);
-			this->flowLayoutPanel2->Location = System::Drawing::Point(8, 63);
-			this->flowLayoutPanel2->Margin = System::Windows::Forms::Padding(0);
-			this->flowLayoutPanel2->Name = L"flowLayoutPanel2";
-			this->flowLayoutPanel2->Padding = System::Windows::Forms::Padding(0, 3, 0, 0);
-			this->flowLayoutPanel2->RightToLeft = System::Windows::Forms::RightToLeft::No;
-			this->flowLayoutPanel2->Size = System::Drawing::Size(258, 156);
-			this->flowLayoutPanel2->TabIndex = 13;
-			// 
-			// label5
-			// 
-			this->label5->BackColor = System::Drawing::Color::Transparent;
-			this->label5->Font = (gcnew System::Drawing::Font(L"Palatino Linotype", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->label5->Location = System::Drawing::Point(3, 3);
-			this->label5->Name = L"label5";
-			this->label5->Padding = System::Windows::Forms::Padding(0, 5, 0, 0);
-			this->label5->Size = System::Drawing::Size(253, 120);
-			this->label5->TabIndex = 2;
-			this->label5->Text = L" \r\nSimulador del brazo ESE_GRS que \r\npermite crear un servidor por Sockets y\r\n un" 
-				L" puente COM-SOCKET para \r\nmanipular varios clientes a la vez.\r\n\r\n\r\n\r\n \r\n  ";
-			this->label5->TextAlign = System::Drawing::ContentAlignment::BottomCenter;
-			// 
 			// label10
 			// 
 			this->label10->BackColor = System::Drawing::Color::Transparent;
 			this->label10->Font = (gcnew System::Drawing::Font(L"Palatino Linotype", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label10->Location = System::Drawing::Point(3, 123);
+			this->label10->Location = System::Drawing::Point(201, 204);
 			this->label10->Name = L"label10";
 			this->label10->Padding = System::Windows::Forms::Padding(0, 5, 0, 0);
-			this->label10->Size = System::Drawing::Size(253, 50);
+			this->label10->Size = System::Drawing::Size(117, 36);
 			this->label10->TabIndex = 3;
 			this->label10->Text = L" v-4.5";
-			this->label10->TextAlign = System::Drawing::ContentAlignment::TopRight;
+			this->label10->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			// 
+			// label1
+			// 
+			this->label1->BackColor = System::Drawing::Color::White;
+			this->label1->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+			this->label1->Font = (gcnew System::Drawing::Font(L"Monospac821 BT", 15.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label1->Location = System::Drawing::Point(23, 23);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(235, 98);
+			this->label1->TabIndex = 1;
+			this->label1->Text = L"ESE_GRS-Simulador";
+			this->label1->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
 			// tabPageCOM
 			// 
@@ -2349,8 +2319,6 @@ private: System::ComponentModel::IContainer^  components;
 			this->Text = L"ESE_GRS_Connection_Simulator";
 			this->tabControl1->ResumeLayout(false);
 			this->tabPageAbout->ResumeLayout(false);
-			this->tabPageAbout->PerformLayout();
-			this->flowLayoutPanel2->ResumeLayout(false);
 			this->tabPageCOM->ResumeLayout(false);
 			this->tabPageCOM->PerformLayout();
 			this->tabPageSocketCliente->ResumeLayout(false);
